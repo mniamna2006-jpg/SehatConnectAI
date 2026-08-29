@@ -5,13 +5,13 @@ An intelligent healthcare platform that uses AI, voice technology, and predictiv
 ## Repository Layout
 
 - `backend/` — Node.js/Express + Prisma + PostgreSQL API. Implemented: auth, patient profile, hospitals (incl. GPS-nearby search), departments, doctors, doctor schedules, time slots, appointments, queue.
-- `frontend/` — React Native + Expo Patient app. **Not yet scaffolded** (directory currently holds only placeholder folders); see below.
+- `frontend/` — React Native + Expo Patient app. **Phase 1 complete**: all 11 patient screens implemented (see below).
 - `database/` — schema/migrations/seeds reference material.
 - `docs/` — project documentation (architecture, scope, contracts, etc. — see links below).
 
 ## Current Development State
 
-Backend foundation is implemented. Frontend is in **pre-Phase-1 preparation**: architecture is frozen and documented, but no Expo project has been scaffolded and no screens exist yet.
+Backend foundation is implemented. Frontend **Phase 1 (Functional Grey Structure) is complete**: all 23 planned tasks and 11 patient screens are implemented on `feat/patient-frontend-phase-1`, open as PR awaiting review/merge into `main`. Phase 2 (design/styling) has not started.
 
 ## Frontend Scope (Patient App)
 
@@ -23,9 +23,9 @@ Feature-first, hook-based MVVM on Expo Router: View (React Native UI) → ViewMo
 
 ## Phases
 
-1. **Preparation** (current) — stack selection, skills, architecture/doc freeze, Phase 1 detailed plan.
-2. **Phase 1 — Functional Grey Structure** — all 11 screens working end-to-end, no visual polish.
-3. **Phase 2 — Design / Styling / Polish** — visual identity, accessibility pass.
+1. **Preparation** — stack selection, skills, architecture/doc freeze, Phase 1 detailed plan. Done.
+2. **Phase 1 — Functional Grey Structure** — all 11 screens working end-to-end, no visual polish. Done, PR open, not yet merged.
+3. **Phase 2 — Design / Styling / Polish** (current, not started) — visual identity, accessibility pass.
 
 Full detail in [docs/PHASES.md](docs/PHASES.md).
 

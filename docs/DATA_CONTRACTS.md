@@ -11,7 +11,7 @@ Request: `{ full_name, email?, phone?, password, preferred_language? }` (email O
 Response `data`: `{ token, user: { user_id, full_name, email, phone, role: "PATIENT", preferred_language, patient_id } }`
 
 `POST /api/auth/login`
-Request: `{ email? | phone?, password }`
+Request: `{ email? | phone?, password }` (backend accepts either). **Login screen UI exposes Email only** — no Phone field (latest frontend clarification).
 Response `data`: `{ token, user: { user_id, full_name, email, phone, role, preferred_language } }`
 
 `GET /api/auth/me` (auth required)
@@ -19,11 +19,11 @@ Response `data`: `{ user_id, full_name, email, phone, role, preferred_language, 
 
 ## Patient Profile
 
-`GET /api/patient/profile` (auth, PATIENT)
+`GET /api/patients/profile` (auth, PATIENT)
 Response `data`: `{ patient_id, user_id, full_name, email, phone, preferred_language, date_of_birth, gender, address, city, emergency_contact }`
 
-`PATCH /api/patient/profile` (auth, PATIENT)
-Request (all optional, partial update): `{ full_name?, phone?, preferred_language?, date_of_birth?, gender?, address?, city?, emergency_contact? }`
+`PATCH /api/patients/profile` (auth, PATIENT)
+Request (all optional, partial update): `{ full_name?, phone?, preferred_language?, date_of_birth?, gender?, address?, city?, emergency_contact? }`. **`email` is not accepted** — frontend keeps Email visible but read-only for this reason; do not fake a successful email update.
 Response `data`: same shape as GET.
 
 ## Hospital
@@ -39,7 +39,7 @@ Hospital shape: `{ hospital_id, name, facility_type, description, logo_url, cove
 
 `GET /api/departments/hospital/:hospitalId` — active departments for one hospital: `{ department_id, hospital_id, name, description, is_active }`
 
-`[ADAPTER] Find Department` (cross-hospital department search/discovery) — no backend endpoint exists. Frontend Model layer defines `findDepartments(query): Department[]` with a temporary mock/local implementation over the same per-hospital shape until backend adds it.
+`[ADAPTER] Find Department` (cross-hospital department search/discovery) — no backend endpoint exists. Frontend Model layer defines `findDepartments(query): Department[]`, composing the real per-hospital `GET /api/departments/hospital/:hospitalId` endpoint across the discovery scope (GPS/manual). Not mock/local data — every result is a real backend record.
 
 ## Doctor
 
@@ -49,7 +49,7 @@ Hospital shape: `{ hospital_id, name, facility_type, description, logo_url, cove
 
 Doctor shape: `{ doctor_id, hospital_id, department_id, name, specialization, qualification, license_number, bio, consultation_fee, is_active }`. **A doctor belongs to exactly one hospital and one department — never more.**
 
-`[ADAPTER] Find Doctor` (cross-hospital doctor search/discovery) — no backend endpoint exists. Frontend Model layer defines `findDoctors(query): Doctor[]` with a temporary mock/local implementation until backend adds it. **Note (intentional deviation, kept as-is):** the adapter's actual return type is `DoctorDetail[]` (`Doctor` + `hospital`/`department`/`schedules`), not bare `Doctor[]` — Task 14's own requirement (show hospital name + available days/timings per result) needs that data, so the adapter fetches each matching doctor's full detail before returning. Do not "fix" the signature back to `Doctor[]`.
+`[ADAPTER] Find Doctor` (cross-hospital doctor search/discovery) — no backend endpoint exists. Frontend Model layer defines `findDoctors(query): DoctorDetail[]`, composing real backend endpoints (`GET /api/hospitals*` to resolve the discovery scope, `GET /api/doctors/hospital/:hospitalId` to search, `GET /api/doctors/:doctor_id` for full detail). Not mock/local data — every result is a real backend record. **Note (intentional deviation, kept as-is):** the return type is `DoctorDetail[]` (`Doctor` + `hospital`/`department`/`schedules`), not bare `Doctor[]` — Task 14's own requirement (show hospital name + available days/timings per result) needs that data. Do not "fix" the signature back to `Doctor[]`.
 
 ## Doctor Schedule / Time Slot
 

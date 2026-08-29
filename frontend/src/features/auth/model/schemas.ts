@@ -1,12 +1,9 @@
 import { z } from 'zod';
 
-export const loginSchema = z
-  .object({
-    email: z.string().email().optional(),
-    phone: z.string().min(7).optional(),
-    password: z.string().min(6),
-  })
-  .refine((v) => !!v.email || !!v.phone, { message: 'Email or phone is required', path: ['email'] });
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
 
 export const registerSchema = z
   .object({

@@ -1,15 +1,15 @@
 # Project Phases
 
-## PREPARATION (current)
+## PREPARATION — done
 
 - CT scan of repository (read-only audit) — done
 - Stack selection (Expo + Expo Router + TanStack Query + RHF/Zod) — done
 - Skills bootstrap/audit — done (see `docs/SKILL_AUDIT.md`)
 - Architecture freeze — done (see `ARCHITECTURE.md`)
 - Documentation freeze — this package
-- Phase 1 Detailed Implementation Plan — **not started, next step after this gate is reviewed**
+- Phase 1 Detailed Implementation Plan — done
 
-## PHASE 1 — Functional Grey Structure
+## PHASE 1 — Functional Grey Structure — done, PR open (not yet merged)
 
 Scaffold Expo app, build all 11 patient screens end-to-end against real/adapter data with correct navigation, forms, and state — no visual design work. UI choices limited to: understandable layout, correct interaction, touch targets, basic accessibility, no broken overflow, safe areas, keyboard usability.
 
@@ -47,6 +47,6 @@ frontend/
 └── assets/
 ```
 
-## PHASE 2 — Design / Styling / Polish
+## PHASE 2 — Design / Styling / Polish (current)
 
-Apply visual identity: `ui-ux-pro-max` + `expo-design-system` for design system generation, `frontend-design` + `craft`/`general-design-review` for polish, `accessibility` skill for a full WCAG pass. Not started until Phase 1 grey structure is functionally complete and reviewed.
+Apply visual identity: `ui-ux-pro-max` + `expo-design-system` for design system generation, `frontend-design` + `craft`/`general-design-review` for polish, `accessibility` skill for a full WCAG pass. Begins in a new isolated branch/worktree (`feat/patient-frontend-phase-2-ui`) only after PR #1 (Phase 1) is merged into `main`.

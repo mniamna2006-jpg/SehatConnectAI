@@ -14,6 +14,7 @@ export interface PatientProfile {
   emergency_contact?: string;
 }
 
+// email is intentionally excluded: backend PATCH /api/patients/profile does not accept email mutation.
 export type ProfileUpdateInput = Partial<
   Pick<PatientProfile, 'full_name' | 'phone' | 'preferred_language' | 'date_of_birth' | 'gender' | 'address' | 'city' | 'emergency_contact'>
 >;

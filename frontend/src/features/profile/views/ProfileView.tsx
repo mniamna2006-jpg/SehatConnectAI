@@ -33,6 +33,7 @@ export function ProfileView() {
       <Screen>
         <Text accessibilityRole="header">Profile</Text>
         <Text testID="profile-full-name">{profile?.full_name}</Text>
+        {/* Email is display-only: backend PATCH /api/patients/profile does not accept email mutation. */}
         <Text testID="profile-email">{profile?.email}</Text>
         <Text testID="profile-phone">{profile?.phone}</Text>
         <Text testID="profile-date-of-birth">{profile?.date_of_birth}</Text>

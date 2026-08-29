@@ -45,20 +45,3 @@ test('onSubmit surfaces a safe apiError message on failure, does not navigate', 
   );
   expect(router.replace).not.toHaveBeenCalled();
 });
-
-test('onSubmit accepts a phone-only submission (no email)', async () => {
-  const login = jest.fn().mockResolvedValue(undefined);
-  (useAuth as jest.Mock).mockReturnValue({ login });
-
-  const { result } = await renderHook(() => useLoginViewModel());
-  await act(() => {
-    result.current.setValue('phone', '03001234567');
-    result.current.setValue('password', 'secret1');
-  });
-  await act(async () => {
-    await result.current.onSubmit();
-  });
-
-  expect(login).toHaveBeenCalledWith({ phone: '03001234567', password: 'secret1' });
-  expect(router.replace).toHaveBeenCalledWith('/home');
-});

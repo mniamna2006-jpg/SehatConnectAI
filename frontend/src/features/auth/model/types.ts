@@ -1,8 +1,7 @@
 import type { PreferredLanguage } from '../../../shared/types/api';
 
 export interface LoginInput {
-  email?: string;
-  phone?: string;
+  email: string;
   password: string;
 }
 

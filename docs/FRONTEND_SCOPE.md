@@ -22,7 +22,7 @@ This is the **only** frontend being built right now. Hospital admin/staff web fr
 
 - Patient registration/login/forgot-password against real backend auth (`/api/auth/*`).
 - Home as a navigation hub to the other patient features.
-- Profile view/edit against real backend (`/api/patient/profile`).
+- Profile view/edit against real backend (`/api/patients/profile`). Email is displayed but read-only — backend PATCH does not accept email mutation.
 - Hospital discovery: list, GPS-nearby, city search, and detail view — all against real backend (`/api/hospitals/*`).
 - Doctor discovery scoped by hospital or by department (real backend), plus a combined "Find Doctor" cross-hospital search (adapter — see DATA_CONTRACTS.md, no matching backend endpoint yet).
 - Department discovery scoped by hospital (real backend) and a combined cross-hospital "Find Department" search (adapter, same reason).
@@ -36,6 +36,6 @@ This is the **only** frontend being built right now. Hospital admin/staff web fr
 - Any AI assistant / chatbot UI (see `PROMPTS.md` — no production AI feature exists in this scope).
 - Any language beyond English/Urdu/Roman Urdu.
 - Any appointment detail requiring a mandatory appointment ID route param — Appointments is a single hub, not a per-ID detail screen.
-- Location capture inside Registration — location/GPS use is confined to hospital discovery (Find Hospital), triggered by explicit user action, never bundled into the registration flow.
+- Location capture inside Registration or Profile — location/GPS use is confined to discovery flows (Find Hospital, Find Doctor, Find Department), triggered by explicit user action, never bundled into registration or profile.
 - Design system generation, visual polish, animation — Phase 2 only.
 - Any backend modification.

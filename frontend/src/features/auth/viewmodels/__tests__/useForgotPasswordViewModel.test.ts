@@ -4,7 +4,7 @@ import { useForgotPasswordViewModel } from '../useForgotPasswordViewModel';
 test('onSubmit sets submitted true after the adapter resolves', async () => {
   const { result } = await renderHook(() => useForgotPasswordViewModel());
   await act(() => {
-    result.current.setIdentifier('a@b.com');
+    result.current.setEmail('a@b.com');
   });
   await act(async () => {
     await result.current.onSubmit();
