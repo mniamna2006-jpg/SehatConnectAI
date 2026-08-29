@@ -1,0 +1,16 @@
+export const queryKeys = {
+  me: ['auth', 'me'] as const,
+  profile: ['profile'] as const,
+  hospitals: (params?: Record<string, unknown>) => ['hospitals', params ?? {}] as const,
+  hospital: (id: string) => ['hospitals', id] as const,
+  doctorsByHospital: (hospitalId: string) => ['doctors', 'hospital', hospitalId] as const,
+  doctorsByDepartment: (departmentId: string) => ['doctors', 'department', departmentId] as const,
+  doctor: (id: string) => ['doctors', id] as const,
+  findDoctors: (query: string) => ['doctors', 'find', query] as const,
+  departmentsByHospital: (hospitalId: string) => ['departments', 'hospital', hospitalId] as const,
+  findDepartments: (query: string) => ['departments', 'find', query] as const,
+  timeSlots: (doctorId: string, date: string) => ['timeSlots', doctorId, date] as const,
+  myAppointments: ['appointments', 'my'] as const,
+  appointment: (id: string) => ['appointments', id] as const,
+  myQueue: ['queue', 'my'] as const,
+};
