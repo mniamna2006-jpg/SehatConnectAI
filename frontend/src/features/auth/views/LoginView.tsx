@@ -28,6 +28,20 @@ export function LoginView() {
       {errors.email && <Text>{errors.email.message}</Text>}
       <Controller
         control={control}
+        name="phone"
+        render={({ field }) => (
+          <TextInput
+            testID="login-phone"
+            placeholder="Phone"
+            keyboardType="phone-pad"
+            value={field.value ?? ''}
+            onChangeText={field.onChange}
+          />
+        )}
+      />
+      {errors.phone && <Text>{errors.phone.message}</Text>}
+      <Controller
+        control={control}
         name="password"
         render={({ field }) => (
           <TextInput

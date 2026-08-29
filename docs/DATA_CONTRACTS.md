@@ -49,7 +49,7 @@ Hospital shape: `{ hospital_id, name, facility_type, description, logo_url, cove
 
 Doctor shape: `{ doctor_id, hospital_id, department_id, name, specialization, qualification, license_number, bio, consultation_fee, is_active }`. **A doctor belongs to exactly one hospital and one department — never more.**
 
-`[ADAPTER] Find Doctor` (cross-hospital doctor search/discovery) — no backend endpoint exists. Frontend Model layer defines `findDoctors(query): Doctor[]` with a temporary mock/local implementation until backend adds it.
+`[ADAPTER] Find Doctor` (cross-hospital doctor search/discovery) — no backend endpoint exists. Frontend Model layer defines `findDoctors(query): Doctor[]` with a temporary mock/local implementation until backend adds it. **Note (intentional deviation, kept as-is):** the adapter's actual return type is `DoctorDetail[]` (`Doctor` + `hospital`/`department`/`schedules`), not bare `Doctor[]` — Task 14's own requirement (show hospital name + available days/timings per result) needs that data, so the adapter fetches each matching doctor's full detail before returning. Do not "fix" the signature back to `Doctor[]`.
 
 ## Doctor Schedule / Time Slot
 

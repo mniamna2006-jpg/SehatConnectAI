@@ -34,6 +34,23 @@ test('requestGpsLocation sets permissionDenied=true on denial, does not clear ma
   expect(result.current.manualCity).toBe('Karachi');
 });
 
+test('requestGpsLocation sets locationUnavailable=true on GPS timeout/failure, does not throw, leaves manual entry usable', async () => {
+  (Location.requestForegroundPermissionsAsync as jest.Mock).mockResolvedValue({ status: 'granted' });
+  (Location.getCurrentPositionAsync as jest.Mock).mockRejectedValue(new Error('Location request timed out'));
+
+  const { result } = await renderHook(() => useLocationSelector());
+  await act(() => result.current.setManualCity('Karachi'));
+
+  await act(async () => {
+    await result.current.requestGpsLocation();
+  });
+
+  expect(result.current.locationUnavailable).toBe(true);
+  expect(result.current.coordinates).toBeNull();
+  expect(result.current.mode).toBe('manual');
+  expect(result.current.manualCity).toBe('Karachi');
+});
+
 test('setManualCity switches mode to manual and clears coordinates', async () => {
   const { result } = await renderHook(() => useLocationSelector());
   await act(() => result.current.setManualCity('Lahore'));

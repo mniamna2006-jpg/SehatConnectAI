@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
 import { ApiError } from '../../../core/api/client';
 import { queryKeys } from '../../../shared/constants/queryKeys';
+import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue';
 import { getDepartmentsByHospital } from '../../departments/model/api';
-import { getDoctorsByHospital } from '../../doctors/model/api';
+import { getDoctorById, getDoctorsByHospital } from '../../doctors/model/api';
 import { getHospitals } from '../../hospitals/model/api';
 import { createAppointment, getTimeSlots } from '../model/api';
 import { bookingSchema, type BookingInput } from '../model/schemas';
+
+const FULL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 interface AppointmentPrefill {
   doctorId?: string;
@@ -43,6 +46,22 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   const doctorId = useWatch({ control, name: 'doctor_id' });
   const selectedSlotId = useWatch({ control, name: 'slot_id' });
 
+  // Doctor-only prefill (no hospitalId/departmentId): resolve the doctor's
+  // own hospital/department so the dependent queries below aren't stuck
+  // disabled and the prefill survives mount.
+  const hasDoctorOnlyPrefill = Boolean(prefill.doctorId) && !prefill.hospitalId && !prefill.departmentId;
+  const { data: prefillDoctor } = useQuery({
+    queryKey: queryKeys.doctor(prefill.doctorId ?? ''),
+    queryFn: () => getDoctorById(prefill.doctorId as string),
+    enabled: hasDoctorOnlyPrefill,
+  });
+
+  useEffect(() => {
+    if (!prefillDoctor) return;
+    setValue('hospital_id', prefillDoctor.hospital.hospital_id);
+    setValue('department_id', prefillDoctor.department.department_id);
+  }, [prefillDoctor, setValue]);
+
   const { data: hospitals = [], isLoading: isLoadingHospitals } = useQuery({
     queryKey: queryKeys.hospitals(),
     queryFn: getHospitals,
@@ -61,10 +80,17 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     ? hospitalDoctors.filter((doctor) => doctor.department_id === departmentId)
     : hospitalDoctors;
 
-  const { data: allTimeSlots = [], isLoading: isLoadingSlots } = useQuery({
-    queryKey: queryKeys.timeSlots(doctorId, selectedDate),
-    queryFn: () => getTimeSlots(doctorId, selectedDate),
-    enabled: doctorId.length > 0 && selectedDate.length > 0,
+  const debouncedDate = useDebouncedValue(selectedDate);
+  const isCompleteDate = FULL_DATE_PATTERN.test(debouncedDate);
+  const {
+    data: allTimeSlots = [],
+    isLoading: isLoadingSlots,
+    isError: isSlotsError,
+    refetch: refetchSlots,
+  } = useQuery({
+    queryKey: queryKeys.timeSlots(doctorId, debouncedDate),
+    queryFn: () => getTimeSlots(doctorId, debouncedDate),
+    enabled: doctorId.length > 0 && isCompleteDate,
   });
   const timeSlots = allTimeSlots.filter((slot) => slot.status === 'AVAILABLE');
 
@@ -73,7 +99,7 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     onSuccess: (appointment) => {
       setBookingSuccess(`Booked: ${appointment.booking_reference}`);
       queryClient.invalidateQueries({ queryKey: queryKeys.myAppointments });
-      queryClient.invalidateQueries({ queryKey: queryKeys.timeSlots(doctorId, selectedDate) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.timeSlots(doctorId, debouncedDate) });
     },
   });
 
@@ -109,9 +135,9 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
           ? 'This slot was just taken'
           : 'Booking failed. Please try again.'
       );
-      if (doctorId && selectedDate) {
+      if (doctorId && debouncedDate) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.timeSlots(doctorId, selectedDate),
+          queryKey: queryKeys.timeSlots(doctorId, debouncedDate),
         });
       }
     }
@@ -135,6 +161,8 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     isLoadingDepartments,
     isLoadingDoctors,
     isLoadingSlots,
+    isSlotsError,
+    refetchSlots,
     onSelectHospital,
     onSelectDepartment,
     onSelectDoctor,

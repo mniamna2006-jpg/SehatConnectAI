@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { Text, FlatList, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import { Image } from 'expo-image';
 import { Screen } from '../../../shared/components/Screen';
@@ -29,8 +29,8 @@ export function FindHospitalView() {
           data={hospitals}
           keyExtractor={(item: Hospital) => item.hospital_id}
           renderItem={({ item }: { item: Hospital }) => (
-            <Link href={`/hospital/${item.hospital_id}`} testID={`hospital-row-${item.hospital_id}`}>
-              <View>
+            <Link href={`/hospital/${item.hospital_id}`} asChild>
+              <Pressable accessibilityRole="button" testID={`hospital-row-${item.hospital_id}`}>
                 <Image
                   source={item.logo_url ? { uri: item.logo_url } : undefined}
                   placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
@@ -44,7 +44,7 @@ export function FindHospitalView() {
                     {item.distance_km.toFixed(1)} km
                   </Text>
                 )}
-              </View>
+              </Pressable>
             </Link>
           )}
         />

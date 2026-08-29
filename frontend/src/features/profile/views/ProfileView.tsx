@@ -9,7 +9,7 @@ import { useProfileViewModel } from '../viewmodels/useProfileViewModel';
 const LANGUAGE_OPTIONS = ['ENGLISH', 'URDU', 'ROMAN_URDU'] as const;
 
 export function ProfileView() {
-  const { profile, isLoading, isError, refetch, isEditing, control, errors, onEdit, onCancel, onSave, isSaving } =
+  const { profile, isLoading, isError, refetch, isEditing, control, errors, onEdit, onCancel, onSave, isSaving, saveError } =
     useProfileViewModel();
 
   if (isLoading) {
@@ -161,6 +161,7 @@ export function ProfileView() {
         )}
       />
       {errors.preferred_language && <Text>{errors.preferred_language.message}</Text>}
+      {saveError && <Text testID="profile-save-error">{saveError}</Text>}
       <Pressable testID="profile-save" onPress={onSave} disabled={isSaving}>
         {isSaving ? <ActivityIndicator /> : <Text>Save</Text>}
       </Pressable>

@@ -18,8 +18,8 @@ export function useLoginViewModel() {
     try {
       await login(values);
       router.replace('/home');
-    } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+    } catch {
+      setApiError('Unable to sign in. Please check your details and try again.');
     }
   });
 

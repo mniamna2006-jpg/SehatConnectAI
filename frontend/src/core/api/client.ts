@@ -44,7 +44,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const json = await response.json();
 
   if (!response.ok || json.success === false) {
-    if (response.status === 401) unauthorizedHandler?.();
+    if (auth && response.status === 401) unauthorizedHandler?.();
     throw new ApiError(response.status, json.message ?? json.error ?? 'Request failed');
   }
 

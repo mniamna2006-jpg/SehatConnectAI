@@ -27,7 +27,8 @@
       "expo-status-bar",
       "expo-secure-store",
       "expo-image",
-      "expo-localization"
+      "expo-localization",
+      ["expo-location", { "locationWhenInUsePermission": "Allow SehatConnectAI to use your location to find nearby hospitals." }]
     ]
   }
 }

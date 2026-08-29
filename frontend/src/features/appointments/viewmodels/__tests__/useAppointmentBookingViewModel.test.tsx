@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { ApiError } from '../../../../core/api/client';
 import { TestQueryProvider } from '../../../../core/query/testUtils';
 import { getDepartmentsByHospital } from '../../../departments/model/api';
-import { getDoctorsByHospital } from '../../../doctors/model/api';
+import { getDoctorById, getDoctorsByHospital } from '../../../doctors/model/api';
 import { getHospitals } from '../../../hospitals/model/api';
 import * as api from '../../model/api';
 import { useAppointmentBookingViewModel } from '../useAppointmentBookingViewModel';
@@ -22,6 +22,7 @@ beforeEach(() => {
   (getHospitals as jest.Mock).mockResolvedValue([]);
   (getDepartmentsByHospital as jest.Mock).mockResolvedValue([]);
   (getDoctorsByHospital as jest.Mock).mockResolvedValue([]);
+  (getDoctorById as jest.Mock).mockResolvedValue(undefined);
   (api.getTimeSlots as jest.Mock).mockResolvedValue([]);
 });
 
@@ -46,6 +47,29 @@ test('prefills doctor, hospital, and department from route params', async () => 
       result.current.isLoadingDoctors,
     ]).toEqual([false, false, false]);
   });
+});
+
+test('doctor-only prefill resolves hospital_id/department_id from the doctor detail without clearing doctor_id', async () => {
+  (getDoctorById as jest.Mock).mockResolvedValue({
+    doctor_id: 'd1',
+    hospital_id: 'h1',
+    department_id: 'dep1',
+    name: 'Dr. Ali',
+    is_active: true,
+    hospital: { hospital_id: 'h1', name: 'City Hospital' },
+    department: { department_id: 'dep1', name: 'Cardiology' },
+    schedules: [],
+  });
+
+  const { result } = await renderHook(
+    () => useAppointmentBookingViewModel({ doctorId: 'd1' }),
+    { wrapper }
+  );
+
+  await waitFor(() => expect(getDoctorById).toHaveBeenCalledWith('d1'));
+  await waitFor(() => expect(result.current.getValues('hospital_id')).toBe('h1'));
+  expect(result.current.getValues('department_id')).toBe('dep1');
+  expect(result.current.getValues('doctor_id')).toBe('d1');
 });
 
 test('onSelectDate loads available time slots for the chosen doctor and date', async () => {

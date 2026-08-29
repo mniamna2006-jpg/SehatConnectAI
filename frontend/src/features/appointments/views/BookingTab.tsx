@@ -63,7 +63,10 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
         onChangeText={vm.onSelectDate}
       />
       {vm.isLoadingSlots ? <LoadingState label="Loading time slots…" /> : null}
-      {!vm.isLoadingSlots && vm.selectedDate && vm.timeSlots.length === 0 ? (
+      {!vm.isLoadingSlots && vm.isSlotsError ? (
+        <ErrorState onRetry={() => void vm.refetchSlots()} />
+      ) : null}
+      {!vm.isLoadingSlots && !vm.isSlotsError && vm.selectedDate && vm.timeSlots.length === 0 ? (
         <EmptyState message="No available time slots. Try another date." />
       ) : null}
       {vm.timeSlots.map((slot) => (

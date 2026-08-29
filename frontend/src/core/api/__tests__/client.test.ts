@@ -61,4 +61,13 @@ describe('apiRequest', () => {
     await expect(apiRequest('/x')).rejects.toThrow();
     expect(handler).toHaveBeenCalledTimes(1);
   });
+
+  test('on a 401 with auth: false (e.g. login), does NOT call the unauthorized handler', async () => {
+    const handler = jest.fn();
+    registerUnauthorizedHandler(handler);
+    (global.fetch as jest.Mock).mockReturnValue(failResponse(401, 'Invalid credentials'));
+
+    await expect(apiRequest('/api/auth/login', { auth: false })).rejects.toThrow();
+    expect(handler).not.toHaveBeenCalled();
+  });
 });

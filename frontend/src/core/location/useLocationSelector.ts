@@ -13,6 +13,7 @@ export function useLocationSelector() {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [manualCity, setManualCityState] = useState('');
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const [locationUnavailable, setLocationUnavailable] = useState(false);
   const [isRequestingGps, setIsRequestingGps] = useState(false);
 
   const requestGpsLocation = useCallback(async () => {
@@ -24,9 +25,16 @@ export function useLocationSelector() {
         return;
       }
       setPermissionDenied(false);
-      const position = await Location.getCurrentPositionAsync({});
-      setCoordinates({ latitude: position.coords.latitude, longitude: position.coords.longitude });
-      setMode('gps');
+      setLocationUnavailable(false);
+      try {
+        const position = await Location.getCurrentPositionAsync({});
+        setCoordinates({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+        setMode('gps');
+      } catch {
+        // GPS unavailable or timed out: surface a non-blocking notice and
+        // leave manual entry usable, same as the permission-denied path.
+        setLocationUnavailable(true);
+      }
     } finally {
       setIsRequestingGps(false);
     }
@@ -43,7 +51,18 @@ export function useLocationSelector() {
     setCoordinates(null);
     setManualCityState('');
     setPermissionDenied(false);
+    setLocationUnavailable(false);
   }, []);
 
-  return { mode, coordinates, manualCity, permissionDenied, isRequestingGps, requestGpsLocation, setManualCity, reset };
+  return {
+    mode,
+    coordinates,
+    manualCity,
+    permissionDenied,
+    locationUnavailable,
+    isRequestingGps,
+    requestGpsLocation,
+    setManualCity,
+    reset,
+  };
 }

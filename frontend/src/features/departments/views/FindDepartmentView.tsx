@@ -9,21 +9,30 @@ import { LoadingState } from '../../../shared/components/LoadingState';
 import type { Department } from '../model/types';
 import { useFindDepartmentViewModel } from '../viewmodels/useFindDepartmentViewModel';
 
-export function FindDepartmentView() {
-  const { departments, isLoading, isError, refetch, query, setQuery, selector } =
-    useFindDepartmentViewModel();
-  const hasQuery = query.trim().length > 0;
+interface FindDepartmentViewProps {
+  hospitalId?: string;
+  departmentId?: string;
+}
+
+export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentViewProps = {}) {
+  const { departments, isLoading, isError, refetch, query, setQuery, selector, isHospitalScoped, highlightedDepartmentId } =
+    useFindDepartmentViewModel({ hospitalId, departmentId });
+  const hasQuery = isHospitalScoped || query.trim().length > 0;
 
   return (
     <Screen>
       <Text accessibilityRole="header">Find Department</Text>
-      <LocationPicker selector={selector} />
-      <TextInput
-        accessibilityLabel="Search departments"
-        placeholder="Department name"
-        value={query}
-        onChangeText={setQuery}
-      />
+      {!isHospitalScoped ? (
+        <>
+          <LocationPicker selector={selector} />
+          <TextInput
+            accessibilityLabel="Search departments"
+            placeholder="Department name"
+            value={query}
+            onChangeText={setQuery}
+          />
+        </>
+      ) : null}
 
       {isLoading ? <LoadingState /> : null}
       {!isLoading && isError ? <ErrorState onRetry={() => void refetch()} /> : null}
@@ -36,7 +45,10 @@ export function FindDepartmentView() {
           data={departments}
           keyExtractor={(department: Department) => department.department_id}
           renderItem={({ item }: { item: Department }) => (
-            <View testID={`department-row-${item.department_id}`}>
+            <View
+              testID={`department-row-${item.department_id}`}
+              accessibilityState={{ selected: item.department_id === highlightedDepartmentId }}
+            >
               <Text>{item.name}</Text>
               {item.description ? <Text>{item.description}</Text> : null}
               <Link href={`/department/${item.department_id}/doctors`} asChild>

@@ -27,3 +27,20 @@ test('starts in view mode, onEdit switches to edit mode, onSave PATCHes and retu
   expect(api.updateProfile).toHaveBeenCalledWith(expect.objectContaining({ city: 'Karachi' }));
   await waitFor(() => expect(result.current.isEditing).toBe(false));
 });
+
+test('onSave sets saveError and does not throw when the mutation rejects', async () => {
+  (api.getProfile as jest.Mock).mockResolvedValue({ patient_id: '1', full_name: 'Ayesha', preferred_language: 'ENGLISH' });
+  (api.updateProfile as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+  const { result } = await renderHook(() => useProfileViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+  await act(() => result.current.onEdit());
+
+  await expect(act(async () => {
+    await result.current.onSave();
+  })).resolves.not.toThrow();
+
+  await waitFor(() => expect(result.current.saveError).toBeTruthy());
+  expect(result.current.isEditing).toBe(true);
+});

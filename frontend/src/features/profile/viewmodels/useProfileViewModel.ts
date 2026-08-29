@@ -10,6 +10,7 @@ import { queryKeys } from '../../../shared/constants/queryKeys';
 export function useProfileViewModel() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const { data: profile, isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.profile,
@@ -30,15 +31,23 @@ export function useProfileViewModel() {
 
   const onEdit = () => {
     if (profile) reset(profile);
+    setSaveError(null);
     setIsEditing(true);
   };
 
   const onCancel = () => setIsEditing(false);
 
-  const onSave = handleSubmit((values) => mutation.mutateAsync(values));
+  const onSave = handleSubmit(async (values) => {
+    setSaveError(null);
+    try {
+      await mutation.mutateAsync(values);
+    } catch {
+      setSaveError('Unable to save your changes. Please try again.');
+    }
+  });
 
   return {
     profile, isLoading, isError, refetch, isEditing, control, errors, setValue,
-    onEdit, onCancel, onSave, isSaving: mutation.isPending,
+    onEdit, onCancel, onSave, isSaving: mutation.isPending, saveError,
   };
 }

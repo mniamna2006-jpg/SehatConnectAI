@@ -22,8 +22,8 @@ export function useRegisterViewModel() {
     try {
       await registerPatient(rest);
       router.replace('/home');
-    } catch (err) {
-      setApiError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+    } catch {
+      setApiError('Unable to create your account. Please try again.');
     }
   });
 

@@ -3,7 +3,8 @@ import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-nativ
 import { useLocationSelector } from '../../core/location/useLocationSelector';
 
 export function LocationPicker({ selector }: { selector: ReturnType<typeof useLocationSelector> }) {
-  const { mode, permissionDenied, isRequestingGps, manualCity, requestGpsLocation, setManualCity } = selector;
+  const { mode, permissionDenied, locationUnavailable, isRequestingGps, manualCity, requestGpsLocation, setManualCity } =
+    selector;
 
   return (
     <View>
@@ -13,6 +14,11 @@ export function LocationPicker({ selector }: { selector: ReturnType<typeof useLo
       {permissionDenied && (
         <Text testID="location-permission-denied">
           Location permission denied. Search by city instead.
+        </Text>
+      )}
+      {locationUnavailable && (
+        <Text testID="location-unavailable">
+          Couldn't get your location. Search by city instead.
         </Text>
       )}
       <TextInput
