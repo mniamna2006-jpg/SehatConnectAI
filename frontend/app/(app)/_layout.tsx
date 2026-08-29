@@ -1,4 +1,9 @@
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
+import { useAuth } from '../../src/providers/AuthProvider';
+
 export default function AppLayout() {
+  const { user, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (!user) return <Redirect href="/login" />;
   return <Stack screenOptions={{ headerShown: false }} />;
 }
