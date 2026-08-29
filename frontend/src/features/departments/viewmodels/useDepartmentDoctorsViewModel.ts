@@ -7,11 +7,12 @@ export function useDepartmentDoctorsViewModel(departmentId: string) {
     data: doctors = [],
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: queryKeys.doctorsByDepartment(departmentId),
     queryFn: () => getDoctorsByDepartment(departmentId),
     enabled: departmentId.length > 0,
   });
 
-  return { doctors, isLoading, isError };
+  return { doctors, isLoading, isError, refetch };
 }

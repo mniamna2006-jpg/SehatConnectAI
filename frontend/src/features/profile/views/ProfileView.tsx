@@ -2,18 +2,28 @@ import React from 'react';
 import { Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { Screen } from '../../../shared/components/Screen';
+import { LoadingState } from '../../../shared/components/LoadingState';
+import { ErrorState } from '../../../shared/components/ErrorState';
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel';
 
 const LANGUAGE_OPTIONS = ['ENGLISH', 'URDU', 'ROMAN_URDU'] as const;
 
 export function ProfileView() {
-  const { profile, isLoading, isEditing, control, errors, onEdit, onCancel, onSave, isSaving } =
+  const { profile, isLoading, isError, refetch, isEditing, control, errors, onEdit, onCancel, onSave, isSaving } =
     useProfileViewModel();
 
   if (isLoading) {
     return (
       <Screen>
-        <Text>Loading...</Text>
+        <LoadingState />
+      </Screen>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Screen>
+        <ErrorState onRetry={() => void refetch()} />
       </Screen>
     );
   }

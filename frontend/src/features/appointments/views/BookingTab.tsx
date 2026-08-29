@@ -1,13 +1,9 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, Text, TextInput } from 'react-native';
 import { Controller } from 'react-hook-form';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import type { AppointmentPrefill } from '../viewmodels/useAppointmentsViewModel';
 import { useAppointmentBookingViewModel } from '../viewmodels/useAppointmentBookingViewModel';
 
@@ -19,7 +15,7 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       <Text accessibilityRole="header">Book Appointment</Text>
 
       <Text>Hospital</Text>
-      {vm.isLoadingHospitals ? <ActivityIndicator /> : null}
+      {vm.isLoadingHospitals ? <LoadingState label="Loading hospitals…" /> : null}
       {vm.hospitals.map((hospital) => (
         <Pressable
           accessibilityRole="button"
@@ -33,7 +29,7 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       {vm.errors.hospital_id ? <Text>{vm.errors.hospital_id.message}</Text> : null}
 
       <Text>Department</Text>
-      {vm.isLoadingDepartments ? <ActivityIndicator /> : null}
+      {vm.isLoadingDepartments ? <LoadingState label="Loading departments…" /> : null}
       {vm.departments.map((department) => (
         <Pressable
           accessibilityRole="button"
@@ -47,7 +43,7 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       {vm.errors.department_id ? <Text>{vm.errors.department_id.message}</Text> : null}
 
       <Text>Doctor</Text>
-      {vm.isLoadingDoctors ? <ActivityIndicator /> : null}
+      {vm.isLoadingDoctors ? <LoadingState label="Loading doctors…" /> : null}
       {vm.doctors.map((doctor) => (
         <Pressable
           accessibilityRole="button"
@@ -66,9 +62,9 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
         value={vm.selectedDate}
         onChangeText={vm.onSelectDate}
       />
-      {vm.isLoadingSlots ? <ActivityIndicator /> : null}
+      {vm.isLoadingSlots ? <LoadingState label="Loading time slots…" /> : null}
       {!vm.isLoadingSlots && vm.selectedDate && vm.timeSlots.length === 0 ? (
-        <Text>No available time slots. Try another date.</Text>
+        <EmptyState message="No available time slots. Try another date." />
       ) : null}
       {vm.timeSlots.map((slot) => (
         <Pressable
@@ -97,7 +93,7 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
         )}
       />
 
-      {vm.bookingError ? <Text accessibilityRole="alert">{vm.bookingError}</Text> : null}
+      {vm.bookingError ? <ErrorState message={vm.bookingError} /> : null}
       {vm.bookingSuccess ? <Text>{vm.bookingSuccess}</Text> : null}
       <Pressable
         accessibilityRole="button"

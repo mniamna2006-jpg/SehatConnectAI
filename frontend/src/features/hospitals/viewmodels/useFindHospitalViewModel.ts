@@ -10,7 +10,7 @@ export function useFindHospitalViewModel() {
   const hasManualCity = mode === 'manual' && manualCity.trim().length > 0;
   const hasGpsCoords = mode === 'gps' && !!coordinates;
 
-  const { data: hospitals = [], isLoading, isError } = useQuery({
+  const { data: hospitals = [], isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.hospitals({ mode, coordinates, manualCity }),
     queryFn: () => {
       if (hasGpsCoords) return getHospitalsNearby(coordinates!);
@@ -19,5 +19,5 @@ export function useFindHospitalViewModel() {
     },
   });
 
-  return { hospitals, isLoading, isError, selector };
+  return { hospitals, isLoading, isError, refetch, selector };
 }

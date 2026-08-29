@@ -17,6 +17,15 @@ interface RequestOptions {
   auth?: boolean;
 }
 
+let unauthorizedHandler: (() => void) | null = null;
+
+export function registerUnauthorizedHandler(handler: () => void): () => void {
+  unauthorizedHandler = handler;
+  return () => {
+    if (unauthorizedHandler === handler) unauthorizedHandler = null;
+  };
+}
+
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', body, auth = true } = options;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -35,6 +44,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const json = await response.json();
 
   if (!response.ok || json.success === false) {
+    if (response.status === 401) unauthorizedHandler?.();
     throw new ApiError(response.status, json.message ?? json.error ?? 'Request failed');
   }
 

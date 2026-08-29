@@ -3,11 +3,14 @@ import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { Link } from 'expo-router';
 import { LocationPicker } from '../../../shared/components/LocationPicker';
 import { Screen } from '../../../shared/components/Screen';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import type { Department } from '../model/types';
 import { useFindDepartmentViewModel } from '../viewmodels/useFindDepartmentViewModel';
 
 export function FindDepartmentView() {
-  const { departments, isLoading, isError, query, setQuery, selector } =
+  const { departments, isLoading, isError, refetch, query, setQuery, selector } =
     useFindDepartmentViewModel();
   const hasQuery = query.trim().length > 0;
 
@@ -22,12 +25,10 @@ export function FindDepartmentView() {
         onChangeText={setQuery}
       />
 
-      {isLoading ? <Text testID="find-department-loading">Loading...</Text> : null}
-      {!isLoading && isError ? (
-        <Text testID="find-department-error">Something went wrong.</Text>
-      ) : null}
+      {isLoading ? <LoadingState /> : null}
+      {!isLoading && isError ? <ErrorState onRetry={() => void refetch()} /> : null}
       {!isLoading && !isError && hasQuery && departments.length === 0 ? (
-        <Text testID="find-department-empty">No departments found.</Text>
+        <EmptyState message="No departments found." />
       ) : null}
       {!isLoading && !isError && departments.length > 0 ? (
         <FlatList

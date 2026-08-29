@@ -1,6 +1,9 @@
 import React from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import type { Appointment } from '../model/types';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import {
   type HistoryFilter,
   useAppointmentHistoryViewModel,
@@ -29,12 +32,14 @@ export function HistoryTab() {
           </Pressable>
         ))}
       </View>
-      {vm.isLoading ? <Text>Loading...</Text> : null}
-      {!vm.isLoading && vm.isError ? <Text>Something went wrong.</Text> : null}
-      {!vm.isLoading && !vm.isError && vm.appointments.length === 0 ? (
-        <Text>No appointments in this category.</Text>
+      {vm.isLoading ? <LoadingState /> : null}
+      {!vm.isLoading && vm.isError ? (
+        <ErrorState onRetry={() => void vm.refetch()} />
       ) : null}
-      {vm.cancelError ? <Text accessibilityRole="alert">{vm.cancelError}</Text> : null}
+      {!vm.isLoading && !vm.isError && vm.appointments.length === 0 ? (
+        <EmptyState message="No appointments in this category." />
+      ) : null}
+      {vm.cancelError ? <ErrorState message={vm.cancelError} /> : null}
       {!vm.isLoading && !vm.isError ? (
         <FlatList
           data={vm.appointments}

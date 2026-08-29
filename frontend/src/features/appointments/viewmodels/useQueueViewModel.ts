@@ -7,11 +7,12 @@ export function useQueueViewModel() {
     data: queue = [],
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: queryKeys.myQueue,
     queryFn: getMyQueue,
     refetchInterval: 15_000,
   });
 
-  return { queue, isLoading, isError };
+  return { queue, isLoading, isError, refetch };
 }

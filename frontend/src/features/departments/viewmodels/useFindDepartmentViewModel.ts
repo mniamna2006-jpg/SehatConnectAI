@@ -13,11 +13,12 @@ export function useFindDepartmentViewModel() {
     data: departments = [],
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: [...queryKeys.findDepartments(query), mode, coordinates, manualCity],
     queryFn: () => findDepartments(query, { mode, coordinates, manualCity }),
     enabled: query.trim().length > 0,
   });
 
-  return { departments, isLoading, isError, query, setQuery, selector };
+  return { departments, isLoading, isError, refetch, query, setQuery, selector };
 }

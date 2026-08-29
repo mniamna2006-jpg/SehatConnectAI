@@ -21,6 +21,7 @@ export function useAppointmentHistoryViewModel() {
     data: allAppointments = [],
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: queryKeys.myAppointments,
     queryFn: getMyAppointments,
@@ -55,6 +56,7 @@ export function useAppointmentHistoryViewModel() {
     appointments,
     isLoading,
     isError,
+    refetch,
     onCancel,
     isCancelling: (id: string) => cancellingId === id,
     cancelError,

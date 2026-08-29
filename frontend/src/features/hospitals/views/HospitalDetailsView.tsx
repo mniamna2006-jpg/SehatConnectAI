@@ -2,6 +2,9 @@ import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { Link } from 'expo-router';
 import { Screen } from '../../../shared/components/Screen';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
 import type { WorkingHours } from '../model/types';
 
@@ -10,14 +13,14 @@ interface HospitalDetailsViewProps {
 }
 
 export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
-  const { hospital, isLoading, isError } = useHospitalDetailsViewModel(hospitalId);
+  const { hospital, isLoading, isError, refetch } = useHospitalDetailsViewModel(hospitalId);
 
   return (
     <Screen>
-      {isLoading && <Text testID="hospital-details-loading">Loading...</Text>}
-      {!isLoading && isError && <Text testID="hospital-details-error">Something went wrong.</Text>}
+      {isLoading && <LoadingState />}
+      {!isLoading && isError && <ErrorState onRetry={() => void refetch()} />}
       {!isLoading && !isError && !hospital && (
-        <Text testID="hospital-details-empty">Hospital not found.</Text>
+        <EmptyState message="Hospital not found." />
       )}
       {!isLoading && !isError && hospital && (
         <View>

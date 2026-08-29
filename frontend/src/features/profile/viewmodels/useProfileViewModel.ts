@@ -11,7 +11,10 @@ export function useProfileViewModel() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: profile, isLoading } = useQuery({ queryKey: queryKeys.profile, queryFn: getProfile });
+  const { data: profile, isLoading, isError, refetch } = useQuery({
+    queryKey: queryKeys.profile,
+    queryFn: getProfile,
+  });
 
   const { control, handleSubmit, setValue, reset, formState: { errors } } = useForm<ProfileUpdateInput>({
     resolver: zodResolver(profileUpdateSchema),
@@ -35,7 +38,7 @@ export function useProfileViewModel() {
   const onSave = handleSubmit((values) => mutation.mutateAsync(values));
 
   return {
-    profile, isLoading, isEditing, control, errors, setValue,
+    profile, isLoading, isError, refetch, isEditing, control, errors, setValue,
     onEdit, onCancel, onSave, isSaving: mutation.isPending,
   };
 }

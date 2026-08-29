@@ -4,21 +4,24 @@ import { Link } from 'expo-router';
 import { Image } from 'expo-image';
 import { Screen } from '../../../shared/components/Screen';
 import { LocationPicker } from '../../../shared/components/LocationPicker';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import { useFindHospitalViewModel } from '../viewmodels/useFindHospitalViewModel';
 import type { Hospital } from '../model/types';
 
 export function FindHospitalView() {
-  const { hospitals, isLoading, isError, selector } = useFindHospitalViewModel();
+  const { hospitals, isLoading, isError, refetch, selector } = useFindHospitalViewModel();
 
   return (
     <Screen>
       <Text accessibilityRole="header">Find Hospital</Text>
       <LocationPicker selector={selector} />
 
-      {isLoading && <Text testID="find-hospital-loading">Loading...</Text>}
-      {!isLoading && isError && <Text testID="find-hospital-error">Something went wrong.</Text>}
+      {isLoading && <LoadingState />}
+      {!isLoading && isError && <ErrorState onRetry={() => void refetch()} />}
       {!isLoading && !isError && hospitals.length === 0 && (
-        <Text testID="find-hospital-empty">No hospitals found.</Text>
+        <EmptyState message="No hospitals found." />
       )}
       {!isLoading && !isError && hospitals.length > 0 && (
         <FlatList

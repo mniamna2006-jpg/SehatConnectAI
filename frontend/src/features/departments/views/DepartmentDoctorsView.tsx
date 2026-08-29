@@ -2,21 +2,22 @@ import React from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { Link } from 'expo-router';
 import { Screen } from '../../../shared/components/Screen';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import type { Doctor } from '../../doctors/model/types';
 import { useDepartmentDoctorsViewModel } from '../viewmodels/useDepartmentDoctorsViewModel';
 
 export function DepartmentDoctorsView({ departmentId }: { departmentId: string }) {
-  const { doctors, isLoading, isError } = useDepartmentDoctorsViewModel(departmentId);
+  const { doctors, isLoading, isError, refetch } = useDepartmentDoctorsViewModel(departmentId);
 
   return (
     <Screen>
       <Text accessibilityRole="header">Department Doctors</Text>
-      {isLoading ? <Text testID="department-doctors-loading">Loading...</Text> : null}
-      {!isLoading && isError ? (
-        <Text testID="department-doctors-error">Something went wrong.</Text>
-      ) : null}
+      {isLoading ? <LoadingState /> : null}
+      {!isLoading && isError ? <ErrorState onRetry={() => void refetch()} /> : null}
       {!isLoading && !isError && doctors.length === 0 ? (
-        <Text testID="department-doctors-empty">No doctors found.</Text>
+        <EmptyState message="No doctors found." />
       ) : null}
       {!isLoading && !isError && doctors.length > 0 ? (
         <FlatList

@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { registerUnauthorizedHandler } from '../core/api/client';
 import { getToken, setToken, clearToken } from '../core/storage/secureStore';
 import { login as apiLogin, registerPatient as apiRegister, getMe } from '../features/auth/model/api';
 import type { CurrentUser, LoginInput, RegisterInput } from '../features/auth/model/types';
@@ -18,6 +19,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
+
+  useEffect(
+    () =>
+      registerUnauthorizedHandler(() => {
+        void clearToken();
+        queryClient.clear();
+        setUser(null);
+      }),
+    [queryClient]
+  );
 
   useEffect(() => {
     (async () => {

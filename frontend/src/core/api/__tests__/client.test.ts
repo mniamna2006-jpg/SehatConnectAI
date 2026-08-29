@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { apiRequest, ApiError } from '../client';
+import { apiRequest, ApiError, registerUnauthorizedHandler } from '../client';
 import * as secureStore from '../../storage/secureStore';
 
 jest.mock('../../storage/secureStore');
@@ -40,5 +40,14 @@ describe('apiRequest', () => {
     await expect(apiRequest('/x')).rejects.toMatchObject(
       new ApiError(401, 'Token expired')
     );
+  });
+
+  test('on a 401, calls the registered unauthorized handler before throwing', async () => {
+    const handler = jest.fn();
+    registerUnauthorizedHandler(handler);
+    (global.fetch as jest.Mock).mockReturnValue(failResponse(401, 'Token expired'));
+
+    await expect(apiRequest('/x')).rejects.toThrow();
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 });

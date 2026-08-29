@@ -13,11 +13,12 @@ export function useFindDoctorViewModel() {
     data: doctors = [],
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: [...queryKeys.findDoctors(query), mode, coordinates, manualCity],
     queryFn: () => findDoctors(query, { mode, coordinates, manualCity }),
     enabled: query.trim().length > 0,
   });
 
-  return { doctors, isLoading, isError, query, setQuery, selector };
+  return { doctors, isLoading, isError, refetch, query, setQuery, selector };
 }

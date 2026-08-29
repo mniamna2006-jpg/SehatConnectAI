@@ -3,6 +3,9 @@ import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { Link } from 'expo-router';
 import { Screen } from '../../../shared/components/Screen';
 import { LocationPicker } from '../../../shared/components/LocationPicker';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import type { DoctorDetail } from '../model/types';
 import { useFindDoctorViewModel } from '../viewmodels/useFindDoctorViewModel';
 
@@ -24,7 +27,7 @@ function DoctorResult({ doctor }: { doctor: DoctorDetail }) {
           </View>
         ))
       ) : (
-        <Text>No schedule available.</Text>
+        <EmptyState message="No schedule available." />
       )}
       <Link href={bookingHref} asChild>
         <Pressable accessibilityRole="button">
@@ -36,7 +39,7 @@ function DoctorResult({ doctor }: { doctor: DoctorDetail }) {
 }
 
 export function FindDoctorView() {
-  const { doctors, isLoading, isError, query, setQuery, selector } =
+  const { doctors, isLoading, isError, refetch, query, setQuery, selector } =
     useFindDoctorViewModel();
   const hasQuery = query.trim().length > 0;
 
@@ -51,12 +54,10 @@ export function FindDoctorView() {
         onChangeText={setQuery}
       />
 
-      {isLoading ? <Text testID="find-doctor-loading">Loading...</Text> : null}
-      {!isLoading && isError ? (
-        <Text testID="find-doctor-error">Something went wrong.</Text>
-      ) : null}
+      {isLoading ? <LoadingState /> : null}
+      {!isLoading && isError ? <ErrorState onRetry={() => void refetch()} /> : null}
       {!isLoading && !isError && hasQuery && doctors.length === 0 ? (
-        <Text testID="find-doctor-empty">No doctors found.</Text>
+        <EmptyState message="No doctors found." />
       ) : null}
       {!isLoading && !isError && doctors.length > 0 ? (
         <FlatList

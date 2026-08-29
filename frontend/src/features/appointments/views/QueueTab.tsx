@@ -1,14 +1,17 @@
 import React from 'react';
 import { FlatList, Text, View } from 'react-native';
 import type { QueueEntry } from '../model/types';
+import { EmptyState } from '../../../shared/components/EmptyState';
+import { ErrorState } from '../../../shared/components/ErrorState';
+import { LoadingState } from '../../../shared/components/LoadingState';
 import { useQueueViewModel } from '../viewmodels/useQueueViewModel';
 
 export function QueueTab() {
-  const { queue, isLoading, isError } = useQueueViewModel();
+  const { queue, isLoading, isError, refetch } = useQueueViewModel();
 
-  if (isLoading) return <Text>Loading...</Text>;
-  if (isError) return <Text>Something went wrong.</Text>;
-  if (queue.length === 0) return <Text>No active queue entries.</Text>;
+  if (isLoading) return <LoadingState />;
+  if (isError) return <ErrorState onRetry={() => void refetch()} />;
+  if (queue.length === 0) return <EmptyState message="No active queue entries." />;
 
   return (
     <FlatList
