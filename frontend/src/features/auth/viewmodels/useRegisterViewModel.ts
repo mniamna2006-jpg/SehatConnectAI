@@ -22,7 +22,8 @@ export function useRegisterViewModel() {
     try {
       await registerPatient(rest);
       router.replace('/home');
-    } catch {
+    } catch (err) {
+      console.warn('[useRegisterViewModel] registration failed', err);
       setApiError('Unable to create your account. Please try again.');
     }
   });

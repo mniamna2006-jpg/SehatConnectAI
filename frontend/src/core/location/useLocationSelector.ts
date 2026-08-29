@@ -22,6 +22,7 @@ export function useLocationSelector() {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setPermissionDenied(true);
+        setLocationUnavailable(false);
         return;
       }
       setPermissionDenied(false);
@@ -30,11 +31,15 @@ export function useLocationSelector() {
         const position = await Location.getCurrentPositionAsync({});
         setCoordinates({ latitude: position.coords.latitude, longitude: position.coords.longitude });
         setMode('gps');
-      } catch {
-        // GPS unavailable or timed out: surface a non-blocking notice and
-        // leave manual entry usable, same as the permission-denied path.
+      } catch (err) {
+        // Per ERROR_HANDLING.md: GPS unavailable/timeout uses the same
+        // fallback and UI copy as permission-denied — distinguish only here, in logs.
+        console.warn('[useLocationSelector] GPS unavailable/timeout', err);
         setLocationUnavailable(true);
       }
+    } catch (err) {
+      console.warn('[useLocationSelector] permission request failed', err);
+      setLocationUnavailable(true);
     } finally {
       setIsRequestingGps(false);
     }

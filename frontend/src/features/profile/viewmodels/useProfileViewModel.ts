@@ -41,7 +41,8 @@ export function useProfileViewModel() {
     setSaveError(null);
     try {
       await mutation.mutateAsync(values);
-    } catch {
+    } catch (err) {
+      console.warn('[useProfileViewModel] save failed', err);
       setSaveError('Unable to save your changes. Please try again.');
     }
   });

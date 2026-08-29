@@ -11,14 +11,9 @@ export function LocationPicker({ selector }: { selector: ReturnType<typeof useLo
       <Pressable testID="use-current-location" onPress={requestGpsLocation} disabled={isRequestingGps}>
         {isRequestingGps ? <ActivityIndicator /> : <Text>Use Current Location</Text>}
       </Pressable>
-      {permissionDenied && (
-        <Text testID="location-permission-denied">
-          Location permission denied. Search by city instead.
-        </Text>
-      )}
-      {locationUnavailable && (
-        <Text testID="location-unavailable">
-          Couldn't get your location. Search by city instead.
+      {(permissionDenied || locationUnavailable) && (
+        <Text testID="location-notice">
+          Couldn't use your location. Search by city instead.
         </Text>
       )}
       <TextInput

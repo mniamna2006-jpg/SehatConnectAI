@@ -18,7 +18,8 @@ export function useLoginViewModel() {
     try {
       await login(values);
       router.replace('/home');
-    } catch {
+    } catch (err) {
+      console.warn('[useLoginViewModel] login failed', err);
       setApiError('Unable to sign in. Please check your details and try again.');
     }
   });
