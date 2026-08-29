@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { apiRequest, ApiError } from '../client';
 import * as secureStore from '../../storage/secureStore';
 
