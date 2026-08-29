@@ -1,6 +1,6 @@
 import { getToken } from '../storage/secureStore';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:5000';
 
 export class ApiError extends Error {
   status: number;

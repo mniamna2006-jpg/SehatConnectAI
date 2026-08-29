@@ -35,6 +35,17 @@ describe('apiRequest', () => {
     await expect(apiRequest('/x')).resolves.toEqual({ hello: 'world' });
   });
 
+  test('defaults to the backend server port when no API URL is configured', async () => {
+    (global.fetch as jest.Mock).mockReturnValue(okResponse({ ok: 1 }));
+
+    await apiRequest('/api/health', { auth: false });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:5000/api/health',
+      expect.any(Object)
+    );
+  });
+
   test('throws ApiError with status + message on failure', async () => {
     (global.fetch as jest.Mock).mockReturnValue(failResponse(401, 'Token expired'));
     await expect(apiRequest('/x')).rejects.toMatchObject(
