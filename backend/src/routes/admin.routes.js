@@ -7,7 +7,27 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 
-const { getPakistanDate } = require("../utils/date.helpers");
+const { getPakistanDate, formatTime12h, addTime12hFields } = require("../utils/date.helpers");
+
+const SLOT_TIME_FIELDS = { start_time: true, end_time: true };
+
+/**
+ * Add 12-hour companion fields to an appointment and its nested slot.
+ */
+const enrichAppointment = (apt) => {
+  if (!apt) return apt;
+
+  const result = {
+    ...apt,
+    appointment_time_12h: formatTime12h(apt.appointment_time),
+  };
+
+  if (result.slot) {
+    result.slot = addTime12hFields(result.slot, SLOT_TIME_FIELDS);
+  }
+
+  return result;
+};
 
 const router = express.Router();
 
@@ -197,7 +217,7 @@ router.get(
             total: totalPatients,
           },
 
-          today_appointments: todayAppointments,
+          today_appointments: todayAppointments.map(enrichAppointment),
 
           appointment_counts: {
             total: Object.values(statusCounts).reduce(

@@ -9,6 +9,31 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 
+const { formatTime12h, addTime12hFields } = require("../utils/date.helpers");
+
+const SLOT_TIME_FIELDS = { start_time: true, end_time: true };
+
+/**
+ * Add 12-hour companion fields to an appointment (and its nested slot if present).
+ */
+const enrichAppointment = (apt) => {
+  if (!apt) return apt;
+
+  const result = {
+    ...apt,
+    appointment_time_12h: formatTime12h(apt.appointment_time),
+  };
+
+  if (result.slot) {
+    result.slot = addTime12hFields(result.slot, SLOT_TIME_FIELDS);
+  }
+
+  return result;
+};
+
+const enrichAppointments = (apts) =>
+  Array.isArray(apts) ? apts.map(enrichAppointment) : enrichAppointment(apts);
+
 const router = express.Router();
 
 // Get patient's appointments
@@ -42,7 +67,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: appointments,
+        data: enrichAppointments(appointments),
       });
     } catch (error) {
       console.error("Get patient appointments error:");
@@ -258,7 +283,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: appointments,
+        data: enrichAppointments(appointments),
       });
     } catch (error) {
       console.error("Get hospital appointments error:");
@@ -304,7 +329,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: appointment,
+        data: enrichAppointment(appointment),
       });
     } catch (error) {
       console.error("Get single appointment error:");
@@ -378,7 +403,7 @@ router.patch(
       return res.status(200).json({
         success: true,
         message: "Appointment cancelled successfully",
-        data: result,
+        data: enrichAppointment(result),
       });
     } catch (error) {
       console.error("Cancel appointment error:");
@@ -552,7 +577,7 @@ router.patch(
       return res.status(200).json({
         success: true,
         message: "Appointment status updated successfully",
-        data: updatedAppointment,
+        data: enrichAppointment(updatedAppointment),
         queue,
       });
     } catch (error) {

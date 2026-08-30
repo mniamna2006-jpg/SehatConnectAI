@@ -1,5 +1,8 @@
 const express = require("express");
 const prisma = require("../config/prisma");
+const { addTime12hFields } = require("../utils/date.helpers");
+
+const WORKING_HOUR_TIME_FIELDS = { opening_time: true, closing_time: true };
 
 const router = express.Router();
 
@@ -217,9 +220,18 @@ router.get("/:hospital_id", async (req, res) => {
       });
     }
 
+    // Add 12-hour time display fields to nested working hours
+    const hospitalData = {
+      ...hospital,
+      working_hours: addTime12hFields(
+        hospital.working_hours,
+        WORKING_HOUR_TIME_FIELDS
+      ),
+    };
+
     return res.status(200).json({
       success: true,
-      data: hospital,
+      data: hospitalData,
     });
   } catch (error) {
     console.error("Error fetching hospital details:", error);

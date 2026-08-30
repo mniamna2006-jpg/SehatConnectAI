@@ -4,6 +4,9 @@ const {
   authenticateToken,
   authorizeRoles,
 } = require("../middleware/auth.middleware");
+const { addTime12hFields } = require("../utils/date.helpers");
+
+const SCHEDULE_TIME_FIELDS = { start_time: true, end_time: true };
 
 const router = express.Router();
 // Get doctor profile
@@ -91,9 +94,15 @@ router.get("/:doctor_id", async (req, res) => {
       });
     }
 
+    // Add 12-hour time display fields to nested schedules
+    const doctorData = {
+      ...doctor,
+      schedules: addTime12hFields(doctor.schedules, SCHEDULE_TIME_FIELDS),
+    };
+
     return res.status(200).json({
       success: true,
-      data: doctor,
+      data: doctorData,
     });
   } catch (error) {
     console.error("Get doctor profile error:", error);
