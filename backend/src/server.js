@@ -14,6 +14,7 @@ const queueRoutes = require("./routes/queue.routes");
 const patientRoutes = require("./routes/patient.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const adminRoutes = require("./routes/admin.routes");
+const staffRoutes = require("./routes/staff.routes");
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/staff", staffRoutes);
 
 
 const PORT = process.env.PORT || 5000;
