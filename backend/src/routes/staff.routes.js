@@ -253,6 +253,114 @@ router.get(
 );
 
 // ---------------------------------------------------------------------------
+// Staff today's appointments (STAFF and ADMIN)
+// ---------------------------------------------------------------------------
+
+// GET /appointments/today — today's appointments for the staff member's hospital
+router.get(
+  "/appointments/today",
+  authenticateToken,
+  authorizeRoles("STAFF", "ADMIN"),
+  async (req, res) => {
+    try {
+      // Resolve the staff member's hospital from the authenticated user
+      const staff = await prisma.hospitalStaff.findUnique({
+        where: { user_id: req.user.user_id },
+      });
+
+      if (!staff) {
+        return res.status(404).json({
+          success: false,
+          message: "Hospital staff profile not found",
+        });
+      }
+
+      if (!staff.is_active) {
+        return res.status(403).json({
+          success: false,
+          message: "Staff account is inactive",
+        });
+      }
+
+      // Verify hospital is active
+      const hospital = await prisma.hospital.findUnique({
+        where: { hospital_id: staff.hospital_id },
+      });
+
+      if (!hospital || !hospital.is_active) {
+        return res.status(403).json({
+          success: false,
+          message: "Hospital is inactive",
+        });
+      }
+
+      // Today's date range in Pakistan Standard Time (Asia/Karachi)
+      const todayStart = getPakistanDate();
+      const todayEnd = new Date(todayStart);
+      todayEnd.setUTCDate(todayEnd.getUTCDate() + 1);
+
+      const appointments = await prisma.appointment.findMany({
+        where: {
+          hospital_id: staff.hospital_id,
+          appointment_date: {
+            gte: todayStart,
+            lt: todayEnd,
+          },
+        },
+        include: {
+          patient: {
+            include: {
+              user: {
+                select: {
+                  user_id: true,
+                  full_name: true,
+                  email: true,
+                  phone: true,
+                },
+              },
+            },
+          },
+          doctor: {
+            select: {
+              doctor_id: true,
+              name: true,
+              specialization: true,
+            },
+          },
+          department: {
+            select: {
+              department_id: true,
+              name: true,
+            },
+          },
+          slot: true,
+        },
+        orderBy: {
+          appointment_time: "asc",
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          date: todayStart.toISOString().split("T")[0],
+          total: appointments.length,
+          appointments: appointments.map(enrichAppointment),
+        },
+      });
+    } catch (error) {
+      console.error("Staff today appointments error:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch today's appointments",
+        error: error.message,
+      });
+    }
+  }
+);
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
