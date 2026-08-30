@@ -6,8 +6,245 @@ const {
   authenticateToken,
   authorizeRoles,
 } = require("../middleware/auth.middleware");
+const {
+  getPakistanDate,
+  getPakistanDayOfWeek,
+  formatTime12h,
+  addTime12hFields,
+} = require("../utils/date.helpers");
+
+const SLOT_TIME_FIELDS = { start_time: true, end_time: true };
+
+/**
+ * Add 12-hour companion fields to an appointment and its nested slot.
+ */
+const enrichAppointment = (apt) => {
+  if (!apt) return apt;
+
+  const result = {
+    ...apt,
+    appointment_time_12h: formatTime12h(apt.appointment_time),
+  };
+
+  if (result.slot) {
+    result.slot = addTime12hFields(result.slot, SLOT_TIME_FIELDS);
+  }
+
+  return result;
+};
 
 const router = express.Router();
+
+// ---------------------------------------------------------------------------
+// Staff dashboard (STAFF and ADMIN)
+// ---------------------------------------------------------------------------
+
+// GET /dashboard — summary data for the staff member's hospital
+router.get(
+  "/dashboard",
+  authenticateToken,
+  authorizeRoles("STAFF", "ADMIN"),
+  async (req, res) => {
+    try {
+      // Resolve the staff member's hospital from the authenticated user
+      const staff = await prisma.hospitalStaff.findUnique({
+        where: { user_id: req.user.user_id },
+        include: {
+          hospital: true,
+          department: {
+            select: { department_id: true, name: true },
+          },
+        },
+      });
+
+      if (!staff) {
+        return res.status(404).json({
+          success: false,
+          message: "Hospital staff profile not found",
+        });
+      }
+
+      if (!staff.is_active) {
+        return res.status(403).json({
+          success: false,
+          message: "Staff account is inactive",
+        });
+      }
+
+      if (!staff.hospital.is_active) {
+        return res.status(403).json({
+          success: false,
+          message: "Hospital is inactive",
+        });
+      }
+
+      const hospital_id = staff.hospital_id;
+
+      // Today's date range in Pakistan Standard Time (Asia/Karachi)
+      const todayStart = getPakistanDate();
+      const todayEnd = new Date(todayStart);
+      todayEnd.setUTCDate(todayEnd.getUTCDate() + 1);
+
+      // Run all independent queries in parallel
+      const [
+        todayAppointments,
+        appointmentStatusCounts,
+        todayQueueCounts,
+        activeDoctorCount,
+        doctorsOnScheduleToday,
+        activeDepartmentCount,
+      ] = await Promise.all([
+        // Today's appointments (PKT calendar day)
+        prisma.appointment.findMany({
+          where: {
+            hospital_id,
+            appointment_date: {
+              gte: todayStart,
+              lt: todayEnd,
+            },
+          },
+          include: {
+            patient: {
+              include: {
+                user: {
+                  select: {
+                    user_id: true,
+                    full_name: true,
+                    email: true,
+                    phone: true,
+                  },
+                },
+              },
+            },
+            doctor: {
+              select: {
+                doctor_id: true,
+                name: true,
+                specialization: true,
+              },
+            },
+            department: {
+              select: {
+                department_id: true,
+                name: true,
+              },
+            },
+            slot: true,
+          },
+          orderBy: {
+            appointment_time: "asc",
+          },
+        }),
+
+        // Appointment counts grouped by status (all time, hospital-scoped)
+        prisma.appointment.groupBy({
+          by: ["status"],
+          where: { hospital_id },
+          _count: { status: true },
+        }),
+
+        // Today's queue summary (PKT calendar day)
+        prisma.queue.groupBy({
+          by: ["queue_status"],
+          where: {
+            hospital_id,
+            appointment: {
+              appointment_date: {
+                gte: todayStart,
+                lt: todayEnd,
+              },
+            },
+          },
+          _count: { queue_status: true },
+        }),
+
+        // Total active doctors at the hospital
+        prisma.doctor.count({
+          where: { hospital_id, is_active: true },
+        }),
+
+        // Doctors available today (based on DoctorAvailability day_of_week)
+        prisma.doctorAvailability.count({
+          where: {
+            doctor: { hospital_id },
+            day_of_week: getPakistanDayOfWeek(),
+            is_available: true,
+          },
+        }),
+
+        // Active department count
+        prisma.department.count({
+          where: { hospital_id, is_active: true },
+        }),
+      ]);
+
+      // Shape appointment status counts into a flat object
+      const statusCounts = {};
+      for (const group of appointmentStatusCounts) {
+        statusCounts[group.status] = group._count.status;
+      }
+
+      // Shape queue counts into a flat object
+      const queueCounts = {};
+      let totalQueueToday = 0;
+      for (const group of todayQueueCounts) {
+        queueCounts[group.queue_status] = group._count.queue_status;
+        totalQueueToday += group._count.queue_status;
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          hospital: {
+            hospital_id: staff.hospital.hospital_id,
+            name: staff.hospital.name,
+            facility_type: staff.hospital.facility_type,
+            city: staff.hospital.city,
+            phone: staff.hospital.phone,
+            email: staff.hospital.email,
+            logo_url: staff.hospital.logo_url,
+            is_active: staff.hospital.is_active,
+          },
+
+          staff_context: {
+            staff_id: staff.staff_id,
+            employee_id: staff.employee_id,
+            position: staff.position,
+            department: staff.department,
+          },
+
+          departments: {
+            active: activeDepartmentCount,
+          },
+
+          doctors: {
+            active: activeDoctorCount,
+            available_today: doctorsOnScheduleToday,
+          },
+
+          today_appointments: {
+            total: todayAppointments.length,
+            by_status: statusCounts,
+            list: todayAppointments.map(enrichAppointment),
+          },
+
+          today_queue: {
+            total: totalQueueToday,
+            by_status: queueCounts,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Staff dashboard error:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch staff dashboard data",
+        error: error.message,
+      });
+    }
+  }
+);
 
 // ---------------------------------------------------------------------------
 // Helpers
