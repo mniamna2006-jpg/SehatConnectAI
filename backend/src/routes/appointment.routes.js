@@ -359,6 +359,10 @@ router.patch(
             user_id: req.user.user_id,
           },
         },
+        include: {
+          doctor: { select: { name: true } },
+          hospital: { select: { name: true } },
+        },
       });
 
       if (!appointment) {
@@ -379,6 +383,7 @@ router.patch(
       }
 
       const result = await prisma.$transaction(async (tx) => {
+        // 1. Cancel the appointment
         const cancelledAppointment = await tx.appointment.update({
           where: {
             appointment_id,
@@ -388,12 +393,35 @@ router.patch(
           },
         });
 
+        // 2. Release the time slot so it can be rebooked
         await tx.timeSlot.update({
           where: {
             slot_id: appointment.slot_id,
           },
           data: {
             status: "AVAILABLE",
+          },
+        });
+
+        // 3. Cancel any active queue entry for this appointment
+        await tx.queue.updateMany({
+          where: {
+            appointment_id,
+            queue_status: { in: ["WAITING", "CALLED", "IN_PROGRESS"] },
+          },
+          data: {
+            queue_status: "SKIPPED",
+          },
+        });
+
+        // 4. Notify the patient about the cancellation
+        await tx.notification.create({
+          data: {
+            user_id: req.user.user_id,
+            type: "CANCELLATION",
+            title: "Appointment Cancelled",
+            message: `Your appointment with ${appointment.doctor.name} at ${appointment.hospital.name} on ${appointment.appointment_date.toISOString().split("T")[0]} at ${appointment.appointment_time} has been cancelled.`,
+            related_appointment_id: appointment_id,
           },
         });
 

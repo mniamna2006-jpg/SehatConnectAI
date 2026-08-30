@@ -411,6 +411,7 @@ enum NotificationType {
   APPOINTMENT_REMINDER
   QUEUE_UPDATE
   DOCTOR_AVAILABILITY
+  CANCELLATION
 }
 
 enum InvitationStatus {
