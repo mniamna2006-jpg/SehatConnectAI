@@ -1,90 +1,101 @@
 const https = require("https");
-const http = require("http");
 
 const SUPPORTED_LANGUAGES = ["ENGLISH", "URDU", "ROMAN_URDU"];
 
 const MAX_MESSAGE_LENGTH = 2000;
 
-const SYSTEM_PROMPT = `You are SehatConnectAI, a helpful healthcare assistant for patients in Pakistan.
+const SYSTEM_PROMPT = `You are the SehatConnectAI symptom-to-specialist assistant. Your job is to help patients find the right medical department based on their symptoms.
 
-Your role:
-- Provide general health information and guidance.
-- Help patients understand symptoms, common conditions, and wellness practices.
-- Suggest which medical department or specialist a patient might need.
-- Encourage healthy lifestyle habits and preventive care.
+You are NOT a doctor. You must NEVER:
+- Diagnose diseases or conditions definitively.
+- Prescribe medications or recommend dosages.
+- Provide treatment plans as if you are a medical professional.
+- Tell the patient "you have" a specific disease.
 
-Important safety rules:
-- You are NOT a doctor. Always make this clear when relevant.
-- Do NOT diagnose diseases or conditions definitively.
-- Do NOT prescribe medications or recommend specific dosages.
-- Do NOT provide definitive medical conclusions.
-- Always recommend consulting a qualified healthcare professional for proper diagnosis and treatment.
-- If symptoms suggest a potential emergency (chest pain, difficulty breathing, severe bleeding, loss of consciousness, severe allergic reaction, signs of stroke), immediately advise the user to seek emergency medical attention or call emergency services (1122 in Pakistan).
-- Express uncertainty when appropriate. Use phrases like "this could be related to" rather than "you have."
-- Do not refuse normal healthcare questions — provide helpful general information while noting limitations.
+Your job:
+1. Read the patient's symptom description.
+2. Determine which medical department or specialist type is most appropriate.
+3. Provide a brief, helpful explanation in a caring tone.
+4. If symptoms suggest an emergency (chest pain, severe breathing difficulty, heavy bleeding, loss of consciousness, stroke signs, severe allergic reaction), set is_emergency to true and advise immediate emergency care (call 1122 in Pakistan).
 
-Language behavior:
-- When the requested language is ENGLISH, respond in English.
-- When the requested language is URDU, respond in Urdu script.
-- When the requested language is ROMAN_URDU, respond in Roman Urdu (Urdu written in English/Latin script).
-- Always respond in the requested language.`;
+You MUST respond with valid JSON only (no markdown, no code fences, no extra text). Use this exact structure:
+
+{
+  "recommended_department": "Department Name",
+  "message": "A brief, caring explanation of why this department is appropriate. Do not diagnose.",
+  "is_emergency": false
+}
+
+Rules for recommended_department:
+- Use common department names such as: Cardiology, Neurology, Orthopedics, Dermatology, ENT, Ophthalmology, General Medicine, Pediatrics, Gynecology, Urology, Gastroenterology, Pulmonology, Psychiatry, Dentistry, General Surgery.
+- If the symptoms are too vague to determine a specific department, recommend "General Medicine".
+- Always provide exactly one department name.
+
+Language rules:
+- The "message" field MUST be written in the patient's requested language.
+- ENGLISH → English
+- URDU → Urdu script
+- ROMAN_URDU → Roman Urdu (Urdu written in English/Latin script)`;
 
 /**
- * Build the user-facing prompt sent to the AI provider.
+ * Build the request payload for the Gemini generateContent API.
  */
-function buildMessages(message, language) {
+function buildGeminiPayload(message, language) {
   const langInstruction = {
     ENGLISH: "Respond in English.",
     URDU: "Respond in Urdu script.",
     ROMAN_URDU: "Respond in Roman Urdu (Urdu written in English/Latin script).",
   };
 
-  return [
-    { role: "system", content: SYSTEM_PROMPT },
-    {
-      role: "user",
-      content: `${message}\n\n[${langInstruction[language] || langInstruction.ENGLISH}]`,
+  return {
+    system_instruction: {
+      parts: [{ text: SYSTEM_PROMPT }],
     },
-  ];
+    contents: [
+      {
+        parts: [
+          {
+            text: `${message}\n\n[${langInstruction[language] || langInstruction.ENGLISH}]`,
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      temperature: 0.3,
+      maxOutputTokens: 512,
+    },
+  };
 }
 
 /**
- * Call the configured OpenAI-compatible AI provider.
+ * Call the Google Gemini API.
  *
  * Environment variables:
- *   AI_PROVIDER_API_KEY  – Bearer token for the AI provider
- *   AI_PROVIDER_BASE_URL – API base URL (default: https://api.openai.com)
- *   AI_PROVIDER_MODEL    – Model name (default: gpt-4o-mini)
+ *   GEMINI_API_KEY – Google Gemini API key
+ *   GEMINI_MODEL   – Model name (default: gemini-2.0-flash)
  */
-async function callAIProvider(messages) {
-  const apiKey = process.env.AI_PROVIDER_API_KEY;
-  const baseUrl = (process.env.AI_PROVIDER_BASE_URL || "https://api.openai.com").replace(/\/+$/, "");
-  const model = process.env.AI_PROVIDER_MODEL || "gpt-4o-mini";
+async function callGemini(payload) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
   if (!apiKey) {
     throw new Error("AI provider is not configured");
   }
 
-  const body = JSON.stringify({
-    model,
-    messages,
-    max_tokens: 1024,
-    temperature: 0.7,
-  });
+  const body = JSON.stringify(payload);
 
-  const url = new URL(`${baseUrl}/v1/chat/completions`);
-  const transport = url.protocol === "https:" ? https : http;
+  const url = new URL(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+  );
 
   return new Promise((resolve, reject) => {
-    const req = transport.request(
+    const req = https.request(
       {
         method: "POST",
         hostname: url.hostname,
-        port: url.port,
-        path: url.pathname,
+        path: `${url.pathname}?key=${encodeURIComponent(apiKey)}`,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
         },
       },
       (res) => {
@@ -96,18 +107,18 @@ async function callAIProvider(messages) {
 
             if (res.statusCode !== 200) {
               const errMsg =
-                parsed?.error?.message || `AI provider returned status ${res.statusCode}`;
+                parsed?.error?.message || `Gemini API returned status ${res.statusCode}`;
               return reject(new Error(errMsg));
             }
 
-            const content = parsed?.choices?.[0]?.message?.content;
-            if (!content) {
-              return reject(new Error("AI provider returned an empty response"));
+            const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) {
+              return reject(new Error("Gemini API returned an empty response"));
             }
 
-            resolve(content.trim());
+            resolve(text.trim());
           } catch (parseErr) {
-            reject(new Error("Failed to parse AI provider response"));
+            reject(new Error("Failed to parse Gemini API response"));
           }
         });
       }
@@ -123,19 +134,51 @@ async function callAIProvider(messages) {
 }
 
 /**
- * Generate an AI assistant response for a patient message.
- *
- * @param {string} message  – The patient's text message
- * @param {string} language – One of ENGLISH, URDU, ROMAN_URDU
- * @returns {Promise<string>} The AI-generated response
+ * Parse the AI provider's raw text response into structured JSON.
+ * Falls back to a safe default if parsing fails.
  */
-async function generateResponse(message, language) {
-  const messages = buildMessages(message, language);
-  return callAIProvider(messages);
+function parseAIResponse(rawText) {
+  // Strip markdown code fences if the AI wraps JSON in them
+  let cleaned = rawText
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+
+  try {
+    const parsed = JSON.parse(cleaned);
+
+    return {
+      recommended_department: typeof parsed.recommended_department === "string"
+        ? parsed.recommended_department.trim()
+        : null,
+      message: typeof parsed.message === "string" ? parsed.message.trim() : "",
+      is_emergency: parsed.is_emergency === true,
+    };
+  } catch {
+    // If JSON parsing fails, do NOT invent a department
+    return {
+      recommended_department: null,
+      message: rawText || "We could not analyze your symptoms. Please consult a doctor directly.",
+      is_emergency: false,
+    };
+  }
+}
+
+/**
+ * Analyze patient symptoms and return a structured recommendation.
+ *
+ * @param {string} message  – The patient's symptom description
+ * @param {string} language – One of ENGLISH, URDU, ROMAN_URDU
+ * @returns {Promise<{recommended_department: string, message: string, is_emergency: boolean}>}
+ */
+async function analyzeSymptoms(message, language) {
+  const payload = buildGeminiPayload(message, language);
+  const rawResponse = await callGemini(payload);
+  return parseAIResponse(rawResponse);
 }
 
 module.exports = {
-  generateResponse,
+  analyzeSymptoms,
   SUPPORTED_LANGUAGES,
   MAX_MESSAGE_LENGTH,
 };
