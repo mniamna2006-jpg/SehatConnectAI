@@ -114,15 +114,16 @@ model Patient {
 }
 
 model Department {
-  department_id String          @id @default(uuid()) @db.Uuid
-  hospital_id   String          @db.Uuid
-  name          String
-  description   String?
-  is_active     Boolean         @default(true)
-  appointments  Appointment[]
-  hospital      Hospital        @relation(fields: [hospital_id], references: [hospital_id])
-  doctors       Doctor[]
-  staff         HospitalStaff[]
+  department_id     String            @id @default(uuid()) @db.Uuid
+  hospital_id       String            @db.Uuid
+  name              String
+  description       String?
+  is_active         Boolean           @default(true)
+  appointments      Appointment[]
+  hospital          Hospital          @relation(fields: [hospital_id], references: [hospital_id])
+  doctors           Doctor[]
+  staff             HospitalStaff[]
+  staff_invitations StaffInvitation[]
 
   @@unique([hospital_id, name])
   @@index([hospital_id])
@@ -293,11 +294,14 @@ model StaffInvitation {
   hospital_id      String           @db.Uuid
   email            String
   employee_id      String
+  position         String
+  department_id    String?          @db.Uuid
   role             UserRole         @default(STAFF)
   invitation_token String           @unique
   status           InvitationStatus @default(PENDING)
   expires_at       DateTime
   created_at       DateTime         @default(now())
+  department       Department?      @relation(fields: [department_id], references: [department_id], onDelete: Restrict)
   hospital         Hospital         @relation(fields: [hospital_id], references: [hospital_id])
 
   @@index([hospital_id])
