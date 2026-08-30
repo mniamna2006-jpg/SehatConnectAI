@@ -4,6 +4,7 @@ const {
   authenticateToken,
   authorizeRoles,
 } = require("../middleware/auth.middleware");
+const { getPakistanDayOfWeekForDate } = require("../utils/date.helpers");
 
 const router = express.Router();
 
@@ -61,17 +62,7 @@ router.post(
         });
       }
 
-      const days = [
-        "SUNDAY",
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-      ];
-
-      const dayOfWeek = days[requestedDate.getUTCDay()];
+      const dayOfWeek = getPakistanDayOfWeekForDate(requestedDate);
 
       const schedule = await prisma.doctorSchedule.findFirst({
         where: {

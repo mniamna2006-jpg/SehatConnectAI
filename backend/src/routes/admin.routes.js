@@ -7,6 +7,8 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 
+const { getPakistanDate } = require("../utils/date.helpers");
+
 const router = express.Router();
 
 // GET /api/admin/dashboard — ADMIN only
@@ -42,32 +44,12 @@ router.get(
 
       const hospital_id = admin.hospital.hospital_id;
 
-      // Today's date range (UTC, matching existing slot date handling)
-      const now = new Date();
+      // Today's date range in Pakistan Standard Time (Asia/Karachi)
+      const todayStart = getPakistanDate();
 
-      const todayStart = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          0,
-          0,
-          0,
-          0
-        )
-      );
+      const todayEnd = new Date(todayStart);
 
-      const todayEnd = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          23,
-          59,
-          59,
-          999
-        )
-      );
+      todayEnd.setUTCDate(todayEnd.getUTCDate() + 1);
 
       // Run all independent queries in parallel
       const [
@@ -77,7 +59,7 @@ router.get(
         activeDoctors,
         totalStaff,
         activeStaff,
-        patientCount,
+        totalPatients,
         todayAppointments,
         appointmentStatusCounts,
         todayQueueCounts,
@@ -109,19 +91,16 @@ router.get(
           where: { hospital_id, is_active: true },
         }),
 
-        // Distinct patients that have appointments at this hospital
-        prisma.appointment.findMany({
-          where: { hospital_id },
-          select: { patient_id: true },
-        }),
+        // Total registered patients in the system
+        prisma.patient.count(),
 
-        // Today's appointments
+        // Today's appointments (PKT calendar day)
         prisma.appointment.findMany({
           where: {
             hospital_id,
             appointment_date: {
               gte: todayStart,
-              lte: todayEnd,
+              lt: todayEnd,
             },
           },
           include: {
@@ -153,7 +132,7 @@ router.get(
           _count: { status: true },
         }),
 
-        // Today's queue summary
+        // Today's queue summary (PKT calendar day)
         prisma.queue.groupBy({
           by: ["queue_status"],
           where: {
@@ -161,18 +140,13 @@ router.get(
             appointment: {
               appointment_date: {
                 gte: todayStart,
-                lte: todayEnd,
+                lt: todayEnd,
               },
             },
           },
           _count: { queue_status: true },
         }),
       ]);
-
-      // Build unique patient count
-      const uniquePatientIds = new Set(
-        patientCount.map((a) => a.patient_id)
-      );
 
       // Shape appointment status counts into a flat object
       const statusCounts = {};
@@ -220,7 +194,7 @@ router.get(
           },
 
           patients: {
-            total: uniquePatientIds.size,
+            total: totalPatients,
           },
 
           today_appointments: todayAppointments,
