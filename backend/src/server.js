@@ -13,6 +13,7 @@ const appointmentRoutes = require("./routes/appointment.routes");
 const queueRoutes = require("./routes/queue.routes");
 const patientRoutes = require("./routes/patient.routes");
 const notificationRoutes = require("./routes/notification.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/queue", queueRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 const PORT = process.env.PORT || 5000;
