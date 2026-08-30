@@ -1,0 +1,10 @@
+{
+  "common": {
+    "loading": "Load ho raha hai…",
+    "error": "Kuch ghalat ho gaya",
+    "retry": "Dobara koshish karein"
+  },
+  "home": {
+    "greeting": "Khush aamdeed"
+  }
+}
