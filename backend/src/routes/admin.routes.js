@@ -195,6 +195,8 @@ router.get(
             phone: admin.hospital.phone,
             email: admin.hospital.email,
             logo_url: admin.hospital.logo_url,
+            cover_image_url: admin.hospital.cover_image_url,
+            theme: admin.hospital.theme,
             is_active: admin.hospital.is_active,
           },
 
