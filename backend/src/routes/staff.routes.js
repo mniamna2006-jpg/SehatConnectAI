@@ -136,10 +136,16 @@ router.get(
           },
         }),
 
-        // Appointment counts grouped by status (all time, hospital-scoped)
+        // Appointment counts grouped by status (today, hospital-scoped)
         prisma.appointment.groupBy({
           by: ["status"],
-          where: { hospital_id },
+          where: {
+            hospital_id,
+            appointment_date: {
+              gte: todayStart,
+              lt: todayEnd,
+            },
+          },
           _count: { status: true },
         }),
 
