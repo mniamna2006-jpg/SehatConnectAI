@@ -1,8 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import type { LocationMode } from '../../../core/location/useLocationSelector';
+import { useAuth } from '../../../providers/AuthProvider';
+import { LocaleProvider } from '../../../providers/LocaleProvider';
 import { LocationPicker } from '../LocationPicker';
 
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
+jest.mock('../../../providers/AuthProvider');
 
 function baseSelector() {
   return {
@@ -48,4 +51,18 @@ test('disables GPS action while location request is active', async () => {
   await render(<LocationPicker selector={selector({ isRequestingGps: true })} />);
 
   expect(screen.getByTestId('use-current-location')).toBeDisabled();
+});
+
+test('renders location controls in the Urdu locale', async () => {
+  (useAuth as jest.Mock).mockReturnValue({ user: { preferred_language: 'URDU' } });
+
+  await render(
+    <LocaleProvider>
+      <LocationPicker selector={selector()} />
+    </LocaleProvider>
+  );
+
+  expect(screen.getByText('آپ کا مقام')).toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'موجودہ مقام استعمال کریں' })).toBeOnTheScreen();
+  expect(screen.getByLabelText('شہر یا علاقہ')).toBeOnTheScreen();
 });

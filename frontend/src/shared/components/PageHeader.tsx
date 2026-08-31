@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import { useOptionalLocale } from '../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../providers/LocaleProvider';
 import { colors, typography } from '../theme';
 import { IconButton } from './Buttons';
 
@@ -17,10 +17,11 @@ export function PageHeader({
   right?: ReactNode;
 }) {
   const isRTL = useOptionalLocale()?.isRTL ?? false;
+  const t = useTranslations();
   return (
     <View style={styles.wrap}>
       <View style={styles.topRow}>
-        {showBack ? <IconButton icon={isRTL ? 'chevron-forward' : 'chevron-back'} label="Go back" onPress={() => router.back()} /> : <View style={styles.spacer} />}
+        {showBack ? <IconButton icon={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.goBack')} onPress={() => router.back()} /> : <View style={styles.spacer} />}
         <View style={styles.titleWrap}>
           <Text accessibilityRole="header" style={styles.title}>{title}</Text>
         </View>

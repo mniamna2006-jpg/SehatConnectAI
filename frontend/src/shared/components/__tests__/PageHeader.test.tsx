@@ -7,6 +7,7 @@ let mockIsRTL = false;
 
 jest.mock('../../../providers/LocaleProvider', () => ({
   useOptionalLocale: () => ({ isRTL: mockIsRTL }),
+  useTranslations: () => (key: string) => key === 'common.goBack' ? 'Go back' : key,
 }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
 jest.mock('@expo/vector-icons/Ionicons', () => {

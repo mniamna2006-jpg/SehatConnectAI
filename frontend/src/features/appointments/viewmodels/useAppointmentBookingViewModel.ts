@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
 import { ApiError } from '../../../core/api/client';
+import { useTranslations } from '../../../providers/LocaleProvider';
 import { queryKeys } from '../../../shared/constants/queryKeys';
 import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue';
 import { getDepartmentsByHospital } from '../../departments/model/api';
@@ -20,6 +21,7 @@ interface AppointmentPrefill {
 }
 
 export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState('');
   const [bookingError, setBookingError] = useState<string | null>(null);
@@ -50,7 +52,11 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   // own hospital/department so the dependent queries below aren't stuck
   // disabled and the prefill survives mount.
   const hasDoctorOnlyPrefill = Boolean(prefill.doctorId) && !prefill.hospitalId && !prefill.departmentId;
-  const { data: prefillDoctor } = useQuery({
+  const {
+    data: prefillDoctor,
+    isError: isPrefillDoctorError,
+    refetch: refetchPrefillDoctor,
+  } = useQuery({
     queryKey: queryKeys.doctor(prefill.doctorId ?? ''),
     queryFn: () => getDoctorById(prefill.doctorId as string),
     enabled: hasDoctorOnlyPrefill,
@@ -62,16 +68,31 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     setValue('department_id', prefillDoctor.department.department_id);
   }, [prefillDoctor, setValue]);
 
-  const { data: hospitals = [], isLoading: isLoadingHospitals } = useQuery({
+  const {
+    data: hospitals = [],
+    isLoading: isLoadingHospitals,
+    isError: isHospitalsError,
+    refetch: refetchHospitals,
+  } = useQuery({
     queryKey: queryKeys.hospitals(),
     queryFn: getHospitals,
   });
-  const { data: departments = [], isLoading: isLoadingDepartments } = useQuery({
+  const {
+    data: departments = [],
+    isLoading: isLoadingDepartments,
+    isError: isDepartmentsError,
+    refetch: refetchDepartments,
+  } = useQuery({
     queryKey: queryKeys.departmentsByHospital(hospitalId),
     queryFn: () => getDepartmentsByHospital(hospitalId),
     enabled: hospitalId.length > 0,
   });
-  const { data: hospitalDoctors = [], isLoading: isLoadingDoctors } = useQuery({
+  const {
+    data: hospitalDoctors = [],
+    isLoading: isLoadingDoctors,
+    isError: isHospitalDoctorsError,
+    refetch: refetchHospitalDoctors,
+  } = useQuery({
     queryKey: queryKeys.doctorsByHospital(hospitalId),
     queryFn: () => getDoctorsByHospital(hospitalId),
     enabled: hospitalId.length > 0,
@@ -97,7 +118,7 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   const mutation = useMutation({
     mutationFn: (values: BookingInput) => createAppointment(values),
     onSuccess: (appointment) => {
-      setBookingSuccess(`Booked: ${appointment.booking_reference}`);
+      setBookingSuccess(`${t('appointments.booking.booked')}: ${appointment.booking_reference}`);
       queryClient.invalidateQueries({ queryKey: queryKeys.myAppointments });
       queryClient.invalidateQueries({ queryKey: queryKeys.timeSlots(doctorId, debouncedDate) });
     },
@@ -132,8 +153,8 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     } catch (error) {
       setBookingError(
         error instanceof ApiError && error.status === 400
-          ? 'This slot was just taken'
-          : 'Booking failed. Please try again.'
+          ? t('appointments.booking.slotTaken')
+          : t('appointments.booking.failed')
       );
       if (doctorId && debouncedDate) {
         queryClient.invalidateQueries({
@@ -161,7 +182,13 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     isLoadingDepartments,
     isLoadingDoctors,
     isLoadingSlots,
+    isHospitalsError,
+    isDepartmentsError,
+    isDoctorsError: isPrefillDoctorError || isHospitalDoctorsError,
     isSlotsError,
+    refetchHospitals,
+    refetchDepartments,
+    refetchDoctors: hasDoctorOnlyPrefill ? refetchPrefillDoctor : refetchHospitalDoctors,
     refetchSlots,
     onSelectHospital,
     onSelectDepartment,

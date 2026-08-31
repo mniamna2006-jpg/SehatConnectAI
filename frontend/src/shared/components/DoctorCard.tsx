@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, shadow, typography } from '../theme';
 import { displayTime12h } from '../utils/time';
 import { AppIcon } from './AppIcon';
@@ -32,6 +33,7 @@ export function DoctorCard({
   bookingHref: string;
   testID?: string;
 }) {
+  const t = useTranslations();
   const firstSchedule = schedules[0];
   return (
     <View testID={testID ?? `doctor-row-${id}`} style={styles.card}>
@@ -61,9 +63,9 @@ export function DoctorCard({
         </View>
       ) : null}
       <View style={styles.footer}>
-        {schedules.length > 0 ? <Text style={styles.availableLabel}>Available Timings</Text> : <Text style={styles.unavailable}>Schedule not available</Text>}
+        {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <Text style={styles.unavailable}>{t('doctors.scheduleUnavailable')}</Text>}
         <Link href={bookingHref} asChild>
-          <AppButton label="Book Appointment" style={styles.bookButton} />
+          <AppButton label={t('common.bookAppointment')} style={styles.bookButton} />
         </Link>
       </View>
     </View>

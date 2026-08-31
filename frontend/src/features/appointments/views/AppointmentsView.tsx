@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
 import { PageHeader } from '../../../shared/components/PageHeader';
 import { Screen } from '../../../shared/components/Screen';
@@ -8,18 +9,19 @@ import { BookingTab } from './BookingTab';
 import { HistoryTab } from './HistoryTab';
 import { QueueTab } from './QueueTab';
 
-const TABS: { id: AppointmentTab; label: string; icon: AppIconName }[] = [
-  { id: 'booking', label: 'Booking', icon: 'calendar-outline' },
-  { id: 'history', label: 'History', icon: 'time-outline' },
-  { id: 'queue', label: 'Queue', icon: 'people-outline' },
+const TABS: { id: AppointmentTab; labelKey: string; icon: AppIconName }[] = [
+  { id: 'booking', labelKey: 'appointments.mainTabs.booking', icon: 'calendar-outline' },
+  { id: 'history', labelKey: 'appointments.mainTabs.history', icon: 'time-outline' },
+  { id: 'queue', labelKey: 'appointments.mainTabs.queue', icon: 'people-outline' },
 ];
 
 export function AppointmentsView(prefill: AppointmentPrefill) {
+  const t = useTranslations();
   const { activeTab, setActiveTab } = useAppointmentsViewModel(prefill);
   return (
     <Screen>
       <View style={styles.root}>
-        <PageHeader title="Appointments" subtitle="Book and manage your care" />
+        <PageHeader title={t('appointments.title')} subtitle={t('appointments.subtitle')} />
         <View accessibilityRole="tablist" style={styles.tabs}>
           {TABS.map((tab) => {
             const selected = activeTab === tab.id;
@@ -32,7 +34,7 @@ export function AppointmentsView(prefill: AppointmentPrefill) {
                 style={({ pressed }) => [styles.tab, selected && styles.tabSelected, pressed && styles.pressed]}
               >
                 <AppIcon name={tab.icon} color={selected ? colors.primary : colors.muted} size={18} />
-                <Text style={[styles.tabText, selected && styles.tabTextSelected]}>{tab.label}</Text>
+                <Text style={[styles.tabText, selected && styles.tabTextSelected]}>{t(tab.labelKey)}</Text>
               </Pressable>
             );
           })}

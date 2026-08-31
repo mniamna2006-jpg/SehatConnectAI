@@ -33,7 +33,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           <View style={styles.scrim} />
           <View style={styles.heroTop}>
             {hospital.logo_url ? <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" accessibilityLabel={`${hospital.name} logo`} /> : <View style={styles.logoFallback}><AppIcon name="business" color={colors.primary} size={29} /></View>}
-            {hospital.working_hours.length > 0 ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText}>Working hours available</Text></View> : null}
+            {hospital.working_hours.some((item) => item.is_open) ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText}>Working hours available</Text></View> : null}
           </View>
           <View>
             <Text accessibilityRole="header" testID="hospital-name" style={styles.heroName}>{hospital.name}</Text>
@@ -60,8 +60,12 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
               {hospital.working_hours.map((item, index) => (
                 <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={styles.hoursCard}>
                   <Text style={styles.day}>{item.day_of_week}</Text>
-                  <Text style={styles.time}>{displayTime12h(item.opening_time_12h, item.opening_time)}</Text>
-                  <Text style={styles.timeMuted}>to {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
+                  {item.is_open ? (
+                    <>
+                      <Text style={styles.time}>{displayTime12h(item.opening_time_12h, item.opening_time)}</Text>
+                      <Text style={styles.timeMuted}>to {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
+                    </>
+                  ) : <Text style={styles.time}>{t('common.closed')}</Text>}
                 </View>
               ))}
             </ScrollView>

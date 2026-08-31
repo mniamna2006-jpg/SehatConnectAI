@@ -81,3 +81,30 @@ test('safely renders absent optional logo, contact, timing, departments, and doc
   expect(screen.queryByTestId('hospital-departments-section')).not.toBeOnTheScreen();
   expect(screen.queryByTestId('hospital-doctors-section')).not.toBeOnTheScreen();
 });
+
+test('renders a closed working-hours day as closed without opening times', async () => {
+  (useHospitalDetailsViewModel as jest.Mock).mockReturnValue({
+    hospital: {
+      hospital_id: 'h3',
+      name: 'City Hospital',
+      facility_type: 'HOSPITAL',
+      working_hours: [{
+        day_of_week: 'SUNDAY',
+        opening_time: '09:00',
+        closing_time: '17:00',
+        is_open: false,
+      }],
+      departments: [],
+      doctors: [],
+    },
+    isLoading: false,
+    isError: false,
+    refetch: jest.fn(),
+  });
+
+  await render(<HospitalDetailsView hospitalId="h3" />);
+
+  expect(screen.getByTestId('working-hours-SUNDAY')).toHaveTextContent('SUNDAYClosed');
+  expect(screen.queryByText('9:00 AM')).not.toBeOnTheScreen();
+  expect(screen.queryByText('to 5:00 PM')).not.toBeOnTheScreen();
+});

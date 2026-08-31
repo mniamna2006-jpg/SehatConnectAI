@@ -1,12 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, typography } from '../theme';
 import { AppIcon, type AppIconName } from './AppIcon';
 
-export function EmptyState({ message, title = 'Nothing here yet', icon = 'calendar-outline' }: { message: string; title?: string; icon?: AppIconName }) {
+export function EmptyState({ message, title, icon = 'calendar-outline' }: { message: string; title?: string; icon?: AppIconName }) {
+  const t = useTranslations();
   return (
     <View style={styles.wrap}>
       <View style={styles.iconBox}><AppIcon name={icon} color={colors.teal} size={27} /></View>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>{title ?? t('common.emptyTitle')}</Text>
       <Text style={styles.message}>{message}</Text>
     </View>
   );

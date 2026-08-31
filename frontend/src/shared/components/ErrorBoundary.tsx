@@ -24,7 +24,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         <ErrorState
-          message="Something went wrong"
           onRetry={() => this.setState({ hasError: false })}
         />
       );

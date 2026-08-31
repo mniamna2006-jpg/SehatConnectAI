@@ -1,11 +1,13 @@
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, typography } from '../theme';
 
-export function LoadingState({ label = 'Loading…' }: { label?: string }) {
+export function LoadingState({ label }: { label?: string }) {
+  const t = useTranslations();
   return (
     <View style={styles.wrap} accessibilityLiveRegion="polite">
       <View style={styles.iconBox}><ActivityIndicator color={colors.primary} /></View>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>{label ?? t('common.loading')}</Text>
     </View>
   );
 }

@@ -9,21 +9,14 @@ jest.mock('react-hook-form', () => ({
     render({ field: { value: '', onBlur: jest.fn(), onChange: jest.fn() } }),
 }));
 
-test('renders a mobile date strip and 12-hour time slots', async () => {
-  (useAppointmentBookingViewModel as jest.Mock).mockReturnValue({
+function viewModel(overrides: Record<string, unknown> = {}) {
+  return {
     control: {},
     errors: {},
     hospitals: [],
     departments: [],
     doctors: [],
-    timeSlots: [
-      {
-        slot_id: 'slot-1',
-        start_time: '09:00',
-        end_time: '09:30',
-        status: 'AVAILABLE',
-      },
-    ],
+    timeSlots: [],
     hospitalId: '',
     departmentId: '',
     doctorId: '',
@@ -33,7 +26,13 @@ test('renders a mobile date strip and 12-hour time slots', async () => {
     isLoadingDepartments: false,
     isLoadingDoctors: false,
     isLoadingSlots: false,
+    isHospitalsError: false,
+    isDepartmentsError: false,
+    isDoctorsError: false,
     isSlotsError: false,
+    refetchHospitals: jest.fn(),
+    refetchDepartments: jest.fn(),
+    refetchDoctors: jest.fn(),
     refetchSlots: jest.fn(),
     onSelectHospital: jest.fn(),
     onSelectDepartment: jest.fn(),
@@ -44,11 +43,38 @@ test('renders a mobile date strip and 12-hour time slots', async () => {
     isSubmitting: false,
     bookingError: null,
     bookingSuccess: null,
-  });
+    ...overrides,
+  };
+}
+
+test('renders a mobile date strip and 12-hour time slots', async () => {
+  (useAppointmentBookingViewModel as jest.Mock).mockReturnValue(viewModel({
+    timeSlots: [
+      {
+        slot_id: 'slot-1',
+        start_time: '09:00',
+        end_time: '09:30',
+        status: 'AVAILABLE',
+      },
+    ],
+  }));
 
   await render(<BookingTab prefill={{}} />);
 
   expect(screen.getByText('Choose Date')).toBeOnTheScreen();
   expect(screen.getByTestId('date-option-0')).toBeOnTheScreen();
   expect(screen.getByText('9:00 AM')).toBeOnTheScreen();
+});
+
+test('shows retry recovery instead of an empty list when hospitals fail to load', async () => {
+  const refetchHospitals = jest.fn();
+  (useAppointmentBookingViewModel as jest.Mock).mockReturnValue(viewModel({
+    isHospitalsError: true,
+    refetchHospitals,
+  }));
+
+  await render(<BookingTab prefill={{}} />);
+
+  expect(screen.getByText("We couldn't load this")).toBeOnTheScreen();
+  expect(screen.queryByText('No hospitals available.')).not.toBeOnTheScreen();
 });

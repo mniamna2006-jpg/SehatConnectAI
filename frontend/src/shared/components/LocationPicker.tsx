@@ -1,9 +1,11 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useLocationSelector } from '../../core/location/useLocationSelector';
+import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, shadow, typography } from '../theme';
 import { AppIcon } from './AppIcon';
 
 export function LocationPicker({ selector }: { selector: ReturnType<typeof useLocationSelector> }) {
+  const t = useTranslations();
   const { mode, permissionDenied, locationUnavailable, isRequestingGps, manualCity, requestGpsLocation, setManualCity } =
     selector;
 
@@ -14,8 +16,8 @@ export function LocationPicker({ selector }: { selector: ReturnType<typeof useLo
           <AppIcon name="location" color={colors.primary} size={21} />
         </View>
         <View style={styles.headingCopy}>
-          <Text style={styles.title}>Your location</Text>
-          <Text style={styles.subtitle}>Find care close to you</Text>
+          <Text style={styles.title}>{t('location.title')}</Text>
+          <Text style={styles.subtitle}>{t('location.subtitle')}</Text>
         </View>
       </View>
       <Pressable
@@ -32,26 +34,26 @@ export function LocationPicker({ selector }: { selector: ReturnType<typeof useLo
         ) : (
           <>
             <AppIcon name="navigate-circle-outline" color={colors.primary} size={21} />
-            <Text style={styles.currentLabel}>Use Current Location</Text>
+            <Text style={styles.currentLabel}>{t('common.useCurrentLocation')}</Text>
           </>
         )}
       </Pressable>
       {(permissionDenied || locationUnavailable) && (
         <Text testID="location-notice" style={styles.notice}>
-          Couldn't use your location. Search by city instead.
+          {t('common.locationDenied')}
         </Text>
       )}
       <View style={styles.dividerRow}>
         <View style={styles.divider} />
-        <Text style={styles.dividerLabel}>or enter your city</Text>
+        <Text style={styles.dividerLabel}>{t('location.divider')}</Text>
         <View style={styles.divider} />
       </View>
       <View style={styles.inputShell}>
         <AppIcon name="search" color={colors.muted} size={19} />
         <TextInput
-          accessibilityLabel="City or area"
+          accessibilityLabel={t('location.cityLabel')}
           testID="manual-city-input"
-          placeholder="e.g. Gulshan-e-Iqbal, Karachi"
+          placeholder={t('location.placeholder')}
           placeholderTextColor={colors.faint}
           value={manualCity}
           onChangeText={setManualCity}

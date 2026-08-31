@@ -1,22 +1,24 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, typography } from '../theme';
 import { AppButton } from './Buttons';
 import { AppIcon } from './AppIcon';
 
 export function ErrorState({
-  message = 'Something went wrong',
+  message,
   onRetry,
 }: {
   message?: string;
   onRetry?: () => void;
 }) {
+  const t = useTranslations();
   return (
     <View accessibilityRole="alert" style={styles.wrap}>
       <View style={styles.iconBox}><AppIcon name="alert-circle-outline" color={colors.danger} size={28} /></View>
-      <Text style={styles.title}>We couldn't load this</Text>
-      <Text style={styles.message}>{message}</Text>
+      <Text style={styles.title}>{t('common.errorTitle')}</Text>
+      <Text style={styles.message}>{message ?? t('common.error')}</Text>
       {onRetry ? (
-        <AppButton label="Try again" variant="secondary" onPress={onRetry} style={styles.retry} />
+        <AppButton label={t('common.retry')} variant="secondary" onPress={onRetry} style={styles.retry} />
       ) : null}
     </View>
   );

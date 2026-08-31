@@ -9,7 +9,8 @@ export function formatTime12Hour(value?: string): string {
 }
 
 export function formatDateLabel(value: string): string {
-  const date = new Date(`${value}T12:00:00`);
+  const calendarDate = value.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+  const date = new Date(calendarDate ? `${calendarDate}T12:00:00` : value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString('en-US', {
     month: 'short',

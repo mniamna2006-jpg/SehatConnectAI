@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Controller } from 'react-hook-form';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
 import { Avatar } from '../../../shared/components/Avatar';
 import { AppButton } from '../../../shared/components/Buttons';
@@ -38,6 +39,8 @@ function toDateValue(date: Date): string {
 }
 
 export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
+  const t = useTranslations();
+  const locale = useOptionalLocale();
   const vm = useAppointmentBookingViewModel(prefill);
   const days = nextSevenDays();
 
@@ -45,12 +48,12 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.introCard}>
         <View style={styles.introIcon}><AppIcon name="calendar-clear" color={colors.surface} size={27} /></View>
-        <View style={styles.introCopy}><Text accessibilityRole="header" style={styles.introTitle}>Book an appointment</Text><Text style={styles.introText}>Choose your care team, date and available time.</Text></View>
+        <View style={styles.introCopy}><Text accessibilityRole="header" style={styles.introTitle}>{t('appointments.booking.introTitle')}</Text><Text style={styles.introText}>{t('appointments.booking.introMessage')}</Text></View>
       </View>
 
       <View style={styles.stage}>
-        <StageHeader icon="business-outline" title="Choose Hospital" detail={vm.hospitalId ? 'Selected' : 'Start here'} />
-        {vm.isLoadingHospitals ? <LoadingState label="Loading hospitals…" /> : (
+        <StageHeader icon="business-outline" title={t('appointments.booking.chooseHospital')} detail={vm.hospitalId ? t('common.selected') : t('appointments.booking.startHere')} />
+        {vm.isLoadingHospitals ? <LoadingState label={t('appointments.booking.loadingHospitals')} /> : vm.isHospitalsError ? <ErrorState onRetry={() => void vm.refetchHospitals()} /> : (
           <View style={styles.entityList}>
             {vm.hospitals.map((hospital) => {
               const selected = vm.hospitalId === hospital.hospital_id;
@@ -58,19 +61,19 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
                 <Pressable key={hospital.hospital_id} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => vm.onSelectHospital(hospital.hospital_id)} style={({ pressed }) => [styles.entityRow, selected && styles.entityRowSelected, pressed && styles.pressed]}>
                   <View style={[styles.entityIcon, selected && styles.entityIconSelected]}><AppIcon name="business" color={selected ? colors.surface : colors.teal} size={20} /></View>
                   <Text style={[styles.entityName, selected && styles.entityNameSelected]}>{hospital.name}</Text>
-                  {selected ? <AppIcon name="checkmark-circle" color={colors.primary} size={22} /> : <AppIcon name="chevron-forward" color={colors.faint} size={19} />}
+                  {selected ? <AppIcon name="checkmark-circle" color={colors.primary} size={22} /> : <AppIcon name={locale?.isRTL ? 'chevron-back' : 'chevron-forward'} color={colors.faint} size={19} />}
                 </Pressable>
               );
             })}
-            {!vm.isLoadingHospitals && vm.hospitals.length === 0 ? <Text style={styles.inlineEmpty}>No hospitals available.</Text> : null}
+            {vm.hospitals.length === 0 ? <Text style={styles.inlineEmpty}>{t('appointments.booking.noHospitals')}</Text> : null}
           </View>
         )}
         {vm.errors.hospital_id ? <Text style={styles.error}>{vm.errors.hospital_id.message}</Text> : null}
       </View>
 
       <View style={styles.stage}>
-        <StageHeader icon="grid-outline" title="Choose Department" detail={vm.departmentId ? 'Selected' : 'Select a hospital first'} />
-        {vm.isLoadingDepartments ? <LoadingState label="Loading departments…" /> : (
+        <StageHeader icon="grid-outline" title={t('appointments.booking.chooseDepartment')} detail={vm.departmentId ? t('common.selected') : t('appointments.booking.selectHospitalFirst')} />
+        {vm.isLoadingDepartments ? <LoadingState label={t('appointments.booking.loadingDepartments')} /> : vm.isDepartmentsError ? <ErrorState onRetry={() => void vm.refetchDepartments()} /> : (
           <View style={styles.departmentGrid}>
             {vm.departments.map((department) => {
               const selected = vm.departmentId === department.department_id;
@@ -87,8 +90,8 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       </View>
 
       <View style={styles.stage}>
-        <StageHeader icon="medkit-outline" title="Choose Doctor" detail={vm.doctorId ? 'Selected' : undefined} />
-        {vm.isLoadingDoctors ? <LoadingState label="Loading doctors…" /> : (
+        <StageHeader icon="medkit-outline" title={t('appointments.booking.chooseDoctor')} detail={vm.doctorId ? t('common.selected') : undefined} />
+        {vm.isLoadingDoctors ? <LoadingState label={t('appointments.booking.loadingDoctors')} /> : vm.isDoctorsError ? <ErrorState onRetry={() => void vm.refetchDoctors()} /> : (
           <View style={styles.doctorList}>
             {vm.doctors.map((doctor) => {
               const selected = vm.doctorId === doctor.doctor_id;
@@ -106,32 +109,32 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       </View>
 
       <View style={styles.stage}>
-        <StageHeader icon="calendar-outline" title="Choose Date" detail={vm.selectedDate || 'Next 7 days'} />
+        <StageHeader icon="calendar-outline" title={t('appointments.booking.chooseDate')} detail={vm.selectedDate || t('appointments.booking.nextSevenDays')} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dateStrip}>
           {days.map((date, index) => {
             const value = toDateValue(date);
             const selected = vm.selectedDate === value;
             return (
               <Pressable key={value} testID={`date-option-${index}`} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => vm.onSelectDate(value)} style={({ pressed }) => [styles.dateOption, selected && styles.dateOptionSelected, pressed && styles.pressed]}>
-                <Text style={[styles.dateDay, selected && styles.dateTextSelected]}>{date.toLocaleDateString('en-US', { weekday: 'short' })}</Text>
+                <Text style={[styles.dateDay, selected && styles.dateTextSelected]}>{date.toLocaleDateString(locale?.locale === 'URDU' ? 'ur-PK' : 'en-US', { weekday: 'short' })}</Text>
                 <Text style={[styles.dateNumber, selected && styles.dateTextSelected]}>{date.getDate()}</Text>
               </Pressable>
             );
           })}
         </ScrollView>
-        <FormField accessibilityLabel="Appointment date" label="Or enter a date" icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} />
+        <FormField accessibilityLabel={t('appointments.booking.appointmentDate')} label={t('appointments.booking.enterDate')} icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} />
       </View>
 
       <View style={styles.stage}>
-        <StageHeader icon="time-outline" title="Available Time" detail={vm.timeSlots.length > 0 ? `${vm.timeSlots.length} slots` : undefined} />
-        {vm.isLoadingSlots ? <LoadingState label="Loading time slots…" /> : null}
+        <StageHeader icon="time-outline" title={t('appointments.booking.availableTime')} detail={vm.timeSlots.length > 0 ? `${vm.timeSlots.length} ${t('appointments.booking.slots')}` : undefined} />
+        {vm.isLoadingSlots ? <LoadingState label={t('appointments.booking.loadingSlots')} /> : null}
         {!vm.isLoadingSlots && vm.isSlotsError ? <ErrorState onRetry={() => void vm.refetchSlots()} /> : null}
-        {!vm.isLoadingSlots && !vm.isSlotsError && vm.selectedDate && vm.timeSlots.length === 0 ? <EmptyState title="No times available" message="Try another date to see more time slots." icon="time-outline" /> : null}
+        {!vm.isLoadingSlots && !vm.isSlotsError && vm.selectedDate && vm.timeSlots.length === 0 ? <EmptyState title={t('appointments.booking.noTimesTitle')} message={t('appointments.booking.noTimesMessage')} icon="time-outline" /> : null}
         <View style={styles.timeGrid}>
           {vm.timeSlots.map((slot) => {
             const selected = vm.selectedSlotId === slot.slot_id;
             return (
-              <Pressable key={slot.slot_id} accessibilityRole="radio" accessibilityLabel={`${displayTime12h(slot.start_time_12h, slot.start_time)} to ${displayTime12h(slot.end_time_12h, slot.end_time)}`} accessibilityState={{ selected }} onPress={() => vm.onSelectSlot(slot.slot_id)} style={({ pressed }) => [styles.timeOption, selected && styles.timeOptionSelected, pressed && styles.pressed]}>
+              <Pressable key={slot.slot_id} accessibilityRole="radio" accessibilityLabel={`${displayTime12h(slot.start_time_12h, slot.start_time)} ${t('common.to')} ${displayTime12h(slot.end_time_12h, slot.end_time)}`} accessibilityState={{ selected }} onPress={() => vm.onSelectSlot(slot.slot_id)} style={({ pressed }) => [styles.timeOption, selected && styles.timeOptionSelected, pressed && styles.pressed]}>
                 <Text style={[styles.timeText, selected && styles.timeTextSelected]}>{displayTime12h(slot.start_time_12h, slot.start_time)}</Text>
               </Pressable>
             );
@@ -141,13 +144,13 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       </View>
 
       <View style={styles.stage}>
-        <StageHeader icon="document-text-outline" title="Reason for visit" detail="Optional" />
-        <Controller control={vm.control} name="reason" render={({ field }) => <FormField label="Reason" accessibilityLabel="Reason for appointment" placeholder="Tell the doctor what you need help with" value={field.value ?? ''} onBlur={field.onBlur} onChangeText={field.onChange} multiline />} />
+        <StageHeader icon="document-text-outline" title={t('appointments.booking.reasonForVisit')} detail={t('common.optional')} />
+        <Controller control={vm.control} name="reason" render={({ field }) => <FormField label={t('appointments.booking.reason')} accessibilityLabel={t('appointments.booking.reasonAccessibility')} placeholder={t('appointments.booking.reasonHelpPlaceholder')} value={field.value ?? ''} onBlur={field.onBlur} onChangeText={field.onChange} multiline />} />
       </View>
 
       {vm.bookingError ? <ErrorState message={vm.bookingError} /> : null}
       {vm.bookingSuccess ? <View style={styles.success}><AppIcon name="checkmark-circle" color={colors.success} size={22} /><Text style={styles.successText}>{vm.bookingSuccess}</Text></View> : null}
-      <AppButton label="Confirm Appointment" icon="checkmark-circle-outline" loading={vm.isSubmitting} onPress={vm.onSubmit} />
+      <AppButton label={t('appointments.booking.confirmAppointment')} icon="checkmark-circle-outline" loading={vm.isSubmitting} onPress={vm.onSubmit} />
     </ScrollView>
   );
 }

@@ -5,10 +5,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProfile, updateProfile } from '../model/api';
 import { profileUpdateSchema } from '../model/schemas';
 import type { ProfileUpdateInput } from '../model/types';
+import { useOptionalLocale } from '../../../providers/LocaleProvider';
 import { queryKeys } from '../../../shared/constants/queryKeys';
 
 export function useProfileViewModel() {
   const queryClient = useQueryClient();
+  const locale = useOptionalLocale();
   const [isEditing, setIsEditing] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -25,6 +27,7 @@ export function useProfileViewModel() {
     mutationFn: (values: ProfileUpdateInput) => updateProfile(values),
     onSuccess: (updated) => {
       queryClient.setQueryData(queryKeys.profile, updated);
+      locale?.setLocale(updated.preferred_language);
       setIsEditing(false);
     },
   });
