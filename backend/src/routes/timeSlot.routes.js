@@ -4,6 +4,9 @@ const {
   authenticateToken,
   authorizeRoles,
 } = require("../middleware/auth.middleware");
+const { getPakistanDayOfWeekForDate, addTime12hFields } = require("../utils/date.helpers");
+
+const SLOT_TIME_FIELDS = { start_time: true, end_time: true };
 
 const router = express.Router();
 
@@ -24,7 +27,7 @@ router.get("/doctor/:doctorId/date/:date", async (req, res) => {
 
     res.json({
       success: true,
-      data: slots,
+      data: addTime12hFields(slots, SLOT_TIME_FIELDS),
     });
   } catch (error) {
     console.error("Get time slots error:", error);
@@ -61,17 +64,7 @@ router.post(
         });
       }
 
-      const days = [
-        "SUNDAY",
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-      ];
-
-      const dayOfWeek = days[requestedDate.getUTCDay()];
+      const dayOfWeek = getPakistanDayOfWeekForDate(requestedDate);
 
       const schedule = await prisma.doctorSchedule.findFirst({
         where: {

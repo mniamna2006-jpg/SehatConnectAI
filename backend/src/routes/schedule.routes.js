@@ -4,6 +4,9 @@ const {
   authenticateToken,
   authorizeRoles,
 } = require("../middleware/auth.middleware");
+const { addTime12hFields } = require("../utils/date.helpers");
+
+const SCHEDULE_TIME_FIELDS = { start_time: true, end_time: true };
 
 const router = express.Router();
 
@@ -27,7 +30,7 @@ router.get("/doctor/:doctorId", async (req, res) => {
 
     res.json({
       success: true,
-      data: schedules,
+      data: addTime12hFields(schedules, SCHEDULE_TIME_FIELDS),
     });
   } catch (error) {
     console.error("Get doctor schedule error:", error);

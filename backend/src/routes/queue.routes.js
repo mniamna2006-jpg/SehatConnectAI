@@ -7,6 +7,28 @@ const {
 const {
   notifyPatientForAppointment,
 } = require("../services/notification.service");
+const { formatTime12h } = require("../utils/date.helpers");
+
+/**
+ * Add appointment_time_12h to a queue entry's nested appointment.
+ */
+const enrichQueue = (entry) => {
+  if (!entry) return entry;
+
+  const result = { ...entry };
+
+  if (result.appointment) {
+    result.appointment = {
+      ...result.appointment,
+      appointment_time_12h: formatTime12h(result.appointment.appointment_time),
+    };
+  }
+
+  return result;
+};
+
+const enrichQueueList = (list) =>
+  Array.isArray(list) ? list.map(enrichQueue) : enrichQueue(list);
 
 const router = express.Router();
 
@@ -55,7 +77,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: queue,
+        data: enrichQueueList(queue),
       });
     } catch (error) {
       console.error("Get patient queue error:", error);
@@ -123,7 +145,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: queue,
+        data: enrichQueueList(queue),
       });
     } catch (error) {
       console.error("Get hospital queue error:", error);
@@ -261,7 +283,14 @@ router.patch(
 
         return {
           queue: updatedQueue,
-          appointment: updatedAppointment,
+          appointment: updatedAppointment
+            ? {
+                ...updatedAppointment,
+                appointment_time_12h: formatTime12h(
+                  updatedAppointment.appointment_time
+                ),
+              }
+            : updatedAppointment,
         };
       });
 

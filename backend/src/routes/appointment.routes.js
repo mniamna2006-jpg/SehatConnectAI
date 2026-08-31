@@ -9,6 +9,31 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 
+const { formatTime12h, addTime12hFields } = require("../utils/date.helpers");
+
+const SLOT_TIME_FIELDS = { start_time: true, end_time: true };
+
+/**
+ * Add 12-hour companion fields to an appointment (and its nested slot if present).
+ */
+const enrichAppointment = (apt) => {
+  if (!apt) return apt;
+
+  const result = {
+    ...apt,
+    appointment_time_12h: formatTime12h(apt.appointment_time),
+  };
+
+  if (result.slot) {
+    result.slot = addTime12hFields(result.slot, SLOT_TIME_FIELDS);
+  }
+
+  return result;
+};
+
+const enrichAppointments = (apts) =>
+  Array.isArray(apts) ? apts.map(enrichAppointment) : enrichAppointment(apts);
+
 const router = express.Router();
 
 // Get patient's appointments
@@ -42,7 +67,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: appointments,
+        data: enrichAppointments(appointments),
       });
     } catch (error) {
       console.error("Get patient appointments error:");
@@ -258,7 +283,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: appointments,
+        data: enrichAppointments(appointments),
       });
     } catch (error) {
       console.error("Get hospital appointments error:");
@@ -304,7 +329,7 @@ router.get(
 
       return res.status(200).json({
         success: true,
-        data: appointment,
+        data: enrichAppointment(appointment),
       });
     } catch (error) {
       console.error("Get single appointment error:");
@@ -334,6 +359,10 @@ router.patch(
             user_id: req.user.user_id,
           },
         },
+        include: {
+          doctor: { select: { name: true } },
+          hospital: { select: { name: true } },
+        },
       });
 
       if (!appointment) {
@@ -354,6 +383,7 @@ router.patch(
       }
 
       const result = await prisma.$transaction(async (tx) => {
+        // 1. Cancel the appointment
         const cancelledAppointment = await tx.appointment.update({
           where: {
             appointment_id,
@@ -363,6 +393,7 @@ router.patch(
           },
         });
 
+        // 2. Release the time slot so it can be rebooked
         await tx.timeSlot.update({
           where: {
             slot_id: appointment.slot_id,
@@ -372,13 +403,35 @@ router.patch(
           },
         });
 
+        // 3. Cancel any active queue entry for this appointment
+        await tx.queue.updateMany({
+          where: {
+            appointment_id,
+            queue_status: { in: ["WAITING", "CALLED", "IN_PROGRESS"] },
+          },
+          data: {
+            queue_status: "SKIPPED",
+          },
+        });
+
+        // 4. Notify the patient about the cancellation
+        await tx.notification.create({
+          data: {
+            user_id: req.user.user_id,
+            type: "CANCELLATION",
+            title: "Appointment Cancelled",
+            message: `Your appointment with ${appointment.doctor.name} at ${appointment.hospital.name} on ${appointment.appointment_date.toISOString().split("T")[0]} at ${appointment.appointment_time} has been cancelled.`,
+            related_appointment_id: appointment_id,
+          },
+        });
+
         return cancelledAppointment;
       });
 
       return res.status(200).json({
         success: true,
         message: "Appointment cancelled successfully",
-        data: result,
+        data: enrichAppointment(result),
       });
     } catch (error) {
       console.error("Cancel appointment error:");
@@ -552,7 +605,7 @@ router.patch(
       return res.status(200).json({
         success: true,
         message: "Appointment status updated successfully",
-        data: updatedAppointment,
+        data: enrichAppointment(updatedAppointment),
         queue,
       });
     } catch (error) {

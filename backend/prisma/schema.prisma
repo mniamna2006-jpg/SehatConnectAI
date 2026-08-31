@@ -5,6 +5,385 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  user_id            String             @id @default(uuid()) @db.Uuid
+  full_name          String
+  email              String?            @unique
+  phone              String?            @unique
+  password_hash      String
+  role               UserRole
+  profile_picture    String?
+  preferred_language PreferredLanguage  @default(ENGLISH)
+  location           String?
+  is_active          Boolean            @default(true)
+  created_at         DateTime           @default(now())
+  updated_at         DateTime           @updatedAt
+  last_login         DateTime?
+  audit_logs         AuditLog[]
+  chat_conversations ChatConversation[]
+  hospital_admin     HospitalAdmin?
+  hospital_staff     HospitalStaff?
+  notifications      Notification[]
+  patient            Patient?
+
+  @@index([role])
+  @@index([is_active])
+  @@map("users")
+}
+
+model Hospital {
+  hospital_id       String                @id @default(uuid()) @db.Uuid
+  name              String
+  facility_type     FacilityType
+  description       String?
+  logo_url          String?
+  cover_image_url   String?
+  theme             String?
+  phone             String?
+  email             String?
+  address           String
+  city              String
+  latitude          Decimal               @db.Decimal(10, 7)
+  longitude         Decimal               @db.Decimal(10, 7)
+  is_active         Boolean               @default(true)
+  created_at        DateTime              @default(now())
+  updated_at        DateTime              @updatedAt
+  appointments      Appointment[]
+  audit_logs        AuditLog[]
+  departments       Department[]
+  doctors           Doctor[]
+  admins            HospitalAdmin[]
+  staff             HospitalStaff[]
+  working_hours     HospitalWorkingHour[]
+  queues            Queue[]
+  staff_invitations StaffInvitation[]
+  time_slots        TimeSlot[]
+
+  @@index([city])
+  @@index([is_active])
+  @@map("hospitals")
+}
+
+model HospitalAdmin {
+  admin_id    String   @id @default(uuid()) @db.Uuid
+  user_id     String   @unique @db.Uuid
+  hospital_id String   @db.Uuid
+  employee_id String
+  created_at  DateTime @default(now())
+  hospital    Hospital @relation(fields: [hospital_id], references: [hospital_id])
+  user        User     @relation(fields: [user_id], references: [user_id])
+
+  @@index([hospital_id])
+  @@map("hospital_admins")
+}
+
+model HospitalStaff {
+  staff_id      String      @id @default(uuid()) @db.Uuid
+  user_id       String      @unique @db.Uuid
+  hospital_id   String      @db.Uuid
+  employee_id   String
+  department_id String?     @db.Uuid
+  position      String
+  created_at    DateTime    @default(now())
+  is_active     Boolean     @default(true)
+  department    Department? @relation(fields: [department_id], references: [department_id], onDelete: Restrict)
+  hospital      Hospital    @relation(fields: [hospital_id], references: [hospital_id])
+  user          User        @relation(fields: [user_id], references: [user_id])
+
+  @@index([hospital_id])
+  @@index([department_id])
+  @@index([is_active])
+  @@map("hospital_staff")
+}
+
+model Patient {
+  patient_id        String            @id @default(uuid()) @db.Uuid
+  user_id           String            @unique @db.Uuid
+  date_of_birth     DateTime?
+  gender            String?
+  address           String?
+  city              String?
+  emergency_contact String?
+  created_at        DateTime          @default(now())
+  appointments      Appointment[]
+  ai_conversations  AIConversation[]
+  user              User              @relation(fields: [user_id], references: [user_id])
+
+  @@index([city])
+  @@map("patients")
+}
+
+model Department {
+  department_id     String            @id @default(uuid()) @db.Uuid
+  hospital_id       String            @db.Uuid
+  name              String
+  description       String?
+  is_active         Boolean           @default(true)
+  appointments      Appointment[]
+  hospital          Hospital          @relation(fields: [hospital_id], references: [hospital_id])
+  doctors           Doctor[]
+  staff             HospitalStaff[]
+  staff_invitations StaffInvitation[]
+
+  @@unique([hospital_id, name])
+  @@index([hospital_id])
+  @@index([is_active])
+  @@map("departments")
+}
+
+model Doctor {
+  doctor_id        String               @id @default(uuid()) @db.Uuid
+  hospital_id      String               @db.Uuid
+  department_id    String               @db.Uuid
+  name             String
+  specialization   String
+  qualification    String?
+  license_number   String               @unique
+  bio              String?
+  consultation_fee Decimal?             @db.Decimal(10, 2)
+  is_active        Boolean              @default(true)
+  appointments     Appointment[]
+  availability     DoctorAvailability[]
+  schedules        DoctorSchedule[]
+  department       Department           @relation(fields: [department_id], references: [department_id])
+  hospital         Hospital             @relation(fields: [hospital_id], references: [hospital_id])
+  queues           Queue[]
+  time_slots       TimeSlot[]
+
+  @@index([hospital_id])
+  @@index([department_id])
+  @@index([is_active])
+  @@map("doctors")
+}
+
+model HospitalWorkingHour {
+  working_hours_id String    @id @default(uuid()) @db.Uuid
+  hospital_id      String    @db.Uuid
+  day_of_week      DayOfWeek
+  opening_time     String
+  closing_time     String
+  is_open          Boolean   @default(true)
+  hospital         Hospital  @relation(fields: [hospital_id], references: [hospital_id])
+
+  @@unique([hospital_id, day_of_week])
+  @@index([hospital_id])
+  @@map("hospital_working_hours")
+}
+
+model DoctorSchedule {
+  schedule_id          String    @id @default(uuid()) @db.Uuid
+  doctor_id            String    @db.Uuid
+  day_of_week          DayOfWeek
+  start_time           String
+  end_time             String
+  appointment_duration Int
+  is_active            Boolean   @default(true)
+  doctor               Doctor    @relation(fields: [doctor_id], references: [doctor_id])
+
+  @@unique([doctor_id, day_of_week, start_time])
+  @@index([doctor_id])
+  @@map("doctor_schedules")
+}
+
+model DoctorAvailability {
+  availability_id String    @id @default(uuid()) @db.Uuid
+  doctor_id       String    @db.Uuid
+  day_of_week     DayOfWeek
+  start_time      String
+  end_time        String
+  is_available    Boolean   @default(true)
+  doctor          Doctor    @relation(fields: [doctor_id], references: [doctor_id])
+
+  @@index([doctor_id])
+  @@map("doctor_availability")
+}
+
+model TimeSlot {
+  slot_id      String         @id @default(uuid()) @db.Uuid
+  doctor_id    String         @db.Uuid
+  hospital_id  String         @db.Uuid
+  date         DateTime       @db.Date
+  start_time   String
+  end_time     String
+  status       TimeSlotStatus @default(AVAILABLE)
+  appointments Appointment[]
+  doctor       Doctor         @relation(fields: [doctor_id], references: [doctor_id])
+  hospital     Hospital       @relation(fields: [hospital_id], references: [hospital_id])
+
+  @@unique([doctor_id, date, start_time])
+  @@index([hospital_id])
+  @@index([doctor_id, date])
+  @@index([status])
+  @@map("time_slots")
+}
+
+model Appointment {
+  appointment_id    String            @id @default(uuid()) @db.Uuid
+  patient_id        String            @db.Uuid
+  doctor_id         String            @db.Uuid
+  hospital_id       String            @db.Uuid
+  department_id     String            @db.Uuid
+  slot_id           String            @db.Uuid
+  appointment_date  DateTime          @db.Date
+  appointment_time  String
+  status            AppointmentStatus @default(BOOKED)
+  booking_reference String            @unique
+  token_number      Int?
+  reason            String?
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+  department        Department        @relation(fields: [department_id], references: [department_id])
+  doctor            Doctor            @relation(fields: [doctor_id], references: [doctor_id])
+  hospital          Hospital          @relation(fields: [hospital_id], references: [hospital_id])
+  patient           Patient           @relation(fields: [patient_id], references: [patient_id])
+  slot              TimeSlot          @relation(fields: [slot_id], references: [slot_id])
+  notifications     Notification[]
+  queue             Queue?
+
+  @@index([patient_id])
+  @@index([doctor_id])
+  @@index([hospital_id])
+  @@index([department_id])
+  @@index([appointment_date])
+  @@index([status])
+  @@map("appointments")
+}
+
+model Queue {
+  queue_id            String      @id @default(uuid()) @db.Uuid
+  hospital_id         String      @db.Uuid
+  doctor_id           String      @db.Uuid
+  appointment_id      String      @unique @db.Uuid
+  token_number        Int
+  queue_status        QueueStatus @default(WAITING)
+  check_in_time       DateTime?
+  estimated_wait_time Int?
+  called_at           DateTime?
+  completed_at        DateTime?
+  appointment         Appointment @relation(fields: [appointment_id], references: [appointment_id])
+  doctor              Doctor      @relation(fields: [doctor_id], references: [doctor_id])
+  hospital            Hospital    @relation(fields: [hospital_id], references: [hospital_id])
+
+  @@index([hospital_id])
+  @@index([doctor_id])
+  @@index([queue_status])
+  @@index([token_number])
+  @@map("queues")
+}
+
+model Notification {
+  notification_id        String           @id @default(uuid()) @db.Uuid
+  user_id                String           @db.Uuid
+  type                   NotificationType
+  title                  String
+  message                String
+  related_appointment_id String?          @db.Uuid
+  is_read                Boolean          @default(false)
+  created_at             DateTime         @default(now())
+  appointment            Appointment?     @relation(fields: [related_appointment_id], references: [appointment_id], onDelete: Restrict)
+  user                   User             @relation(fields: [user_id], references: [user_id])
+
+  @@index([user_id])
+  @@index([is_read])
+  @@index([created_at])
+  @@map("notifications")
+}
+
+model StaffInvitation {
+  invitation_id    String           @id @default(uuid()) @db.Uuid
+  hospital_id      String           @db.Uuid
+  email            String
+  employee_id      String
+  position         String
+  department_id    String?          @db.Uuid
+  role             UserRole         @default(STAFF)
+  invitation_token String           @unique
+  status           InvitationStatus @default(PENDING)
+  expires_at       DateTime
+  created_at       DateTime         @default(now())
+  department       Department?      @relation(fields: [department_id], references: [department_id], onDelete: Restrict)
+  hospital         Hospital         @relation(fields: [hospital_id], references: [hospital_id])
+
+  @@index([hospital_id])
+  @@index([email])
+  @@index([status])
+  @@map("staff_invitations")
+}
+
+model ChatConversation {
+  conversation_id String        @id @default(uuid()) @db.Uuid
+  user_id         String        @db.Uuid
+  created_at      DateTime      @default(now())
+  user            User          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  messages        ChatMessage[]
+
+  @@index([user_id])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  message_id      String             @id @default(uuid()) @db.Uuid
+  conversation_id String             @db.Uuid
+  sender          ChatSender
+  message         String
+  language        PreferredLanguage?
+  created_at      DateTime           @default(now())
+  conversation    ChatConversation   @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
+
+  @@index([conversation_id])
+  @@index([created_at])
+  @@map("chat_messages")
+}
+
+model AIConversation {
+  conversation_id String       @id @default(uuid()) @db.Uuid
+  patient_id      String       @db.Uuid
+  title           String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  patient         Patient      @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade)
+  messages        AIMessage[]
+
+  @@index([patient_id])
+  @@index([updated_at])
+  @@map("ai_conversations")
+}
+
+model AIMessage {
+  message_id               String         @id @default(uuid()) @db.Uuid
+  conversation_id          String         @db.Uuid
+  sender                   ChatSender
+  message                  String
+  language                 PreferredLanguage?
+  recommended_department   String?
+  is_emergency             Boolean        @default(false)
+  created_at               DateTime       @default(now())
+  conversation             AIConversation @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
+
+  @@index([conversation_id])
+  @@index([created_at])
+  @@map("ai_messages")
+}
+
+model AuditLog {
+  log_id      String    @id @default(uuid()) @db.Uuid
+  user_id     String?   @db.Uuid
+  hospital_id String?   @db.Uuid
+  action      String
+  entity_type String
+  entity_id   String?   @db.Uuid
+  timestamp   DateTime  @default(now())
+  hospital    Hospital? @relation(fields: [hospital_id], references: [hospital_id])
+  user        User?     @relation(fields: [user_id], references: [user_id])
+
+  @@index([user_id])
+  @@index([hospital_id])
+  @@index([entity_type, entity_id])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
 enum UserRole {
   PATIENT
   ADMIN
@@ -63,6 +442,7 @@ enum NotificationType {
   APPOINTMENT_REMINDER
   QUEUE_UPDATE
   DOCTOR_AVAILABILITY
+  CANCELLATION
 }
 
 enum InvitationStatus {
@@ -75,366 +455,4 @@ enum InvitationStatus {
 enum ChatSender {
   USER
   AI
-}
-
-model User {
-  user_id            String            @id @default(uuid()) @db.Uuid
-  full_name          String
-  email              String?           @unique
-  phone              String?           @unique
-  password_hash      String
-  role               UserRole
-  profile_picture    String?
-  preferred_language PreferredLanguage @default(ENGLISH)
-  location           String?
-  is_active          Boolean           @default(true)
-  created_at         DateTime          @default(now())
-  updated_at         DateTime          @updatedAt
-  last_login         DateTime?
-
-  patient            Patient?
-  hospital_admin     HospitalAdmin?
-  hospital_staff     HospitalStaff?
-  notifications      Notification[]
-  chat_conversations ChatConversation[]
-  audit_logs         AuditLog[]
-
-  @@index([role])
-  @@index([is_active])
-  @@map("users")
-}
-
-model Hospital {
-  hospital_id     String       @id @default(uuid()) @db.Uuid
-  name            String
-  facility_type   FacilityType
-  description     String?
-  logo_url        String?
-  cover_image_url String?
-  theme           String?
-  phone           String?
-  email           String?
-  address         String
-  city            String
-  latitude        Decimal      @db.Decimal(10, 7)
-  longitude       Decimal      @db.Decimal(10, 7)
-  is_active       Boolean      @default(true)
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-
-  admins            HospitalAdmin[]
-  staff             HospitalStaff[]
-  doctors           Doctor[]
-  departments       Department[]
-  working_hours     HospitalWorkingHour[]
-  time_slots        TimeSlot[]
-  appointments      Appointment[]
-  queues            Queue[]
-  staff_invitations StaffInvitation[]
-  audit_logs        AuditLog[]
-
-  @@index([city])
-  @@index([is_active])
-  @@map("hospitals")
-}
-
-model HospitalAdmin {
-  admin_id    String   @id @default(uuid()) @db.Uuid
-  user_id     String   @unique @db.Uuid
-  hospital_id String   @db.Uuid
-  employee_id String
-  created_at  DateTime @default(now())
-
-  user     User     @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  hospital Hospital @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-
-  @@index([hospital_id])
-  @@map("hospital_admins")
-}
-
-model HospitalStaff {
-  staff_id      String   @id @default(uuid()) @db.Uuid
-  user_id       String   @unique @db.Uuid
-  hospital_id   String   @db.Uuid
-  employee_id   String
-  department_id String?  @db.Uuid
-  position      String
-  created_at    DateTime @default(now())
-  is_active     Boolean  @default(true)
-
-  user       User        @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  hospital   Hospital    @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-  department Department? @relation(fields: [department_id], references: [department_id], onDelete: Restrict)
-
-  @@index([hospital_id])
-  @@index([department_id])
-  @@index([is_active])
-  @@map("hospital_staff")
-}
-
-model Patient {
-  patient_id        String    @id @default(uuid()) @db.Uuid
-  user_id           String    @unique @db.Uuid
-  date_of_birth     DateTime?
-  gender            String?
-  address           String?
-  city              String?
-  emergency_contact String?
-  created_at        DateTime  @default(now())
-
-  user         User          @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  appointments Appointment[]
-
-  @@index([city])
-  @@map("patients")
-}
-
-model Department {
-  department_id String  @id @default(uuid()) @db.Uuid
-  hospital_id   String  @db.Uuid
-  name          String
-  description   String?
-  is_active     Boolean @default(true)
-
-  hospital     Hospital        @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-  doctors      Doctor[]
-  staff        HospitalStaff[]
-  appointments Appointment[]
-
-  @@unique([hospital_id, name])
-  @@index([hospital_id])
-  @@index([is_active])
-  @@map("departments")
-}
-
-model Doctor {
-  doctor_id        String   @id @default(uuid()) @db.Uuid
-  hospital_id      String   @db.Uuid
-  department_id    String   @db.Uuid
-  name             String
-  specialization   String
-  qualification    String?
-  license_number   String   @unique
-  bio              String?
-  consultation_fee Decimal? @db.Decimal(10, 2)
-  is_active        Boolean  @default(true)
-
-  hospital     Hospital             @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-  department   Department           @relation(fields: [department_id], references: [department_id], onDelete: Restrict)
-  availability DoctorAvailability[]
-  schedules    DoctorSchedule[]
-  time_slots   TimeSlot[]
-  appointments Appointment[]
-  queues       Queue[]
-
-  @@index([hospital_id])
-  @@index([department_id])
-  @@index([is_active])
-  @@map("doctors")
-}
-
-model HospitalWorkingHour {
-  working_hours_id String    @id @default(uuid()) @db.Uuid
-  hospital_id      String    @db.Uuid
-  day_of_week      DayOfWeek
-  opening_time     String
-  closing_time     String
-  is_open          Boolean   @default(true)
-
-  hospital Hospital @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-
-  @@unique([hospital_id, day_of_week])
-  @@index([hospital_id])
-  @@map("hospital_working_hours")
-}
-
-model DoctorSchedule {
-  schedule_id          String    @id @default(uuid()) @db.Uuid
-  doctor_id            String    @db.Uuid
-  day_of_week          DayOfWeek
-  start_time           String
-  end_time             String
-  appointment_duration Int
-  is_active            Boolean   @default(true)
-
-  doctor Doctor @relation(fields: [doctor_id], references: [doctor_id], onDelete: Restrict)
-
-  @@unique([doctor_id, day_of_week, start_time])
-  @@index([doctor_id])
-  @@map("doctor_schedules")
-}
-
-model DoctorAvailability {
-  availability_id String    @id @default(uuid()) @db.Uuid
-  doctor_id       String    @db.Uuid
-  day_of_week     DayOfWeek
-  start_time      String
-  end_time        String
-  is_available    Boolean   @default(true)
-
-  doctor Doctor @relation(fields: [doctor_id], references: [doctor_id], onDelete: Restrict)
-
-  @@index([doctor_id])
-  @@map("doctor_availability")
-}
-
-model TimeSlot {
-  slot_id     String         @id @default(uuid()) @db.Uuid
-  doctor_id   String         @db.Uuid
-  hospital_id String         @db.Uuid
-  date        DateTime       @db.Date
-  start_time  String
-  end_time    String
-  status      TimeSlotStatus @default(AVAILABLE)
-
-  doctor      Doctor       @relation(fields: [doctor_id], references: [doctor_id], onDelete: Restrict)
-  hospital    Hospital     @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-  appointments Appointment[]
-
-  @@unique([doctor_id, date, start_time])
-  @@index([hospital_id])
-  @@index([doctor_id, date])
-  @@index([status])
-  @@map("time_slots")
-}
-
-model Appointment {
-  appointment_id    String            @id @default(uuid()) @db.Uuid
-  patient_id        String            @db.Uuid
-  doctor_id         String            @db.Uuid
-  hospital_id       String            @db.Uuid
-  department_id     String            @db.Uuid
-  slot_id           String            @db.Uuid
-  appointment_date  DateTime          @db.Date
-  appointment_time  String
-  status            AppointmentStatus @default(BOOKED)
-  booking_reference String            @unique
-  token_number      Int?
-  reason            String?
-  created_at        DateTime          @default(now())
-  updated_at        DateTime          @updatedAt
-
-  patient    Patient    @relation(fields: [patient_id], references: [patient_id], onDelete: Restrict)
-  doctor     Doctor     @relation(fields: [doctor_id], references: [doctor_id], onDelete: Restrict)
-  hospital   Hospital   @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-  department Department @relation(fields: [department_id], references: [department_id], onDelete: Restrict)
-  slot       TimeSlot   @relation(fields: [slot_id], references: [slot_id], onDelete: Restrict)
-  queue      Queue?
-
-  notifications Notification[]
-
-  @@index([patient_id])
-  @@index([doctor_id])
-  @@index([hospital_id])
-  @@index([department_id])
-  @@index([appointment_date])
-  @@index([status])
-  @@map("appointments")
-}
-
-model Queue {
-  queue_id            String      @id @default(uuid()) @db.Uuid
-  hospital_id         String      @db.Uuid
-  doctor_id           String      @db.Uuid
-  appointment_id      String      @unique @db.Uuid
-  token_number        Int
-  queue_status        QueueStatus @default(WAITING)
-  check_in_time       DateTime?
-  estimated_wait_time Int?
-  called_at           DateTime?
-  completed_at        DateTime?
-
-  hospital    Hospital    @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-  doctor      Doctor      @relation(fields: [doctor_id], references: [doctor_id], onDelete: Restrict)
-  appointment Appointment @relation(fields: [appointment_id], references: [appointment_id], onDelete: Restrict)
-
-  @@index([hospital_id])
-  @@index([doctor_id])
-  @@index([queue_status])
-  @@index([token_number])
-  @@map("queues")
-}
-
-model Notification {
-  notification_id        String           @id @default(uuid()) @db.Uuid
-  user_id                String           @db.Uuid
-  type                   NotificationType
-  title                  String
-  message                String
-  related_appointment_id String?          @db.Uuid
-  is_read                Boolean          @default(false)
-  created_at             DateTime         @default(now())
-
-  user        User         @relation(fields: [user_id], references: [user_id], onDelete: Restrict)
-  appointment Appointment? @relation(fields: [related_appointment_id], references: [appointment_id], onDelete: Restrict)
-
-  @@index([user_id])
-  @@index([is_read])
-  @@index([created_at])
-  @@map("notifications")
-}
-
-model StaffInvitation {
-  invitation_id    String           @id @default(uuid()) @db.Uuid
-  hospital_id      String           @db.Uuid
-  email            String
-  employee_id      String
-  role             UserRole         @default(STAFF)
-  invitation_token String           @unique
-  status           InvitationStatus @default(PENDING)
-  expires_at       DateTime
-  created_at       DateTime         @default(now())
-
-  hospital Hospital @relation(fields: [hospital_id], references: [hospital_id], onDelete: Restrict)
-
-  @@index([hospital_id])
-  @@index([email])
-  @@index([status])
-  @@map("staff_invitations")
-}
-
-model ChatConversation {
-  conversation_id String   @id @default(uuid()) @db.Uuid
-  user_id         String   @db.Uuid
-  created_at      DateTime @default(now())
-
-  user     User          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  messages ChatMessage[]
-
-  @@index([user_id])
-  @@map("chat_conversations")
-}
-
-model ChatMessage {
-  message_id      String             @id @default(uuid()) @db.Uuid
-  conversation_id String             @db.Uuid
-  sender          ChatSender
-  message         String
-  language        PreferredLanguage?
-  created_at      DateTime           @default(now())
-
-  conversation ChatConversation @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
-
-  @@index([conversation_id])
-  @@index([created_at])
-  @@map("chat_messages")
-}
-
-model AuditLog {
-  log_id      String   @id @default(uuid()) @db.Uuid
-  user_id     String?  @db.Uuid
-  hospital_id String?  @db.Uuid
-  action      String
-  entity_type String
-  entity_id   String?  @db.Uuid
-  timestamp   DateTime @default(now())
-
-  user     User?     @relation(fields: [user_id], references: [user_id], onDelete: SetNull)
-  hospital Hospital? @relation(fields: [hospital_id], references: [hospital_id], onDelete: SetNull)
-
-  @@index([user_id])
-  @@index([hospital_id])
-  @@index([entity_type, entity_id])
-  @@index([timestamp])
-  @@map("audit_logs")
 }
