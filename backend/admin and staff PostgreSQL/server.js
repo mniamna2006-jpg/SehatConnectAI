@@ -57,11 +57,13 @@ app.get('/api/state', async (req, res) => {
     const departmentsRes = await client.query('SELECT id, name, description, head FROM departments');
     const doctorsRes = await client.query(
       `SELECT id, name, specialization, department_id AS "departmentId", phone,
-              photo_initials AS "photoInitials", availability, schedule
+              photo_initials AS "photoInitials", availability, schedule, slots
        FROM doctors`
     );
     const staffRes = await client.query(
-      `SELECT id, name, role, department_id AS "departmentId", shift, phone FROM staff`
+      `SELECT id, employee_id AS "employeeId", name, role, department_id AS "departmentId",
+              shift, phone, email, active
+       FROM staff`
     );
     const patientsRes = await client.query('SELECT id, name, phone, age FROM patients');
     const appointmentsRes = await client.query(
@@ -70,7 +72,9 @@ app.get('/api/state', async (req, res) => {
        FROM appointments`
     );
     const queueRes = await client.query(
-      `SELECT id, queue_num AS num, patient_name AS "patientName", doctor_id AS "doctorId", status, added_at AS "addedAt" FROM queue`
+      `SELECT id, queue_num AS num, patient_name AS "patientName", doctor_id AS "doctorId", status,
+              added_at AS "addedAt", appt_time AS time
+       FROM queue`
     );
     const notificationsRes = await client.query(
       `SELECT id, text, created_at AS time FROM notifications ORDER BY created_at DESC LIMIT 50`
@@ -82,7 +86,7 @@ app.get('/api/state', async (req, res) => {
     res.json({
       profile: profileRow ? {
         name: profileRow.name, address: profileRow.address, phone: profileRow.phone,
-        email: profileRow.email, hours: profileRow.hours
+        email: profileRow.email, openingTime: profileRow.opening_time, closingTime: profileRow.closing_time
       } : {},
       branding: brandingRow ? {
         primary: brandingRow.primary_color, secondary: brandingRow.secondary_color, logoText: brandingRow.logo_text
@@ -114,10 +118,10 @@ app.put('/api/state', async (req, res) => {
 
     if (s.profile){
       await client.query(
-        `INSERT INTO hospital_profile (id, name, address, phone, email, hours)
-         VALUES ('profile', $1, $2, $3, $4, $5)
-         ON CONFLICT (id) DO UPDATE SET name=$1, address=$2, phone=$3, email=$4, hours=$5`,
-        [s.profile.name, s.profile.address, s.profile.phone, s.profile.email, s.profile.hours]
+        `INSERT INTO hospital_profile (id, name, address, phone, email, opening_time, closing_time)
+         VALUES ('profile', $1, $2, $3, $4, $5, $6)
+         ON CONFLICT (id) DO UPDATE SET name=$1, address=$2, phone=$3, email=$4, opening_time=$5, closing_time=$6`,
+        [s.profile.name, s.profile.address, s.profile.phone, s.profile.email, s.profile.openingTime || null, s.profile.closingTime || null]
       );
     }
     if (s.branding){
@@ -146,16 +150,18 @@ app.put('/api/state', async (req, res) => {
     }
     for (const d of (s.doctors || [])){
       await client.query(
-        `INSERT INTO doctors (id, name, specialization, department_id, phone, photo_initials, availability, schedule)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        `INSERT INTO doctors (id, name, specialization, department_id, phone, photo_initials, availability, schedule, slots)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         [d.id || newId('doc'), d.name, d.specialization || '', d.departmentId || null, d.phone || '',
-         d.photoInitials || '', d.availability || 'available', JSON.stringify(d.schedule || {})]
+         d.photoInitials || '', d.availability || 'available', JSON.stringify(d.schedule || {}), JSON.stringify(d.slots || [])]
       );
     }
     for (const st of (s.staff || [])){
       await client.query(
-        'INSERT INTO staff (id, name, role, department_id, shift, phone) VALUES ($1, $2, $3, $4, $5, $6)',
-        [st.id || newId('stf'), st.name, st.role || '', st.departmentId || null, st.shift || '', st.phone || '']
+        `INSERT INTO staff (id, employee_id, name, role, department_id, shift, phone, email, active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [st.id || newId('stf'), st.employeeId || '', st.name, st.role || '', st.departmentId || null,
+         st.shift || '', st.phone || '', st.email || '', st.active !== false]
       );
     }
     for (const p of (s.patients || [])){
@@ -173,8 +179,8 @@ app.put('/api/state', async (req, res) => {
     }
     for (const q of (s.queue || [])){
       await client.query(
-        'INSERT INTO queue (id, queue_num, patient_name, doctor_id, status, added_at) VALUES ($1, $2, $3, $4, $5, $6)',
-        [q.id || newId('q'), q.num || 0, q.patientName, q.doctorId || null, q.status || 'waiting', q.addedAt || Date.now()]
+        'INSERT INTO queue (id, queue_num, patient_name, doctor_id, status, added_at, appt_time) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+        [q.id || newId('q'), q.num || 0, q.patientName, q.doctorId || null, q.status || 'waiting', q.addedAt || Date.now(), q.time || null]
       );
     }
     for (const n of (s.notifications || []).slice(0, 50)){
@@ -197,5 +203,5 @@ app.put('/api/state', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Hospital Module (PostgreSQL) running at http://localhost:${PORT}`);
-  console.log(`Open http://localhost:${PORT}/login.html to sign in.`);
+  console.log(`Open http://localhost:${PORT}/index.html to sign in.`);
 });

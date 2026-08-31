@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -217,7 +217,6 @@ input:checked + .slider:before{transform:translateX(16px);}
       <button class="nav-item" data-view="admin-doctors"><span class="dot"></span>Doctors</button>
       <button class="nav-item" data-view="admin-schedules"><span class="dot"></span>Schedules</button>
       <button class="nav-item" data-view="admin-availability"><span class="dot"></span>Availability</button>
-      <button class="nav-item" data-view="admin-appointments"><span class="dot"></span>Appointment management</button>
       <button class="nav-item" data-view="admin-staff"><span class="dot"></span>Staff management</button>
       <button class="nav-item" data-view="admin-analytics"><span class="dot"></span>Analytics</button>
     </div>
@@ -279,8 +278,8 @@ function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9
 
 function defaultData(){
   return {
-    profile: { name:'SehatConnectAI Hospital', address:'Plot 14, Shahrah-e-Faisal, Karachi', phone:'+92 21 111 222 333', hours:'8:00 AM - 10:00 PM', email:'info@stmercy.pk' },
-    branding: { primary:'#0E6F5C', secondary:'#16324F', logoText:'SM' },
+    profile: { name:'SehatConnectAI Hospital', address:'Plot 14, Shahrah-e-Faisal, Karachi', phone:'+92 21 111 222 333', openingTime:'08:00', closingTime:'22:00', email:'info@stmercy.pk' },
+    branding: { primary:'#0E6F5C', secondary:'#16324F', logoText:'SC' },
     departments: [
       { id: uid('dep'), name:'Cardiology', description:'Heart & vascular care', head:'Dr. Ayesha Khan' },
       { id: uid('dep'), name:'Orthopedics', description:'Bone & joint care', head:'Dr. Bilal Ahmed' },
@@ -312,7 +311,7 @@ function getSessionFromUrl(){
 }
 
 function logout(){
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 function applyRoleAccess(){
@@ -361,15 +360,15 @@ function seedIfEmpty(){
   if(state.doctors.length === 0){
     const d1 = state.departments[0].id, d2 = state.departments[1].id, d3 = state.departments[2].id;
     state.doctors.push(
-      { id: uid('doc'), name:'Dr. Ayesha Khan', specialization:'Cardiologist', departmentId:d1, phone:'0300-1112233', photoInitials:'AK', availability:'available' },
-      { id: uid('doc'), name:'Dr. Bilal Ahmed', specialization:'Orthopedic Surgeon', departmentId:d2, phone:'0300-2223344', photoInitials:'BA', availability:'busy' },
-      { id: uid('doc'), name:'Dr. Sana Rizvi', specialization:'Pediatrician', departmentId:d3, phone:'0300-3334455', photoInitials:'SR', availability:'leave' }
+      { id: uid('doc'), name:'Dr. Ayesha Khan', specialization:'Cardiologist', departmentId:d1, phone:'0300-1112233', photoInitials:'AK', availability:'available', schedule:{}, slots:[] },
+      { id: uid('doc'), name:'Dr. Bilal Ahmed', specialization:'Orthopedic Surgeon', departmentId:d2, phone:'0300-2223344', photoInitials:'BA', availability:'busy', schedule:{}, slots:[] },
+      { id: uid('doc'), name:'Dr. Sana Rizvi', specialization:'Pediatrician', departmentId:d3, phone:'0300-3334455', photoInitials:'SR', availability:'leave', schedule:{}, slots:[] }
     );
   }
   if(state.staff.length === 0){
     state.staff.push(
-      { id: uid('stf'), name:'Mubashir Javaid', role:'Front Desk Coordinator', departmentId:state.departments[0].id, shift:'Morning (8am-4pm)', phone:'0301-9998877' },
-      { id: uid('stf'), name:'Hina Malik', role:'Nurse', departmentId:state.departments[1].id, shift:'Evening (4pm-12am)', phone:'0301-8887766' }
+      { id: uid('stf'), employeeId:'EMP-1001', name:'Mubashir Javaid', role:'Front Desk Coordinator', departmentId:state.departments[0].id, shift:'Morning (8am-4pm)', phone:'0301-9998877', email:'mubashir@sehatconnect.pk', active:true },
+      { id: uid('stf'), employeeId:'EMP-1002', name:'Hina Malik', role:'Nurse', departmentId:state.departments[1].id, shift:'Evening (4pm-12am)', phone:'0301-8887766', email:'hina@sehatconnect.pk', active:true }
     );
   }
   if(state.patients.length === 0){
@@ -415,6 +414,20 @@ function docName(id){ const d = state.doctors.find(x=>x.id===id); return d ? d.n
 function depName(id){ const d = state.departments.find(x=>x.id===id); return d ? d.name : '—'; }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Formats a 24h "HH:MM" value (from <input type="time">) as 12-hour "hh:mm AM/PM".
+// Strings that already look like 12-hour time (contain AM/PM) or that aren't
+// parseable are returned unchanged, so this is safe to run on any stored time value.
+function to12h(val){
+  if(!val) return '';
+  if(/am|pm/i.test(val)) return val;
+  const m = /^(\d{1,2}):(\d{2})/.exec(val);
+  if(!m) return val;
+  let h = parseInt(m[1],10), min = m[2];
+  if(isNaN(h)) return val;
+  const period = h>=12 ? 'PM' : 'AM';
+  let h12 = h % 12; if(h12===0) h12 = 12;
+  return `${String(h12).padStart(2,'0')}:${min} ${period}`;
+}
 
 async function persistAndRender(msg){
   await saveState();
@@ -442,12 +455,11 @@ const VIEW_META = {
   'admin-departments':{title:'Departments', sub:'Manage hospital departments'},
   'admin-doctors':{title:'Doctors', sub:'Manage doctor profiles'},
   'admin-schedules':{title:'Schedules', sub:'Set weekly doctor schedules'},
-  'admin-availability':{title:'Availability', sub:'Manage doctor availability status'},
-  'admin-appointments':{title:'Appointment management', sub:'Review and manage all appointments'},
+  'admin-availability':{title:'Availability', sub:'Manage doctor availability status and time slots'},
   'admin-staff':{title:'Staff management', sub:'Manage staff members and roles'},
   'admin-analytics':{title:'Analytics', sub:'Hospital performance at a glance'},
   'staff-dashboard':{title:'Staff dashboard', sub:"Today's snapshot"},
-  'staff-today':{title:"Today's appointments", sub:'All appointments scheduled for today'},
+  'staff-today':{title:"Today's appointments", sub:'Confirm, complete, or cancel appointments scheduled for today'},
   'staff-checkin':{title:'Patient check-in', sub:'Check in patients and add walk-ins'},
   'staff-queue':{title:'Queue management', sub:'Live patient queue'},
   'staff-availability':{title:'Doctor availability', sub:'Read-only view of doctor status'},
@@ -482,7 +494,6 @@ function render(){
     'admin-doctors': renderAdminDoctors,
     'admin-schedules': renderAdminSchedules,
     'admin-availability': renderAdminAvailability,
-    'admin-appointments': renderAdminAppointments,
     'admin-staff': renderAdminStaff,
     'admin-analytics': renderAdminAnalytics,
     'staff-dashboard': renderStaffDashboard,
@@ -566,22 +577,37 @@ function weekBarChart(){
 /* ================= ADMIN: PROFILE ================= */
 function renderAdminProfile(){
   const p = state.profile;
+  const openPreview = to12h(p.openingTime), closePreview = to12h(p.closingTime);
   return `
   <div class="card" style="max-width:520px;">
     <div class="field"><label>Hospital name</label><input id="p_name" value="${escapeHtml(p.name)}"></div>
     <div class="field"><label>Address</label><input id="p_address" value="${escapeHtml(p.address)}"></div>
     <div class="field"><label>Phone</label><input id="p_phone" value="${escapeHtml(p.phone)}"></div>
     <div class="field"><label>Email</label><input id="p_email" value="${escapeHtml(p.email)}"></div>
-    <div class="field"><label>Working hours</label><input id="p_hours" value="${escapeHtml(p.hours)}"></div>
+    <div class="field">
+      <label>Opening time</label>
+      <input id="p_open" type="time" value="${escapeHtml(p.openingTime||'')}" oninput="updateHoursPreview()">
+    </div>
+    <div class="field">
+      <label>Closing time</label>
+      <input id="p_close" type="time" value="${escapeHtml(p.closingTime||'')}" oninput="updateHoursPreview()">
+    </div>
+    <div class="hint" style="margin-top:-6px;">Displayed as: <span id="hoursPreview">${openPreview && closePreview ? `${openPreview} – ${closePreview}` : '—'}</span></div>
     <button class="btn btn-primary" onclick="saveProfile()">Save changes</button>
   </div>`;
+}
+function updateHoursPreview(){
+  const open = to12h(document.getElementById('p_open').value);
+  const close = to12h(document.getElementById('p_close').value);
+  document.getElementById('hoursPreview').textContent = (open && close) ? `${open} – ${close}` : '—';
 }
 async function saveProfile(){
   state.profile.name = document.getElementById('p_name').value.trim() || state.profile.name;
   state.profile.address = document.getElementById('p_address').value.trim();
   state.profile.phone = document.getElementById('p_phone').value.trim();
   state.profile.email = document.getElementById('p_email').value.trim();
-  state.profile.hours = document.getElementById('p_hours').value.trim();
+  state.profile.openingTime = document.getElementById('p_open').value;
+  state.profile.closingTime = document.getElementById('p_close').value;
   await persistAndRender('Hospital profile saved');
 }
 
@@ -720,17 +746,20 @@ async function deleteDoctor(id){
   await persistAndRender('Doctor removed');
 }
 
-/* ================= ADMIN: SCHEDULES ================= */
+/* ================= ADMIN: SCHEDULES (12-hour display, structured start/end) ================= */
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 function renderAdminSchedules(){
   if(state.doctors.length===0) return `<div class="empty">Add a doctor first to set schedules.</div>`;
   return state.doctors.map(d=>{
-    if(!d.schedule) d.schedule = {};
+    if(!d.schedule || typeof d.schedule !== 'object') d.schedule = {};
     const cells = DAYS.map(day=>{
-      const val = d.schedule[day] || '';
+      const slot = d.schedule[day] && typeof d.schedule[day]==='object' ? d.schedule[day] : {start:'',end:''};
+      const preview = (slot.start && slot.end) ? `${to12h(slot.start)} – ${to12h(slot.end)}` : 'Off';
       return `<div>
         <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">${day}</div>
-        <input data-doc="${d.id}" data-day="${day}" class="sched-input" placeholder="Off" value="${escapeHtml(val)}" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--bg);font-size:12px;">
+        <input type="time" data-doc="${d.id}" data-day="${day}" data-field="start" class="sched-input" value="${escapeHtml(slot.start||'')}" style="width:100%;padding:6px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);font-size:11.5px;margin-bottom:4px;">
+        <input type="time" data-doc="${d.id}" data-day="${day}" data-field="end" class="sched-input" value="${escapeHtml(slot.end||'')}" style="width:100%;padding:6px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);font-size:11.5px;">
+        <div style="font-size:10.5px;color:var(--text-muted);margin-top:3px;">${preview}</div>
       </div>`;
     }).join('');
     return `
@@ -743,12 +772,15 @@ function renderAdminSchedules(){
 async function saveSchedules(){
   document.querySelectorAll('.sched-input').forEach(inp=>{
     const doc = state.doctors.find(x=>x.id===inp.dataset.doc);
-    if(doc){ if(!doc.schedule) doc.schedule={}; doc.schedule[inp.dataset.day] = inp.value.trim(); }
+    if(!doc) return;
+    if(!doc.schedule || typeof doc.schedule !== 'object') doc.schedule = {};
+    if(!doc.schedule[inp.dataset.day] || typeof doc.schedule[inp.dataset.day] !== 'object') doc.schedule[inp.dataset.day] = {start:'',end:''};
+    doc.schedule[inp.dataset.day][inp.dataset.field] = inp.value;
   });
-  await persistAndRender('Schedules saved');
+  await persistAndRender('Schedules saved (times shown in 12-hour format)');
 }
 
-/* ================= ADMIN: AVAILABILITY ================= */
+/* ================= ADMIN: AVAILABILITY + TIME SLOTS (12-hour display) ================= */
 function renderAdminAvailability(){
   if(state.doctors.length===0) return `<div class="empty">No doctors added yet.</div>`;
   const rows = state.doctors.map(d=>`
@@ -763,15 +795,67 @@ function renderAdminAvailability(){
         <option value="leave" ${d.availability==='leave'?'selected':''}>On leave</option>
       </select>
     </div>`).join('');
-  return `<div class="card">${rows}</div>`;
+
+  const slotSections = state.doctors.map(d=>{
+    if(!Array.isArray(d.slots)) d.slots = [];
+    const slotRows = d.slots.length===0 ? `<div class="empty" style="padding:16px;">No time slots yet.</div>` : d.slots.map(s=>`
+      <div class="toggle-row">
+        <div class="mono" style="font-size:13px;">${to12h(s.start)} – ${to12h(s.end)}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="badge ${s.status==='booked'?'busy':'available'}">${s.status==='booked'?'Booked':'Available'}</span>
+          <button class="btn btn-sm" onclick="toggleSlotStatus('${d.id}','${s.id}')">${s.status==='booked'?'Mark available':'Mark booked'}</button>
+          <button class="btn btn-icon btn-sm btn-danger" onclick="deleteTimeSlot('${d.id}','${s.id}')" title="Delete">✕</button>
+        </div>
+      </div>`).join('');
+    return `
+    <div class="card" style="margin-bottom:14px;">
+      <div style="font-weight:500;margin-bottom:10px;">${escapeHtml(d.name)} <span style="color:var(--text-muted);font-weight:400;font-size:12.5px;">— time slots</span></div>
+      ${slotRows}
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-top:12px;flex-wrap:wrap;">
+        <div class="field" style="margin-bottom:0;"><label>Start</label><input type="time" id="slot_start_${d.id}"></div>
+        <div class="field" style="margin-bottom:0;"><label>End</label><input type="time" id="slot_end_${d.id}"></div>
+        <button class="btn btn-primary btn-sm" onclick="addTimeSlot('${d.id}')">+ Add slot</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="section-title"><h3>Doctor availability</h3></div>
+  <div class="card">${rows}</div>
+  <div class="section-title"><h3>Time slots</h3></div>
+  <div class="hint">Create and manage bookable time slots per doctor. Staff can monitor which slots are available or booked during check-in.</div>
+  ${slotSections}`;
 }
 async function setAvailability(id, val){
   const d = state.doctors.find(x=>x.id===id);
   d.availability = val;
   await persistAndRender('Availability updated');
 }
+async function addTimeSlot(doctorId){
+  const d = state.doctors.find(x=>x.id===doctorId);
+  if(!d) return;
+  const start = document.getElementById('slot_start_'+doctorId).value;
+  const end = document.getElementById('slot_end_'+doctorId).value;
+  if(!start || !end){ toast('Pick a start and end time.', true); return; }
+  if(!Array.isArray(d.slots)) d.slots = [];
+  d.slots.push({id:uid('slot'), start, end, status:'available'});
+  await persistAndRender('Time slot added');
+}
+async function toggleSlotStatus(doctorId, slotId){
+  const d = state.doctors.find(x=>x.id===doctorId);
+  const s = d && d.slots.find(x=>x.id===slotId);
+  if(!s) return;
+  s.status = s.status==='booked' ? 'available' : 'booked';
+  await persistAndRender('Time slot updated');
+}
+async function deleteTimeSlot(doctorId, slotId){
+  const d = state.doctors.find(x=>x.id===doctorId);
+  if(!d) return;
+  d.slots = d.slots.filter(x=>x.id!==slotId);
+  await persistAndRender('Time slot removed');
+}
 
-/* ================= ADMIN: APPOINTMENTS ================= */
+/* ================= APPOINTMENTS TABLE (shared — times shown in 12-hour format) ================= */
 function appointmentsTable(list, showActions){
   if(list.length===0) return `<div class="empty">No appointments found.<i>Appointments will appear here once booked.</i></div>`;
   const rows = list.map(a=>`
@@ -779,7 +863,7 @@ function appointmentsTable(list, showActions){
       <td>${escapeHtml(a.patientName)}</td>
       <td>${escapeHtml(docName(a.doctorId))}</td>
       <td>${escapeHtml(depName(a.departmentId))}</td>
-      <td class="mono">${fmtDate(a.date)}, ${escapeHtml(a.time)}</td>
+      <td class="mono">${fmtDate(a.date)}, ${escapeHtml(to12h(a.time))}</td>
       <td><span class="badge ${a.status}">${a.status}</span></td>
       ${showActions ? `<td class="actions-cell">
         <button class="btn btn-sm" onclick="setApptStatus('${a.id}','confirmed')">Confirm</button>
@@ -791,95 +875,71 @@ function appointmentsTable(list, showActions){
     <thead><tr><th>Patient</th><th>Doctor</th><th>Department</th><th>Date / time</th><th>Status</th>${showActions?'<th></th>':''}</tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 }
-function renderAdminAppointments(){
-  return `
-  <div class="toolbar">
-    <input type="search" placeholder="Search patient name..." oninput="filterAppointments(this)">
-    <select id="aptStatusFilter" onchange="renderAdminAppointmentsFiltered()" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;">
-      <option value="">All statuses</option>
-      <option value="pending">Pending</option>
-      <option value="confirmed">Confirmed</option>
-      <option value="completed">Completed</option>
-      <option value="cancelled">Cancelled</option>
-    </select>
-  </div>
-  <div id="aptTableWrap">${appointmentsTable([...state.appointments].reverse(), true)}</div>`;
-}
-function renderAdminAppointmentsFiltered(){
-  const status = document.getElementById('aptStatusFilter').value;
-  const list = [...state.appointments].reverse().filter(a=> !status || a.status===status);
-  document.getElementById('aptTableWrap').innerHTML = appointmentsTable(list, true);
-}
-function filterAppointments(input){
-  const q = input.value.toLowerCase();
-  const list = [...state.appointments].reverse().filter(a=>a.patientName.toLowerCase().includes(q));
-  document.getElementById('aptTableWrap').innerHTML = appointmentsTable(list, true);
-}
 async function setApptStatus(id, status){
   const a = state.appointments.find(x=>x.id===id);
   a.status = status;
-  state.notifications.unshift({id:uid('ntf'), text:`Appointment for ${a.patientName} marked ${status}`, time:Date.now()});
+  if(status === 'cancelled'){
+    // Consistency verification: drop the patient from any active queue entry
+    // tied to this appointment so the live queue never shows a cancelled visit.
+    state.queue = state.queue.filter(q => !(q.status !== 'done' && q.patientName === a.patientName && q.doctorId === a.doctorId));
+    state.notifications.unshift({id:uid('ntf'), text:`Appointment for ${a.patientName} was cancelled — patient notified`, time:Date.now()});
+  }else{
+    state.notifications.unshift({id:uid('ntf'), text:`Appointment for ${a.patientName} marked ${status}`, time:Date.now()});
+  }
   await persistAndRender('Appointment updated');
 }
 
-/* ================= ADMIN: STAFF ================= */
+/* ================= ADMIN: STAFF (view-only + invite/register — nothing more) ================= */
 function renderAdminStaff(){
   const rows = state.staff.map(s=>`
     <tr>
+      <td class="mono">${escapeHtml(s.id)}</td>
+      <td class="mono">${escapeHtml(s.employeeId||'—')}</td>
       <td>${escapeHtml(s.name)}</td>
-      <td>${escapeHtml(s.role)}</td>
-      <td>${escapeHtml(depName(s.departmentId))}</td>
-      <td>${escapeHtml(s.shift||'—')}</td>
       <td>${escapeHtml(s.phone||'—')}</td>
-      <td class="actions-cell">
-        <button class="btn btn-icon btn-sm" onclick="editStaff('${s.id}')" title="Edit">✎</button>
-        <button class="btn btn-icon btn-sm btn-danger" onclick="deleteStaff('${s.id}')" title="Delete">✕</button>
-      </td>
+      <td>${escapeHtml(s.email||'—')}</td>
+      <td>${escapeHtml(depName(s.departmentId))}</td>
+      <td>${escapeHtml(s.role||'—')}</td>
+      <td><span class="badge ${s.active===false?'leave':'available'}">${s.active===false?'Inactive':'Active'}</span></td>
     </tr>`).join('');
   return `
   <div class="toolbar">
     <input type="search" placeholder="Search staff..." oninput="filterTable(this,'staffTable')">
-    <button class="btn btn-primary" onclick="editStaff()">+ Add staff member</button>
+    <button class="btn btn-primary" onclick="openInviteStaffModal()">+ Invite / Register staff</button>
   </div>
+  <div class="hint">Admin can view staff details and invite/register new staff. Staff manage the rest of their own profile.</div>
   <div class="table-wrap"><table id="staffTable">
-    <thead><tr><th>Name</th><th>Role</th><th>Department</th><th>Shift</th><th>Contact</th><th></th></tr></thead>
-    <tbody>${rows || `<tr><td colspan="6" class="empty">No staff added yet.</td></tr>`}</tbody>
+    <thead><tr><th>Staff ID</th><th>Employee ID</th><th>Name</th><th>Number</th><th>Email</th><th>Department</th><th>Position</th><th>Status</th></tr></thead>
+    <tbody>${rows || `<tr><td colspan="8" class="empty">No staff added yet.</td></tr>`}</tbody>
   </table></div>`;
 }
-function editStaff(id){
-  const s = id ? state.staff.find(x=>x.id===id) : {name:'',role:'',departmentId:state.departments[0]?.id||'',shift:'',phone:''};
-  const depOptions = state.departments.map(dep=>`<option value="${dep.id}" ${dep.id===s.departmentId?'selected':''}>${escapeHtml(dep.name)}</option>`).join('');
+function openInviteStaffModal(){
+  const depOptions = state.departments.map(dep=>`<option value="${dep.id}">${escapeHtml(dep.name)}</option>`).join('');
   openModal(`
-    <h3>${id?'Edit staff member':'Add staff member'}</h3>
-    <div class="field"><label>Full name</label><input id="m_name" value="${escapeHtml(s.name)}"></div>
-    <div class="field"><label>Role</label><input id="m_role" value="${escapeHtml(s.role)}" placeholder="e.g. Nurse, Front Desk"></div>
+    <h3>Invite / Register staff</h3>
+    <div class="field"><label>Full name</label><input id="m_name" placeholder="e.g. Ayesha Malik"></div>
+    <div class="field"><label>Employee ID</label><input id="m_empid" placeholder="e.g. EMP-1003"></div>
+    <div class="field"><label>Number</label><input id="m_phone" placeholder="e.g. 0301-1234567"></div>
+    <div class="field"><label>Email</label><input id="m_email" type="email" placeholder="e.g. name@sehatconnect.pk"></div>
     <div class="field"><label>Department</label><select id="m_dep">${depOptions || '<option value="">No departments</option>'}</select></div>
-    <div class="field"><label>Shift</label><input id="m_shift" value="${escapeHtml(s.shift)}" placeholder="e.g. Morning (8am-4pm)"></div>
-    <div class="field"><label>Phone</label><input id="m_phone" value="${escapeHtml(s.phone)}"></div>
+    <div class="field"><label>Position</label><input id="m_role" placeholder="e.g. Nurse, Front Desk"></div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveStaff('${id||''}')">Save</button>
+      <button class="btn btn-primary" onclick="saveInvitedStaff()">Send invite</button>
     </div>`);
 }
-async function saveStaff(id){
+async function saveInvitedStaff(){
   const name = document.getElementById('m_name').value.trim();
   if(!name){ toast('Name is required.', true); return; }
-  const role = document.getElementById('m_role').value.trim();
-  const departmentId = document.getElementById('m_dep').value;
-  const shift = document.getElementById('m_shift').value.trim();
+  const employeeId = document.getElementById('m_empid').value.trim();
   const phone = document.getElementById('m_phone').value.trim();
-  if(id){
-    const s = state.staff.find(x=>x.id===id);
-    s.name=name; s.role=role; s.departmentId=departmentId; s.shift=shift; s.phone=phone;
-  }else{
-    state.staff.push({id:uid('stf'), name, role, departmentId, shift, phone});
-  }
+  const email = document.getElementById('m_email').value.trim();
+  const departmentId = document.getElementById('m_dep').value;
+  const role = document.getElementById('m_role').value.trim();
+  state.staff.push({id:uid('stf'), employeeId, name, role, departmentId, shift:'', phone, email, active:true});
+  state.notifications.unshift({id:uid('ntf'), text:`${name} was invited/registered as staff`, time:Date.now()});
   closeModal();
-  await persistAndRender('Staff member saved');
-}
-async function deleteStaff(id){
-  state.staff = state.staff.filter(x=>x.id!==id);
-  await persistAndRender('Staff member removed');
+  await persistAndRender('Staff invited/registered');
 }
 
 /* ================= ADMIN: ANALYTICS ================= */
@@ -888,7 +948,18 @@ function renderAdminAnalytics(){
   const maxDept = Math.max(1, ...byDept.map(x=>x.count));
   const byStatus = ['pending','confirmed','completed','cancelled'].map(st=>({name:st, count: state.appointments.filter(a=>a.status===st).length}));
   const maxStatus = Math.max(1, ...byStatus.map(x=>x.count));
+  // Aggregate appointment statistics — total / booked (pending+confirmed) / completed / cancelled.
+  const totalAppts = state.appointments.length;
+  const completedAppts = state.appointments.filter(a=>a.status==='completed').length;
+  const cancelledAppts = state.appointments.filter(a=>a.status==='cancelled').length;
+  const bookedAppts = totalAppts - completedAppts - cancelledAppts;
   return `
+  <div class="grid grid-4">
+    <div class="card stat-card"><div class="label">Total appointments</div><div class="value">${totalAppts}</div></div>
+    <div class="card stat-card"><div class="label">Booked</div><div class="value">${bookedAppts}</div></div>
+    <div class="card stat-card"><div class="label">Completed</div><div class="value">${completedAppts}</div></div>
+    <div class="card stat-card"><div class="label">Cancelled</div><div class="value">${cancelledAppts}</div></div>
+  </div>
   <div class="grid grid-2">
     <div class="card">
       <h3 style="font-size:14px;margin-bottom:12px;">Appointments by department</h3>
@@ -923,70 +994,123 @@ function renderStaffDashboard(){
   `;
 }
 
-/* ================= STAFF: TODAY'S APPOINTMENTS ================= */
+/* ================= STAFF: TODAY'S APPOINTMENTS (appointment status, start/end operation) ================= */
 function renderStaffToday(){
-  const today = todayStr();
-  const list = state.appointments.filter(a=>a.date===today);
-  return appointmentsTable(list, false);
+  return `
+  <div class="toolbar">
+    <input type="search" placeholder="Search patient name..." oninput="filterTodayAppointments(this)">
+    <select id="todayStatusFilter" onchange="renderTodayAppointmentsFiltered()" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;">
+      <option value="">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+    </select>
+  </div>
+  <div id="todayTableWrap">${appointmentsTable(state.appointments.filter(a=>a.date===todayStr()), true)}</div>`;
+}
+function renderTodayAppointmentsFiltered(){
+  const status = document.getElementById('todayStatusFilter').value;
+  const list = state.appointments.filter(a=>a.date===todayStr() && (!status || a.status===status));
+  document.getElementById('todayTableWrap').innerHTML = appointmentsTable(list, true);
+}
+function filterTodayAppointments(input){
+  const q = input.value.toLowerCase();
+  const list = state.appointments.filter(a=>a.date===todayStr() && a.patientName.toLowerCase().includes(q));
+  document.getElementById('todayTableWrap').innerHTML = appointmentsTable(list, true);
 }
 
-/* ================= STAFF: CHECK-IN ================= */
+/* ================= STAFF: CHECK-IN (monitor available/booked slots while checking in) ================= */
+function slotOptionsFor(doctorId){
+  const d = state.doctors.find(x=>x.id===doctorId);
+  const slots = d && Array.isArray(d.slots) ? d.slots : [];
+  const available = slots.filter(s=>s.status!=='booked');
+  if(available.length===0) return '<option value="">No open time slots</option>';
+  return '<option value="">No specific slot</option>' + available.map(s=>`<option value="${s.id}">${to12h(s.start)} – ${to12h(s.end)}</option>`).join('');
+}
+function refreshSlotOptions(docSelectId, slotSelectId){
+  const docId = document.getElementById(docSelectId).value;
+  document.getElementById(slotSelectId).innerHTML = slotOptionsFor(docId);
+}
 function renderStaffCheckin(){
   const patientOptions = state.patients.map(p=>`<option value="${p.id}">${escapeHtml(p.name)} — ${escapeHtml(p.phone)}</option>`).join('');
   const docOptions = state.doctors.map(d=>`<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
+  const firstDocId = state.doctors[0]?.id || '';
   return `
   <div class="grid grid-2">
     <div class="card">
       <h3 style="font-size:14px;margin-bottom:12px;">Check in existing patient</h3>
       <div class="field"><label>Select patient</label><select id="ci_patient">${patientOptions || '<option value="">No patients yet</option>'}</select></div>
-      <div class="field"><label>Assign doctor</label><select id="ci_doctor">${docOptions || '<option value="">No doctors</option>'}</select></div>
+      <div class="field"><label>Assign doctor</label><select id="ci_doctor" onchange="refreshSlotOptions('ci_doctor','ci_slot')">${docOptions || '<option value="">No doctors</option>'}</select></div>
+      <div class="field"><label>Time slot</label><select id="ci_slot">${slotOptionsFor(firstDocId)}</select></div>
       <button class="btn btn-primary" onclick="checkInExisting()">Check in and add to queue</button>
     </div>
     <div class="card">
       <h3 style="font-size:14px;margin-bottom:12px;">Add walk-in patient</h3>
       <div class="field"><label>Patient name</label><input id="wi_name" placeholder="Full name"></div>
       <div class="field"><label>Phone</label><input id="wi_phone" placeholder="03xx-xxxxxxx"></div>
-      <div class="field"><label>Assign doctor</label><select id="wi_doctor">${docOptions || '<option value="">No doctors</option>'}</select></div>
+      <div class="field"><label>Assign doctor</label><select id="wi_doctor" onchange="refreshSlotOptions('wi_doctor','wi_slot')">${docOptions || '<option value="">No doctors</option>'}</select></div>
+      <div class="field"><label>Time slot</label><select id="wi_slot">${slotOptionsFor(firstDocId)}</select></div>
       <button class="btn btn-primary" onclick="addWalkIn()">Add and check in</button>
     </div>
   </div>`;
 }
+function bookSlotIfChosen(doctorId, slotId){
+  if(!slotId) return '';
+  const d = state.doctors.find(x=>x.id===doctorId);
+  const s = d && d.slots.find(x=>x.id===slotId);
+  if(!s) return '';
+  s.status = 'booked';
+  return s.start; // 24h "HH:MM" — formatted with to12h wherever it's displayed
+}
 async function checkInExisting(){
   const patId = document.getElementById('ci_patient').value;
   const docId = document.getElementById('ci_doctor').value;
+  const slotId = document.getElementById('ci_slot').value;
   const pat = state.patients.find(p=>p.id===patId);
   if(!pat){ toast('Select a patient first.', true); return; }
-  addToQueue(pat.name, docId);
+  const time = bookSlotIfChosen(docId, slotId);
+  addToQueue(pat.name, docId, time);
   await persistAndRender('Patient checked in');
 }
 async function addWalkIn(){
   const name = document.getElementById('wi_name').value.trim();
   const phone = document.getElementById('wi_phone').value.trim();
   const docId = document.getElementById('wi_doctor').value;
+  const slotId = document.getElementById('wi_slot').value;
   if(!name){ toast('Patient name is required.', true); return; }
   const newPat = {id:uid('pat'), name, phone, age:null};
   state.patients.push(newPat);
-  addToQueue(name, docId);
+  const time = bookSlotIfChosen(docId, slotId);
+  addToQueue(name, docId, time);
   document.getElementById('wi_name').value=''; document.getElementById('wi_phone').value='';
   await persistAndRender('Walk-in patient checked in');
 }
-function addToQueue(patientName, doctorId){
+function addToQueue(patientName, doctorId, time){
   const num = state.queue.filter(q=>q.status!=='done').length + 1;
-  state.queue.push({id:uid('q'), num, patientName, doctorId, status:'waiting', addedAt:Date.now()});
+  state.queue.push({id:uid('q'), num, patientName, doctorId, status:'waiting', addedAt:Date.now(), time:time||''});
 }
 
 /* ================= STAFF: QUEUE ================= */
+function queueApptTime(q){
+  // Prefer the time slot booked at check-in; otherwise fall back to a matching
+  // appointment for today (same patient + doctor), shown in 12-hour format.
+  if(q.time) return to12h(q.time);
+  const appt = state.appointments.find(a=>a.date===todayStr() && a.patientName===q.patientName && a.doctorId===q.doctorId);
+  return appt ? to12h(appt.time) : '';
+}
 function renderQueueList(list, showAll){
   if(list.length===0) return `<div class="empty">Queue is empty.<i>Checked-in patients will appear here.</i></div>`;
   return list.map((q,i)=>{
     const waitMin = Math.max(0, Math.round((Date.now()-q.addedAt)/60000));
     const statusBadge = q.status==='waiting' ? 'pending' : (q.status==='in-progress' ? 'confirmed' : 'completed');
+    const apptTime = queueApptTime(q);
     return `
     <div class="queue-item">
       <div class="queue-num">${i+1}</div>
       <div class="info">
         <div class="pname">${escapeHtml(q.patientName)}</div>
-        <div class="meta">${escapeHtml(docName(q.doctorId))} · waiting ${waitMin} min · <span class="badge ${statusBadge}">${q.status}</span></div>
+        <div class="meta">${escapeHtml(docName(q.doctorId))}${apptTime ? ` · ${escapeHtml(apptTime)}` : ''} · waiting ${waitMin} min · <span class="badge ${statusBadge}">${q.status}</span></div>
       </div>
       <div class="queue-actions">
         ${i>0 ? `<button class="btn btn-sm" onclick="moveQueue('${q.id}',-1)" title="Move up">↑</button>` : ''}
@@ -1018,7 +1142,7 @@ async function setQueueStatus(id, status){
   await persistAndRender(status==='done' ? 'Patient marked done' : 'Queue updated');
 }
 
-/* ================= STAFF: DOCTOR AVAILABILITY (read-only) ================= */
+/* ================= STAFF: DOCTOR AVAILABILITY (read-only — monitor available/booked slots) ================= */
 function renderStaffAvailability(){
   if(state.doctors.length===0) return `<div class="empty">No doctors added yet.</div>`;
   const rows = state.doctors.map(d=>`
@@ -1029,12 +1153,30 @@ function renderStaffAvailability(){
       </div>
       <span class="badge ${d.availability}">${d.availability}</span>
     </div>`).join('');
-  return `<div class="card">${rows}</div><div class="hint" style="margin-top:10px;">Read-only — availability is managed by Admin.</div>`;
+
+  const slotCards = state.doctors.map(d=>{
+    const slots = Array.isArray(d.slots) ? d.slots : [];
+    const slotRows = slots.length===0 ? `<div class="empty" style="padding:14px;">No time slots set by Admin yet.</div>` : slots.map(s=>`
+      <div class="toggle-row">
+        <div class="mono" style="font-size:13px;">${to12h(s.start)} – ${to12h(s.end)}</div>
+        <span class="badge ${s.status==='booked'?'busy':'available'}">${s.status==='booked'?'Booked':'Available'}</span>
+      </div>`).join('');
+    return `<div class="card" style="margin-bottom:12px;">
+      <div style="font-weight:500;margin-bottom:6px;">${escapeHtml(d.name)}</div>
+      ${slotRows}
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="card">${rows}</div>
+  <div class="hint" style="margin-top:10px;">Read-only — availability status is managed by Admin.</div>
+  <div class="section-title"><h3>Time slots (available / booked)</h3></div>
+  ${slotCards}`;
 }
 
 /* ================= STAFF: PROFILE / NOTIFICATIONS ================= */
 function renderStaffProfile(){
-  const me = state.staff[0] || {name:'', role:'', phone:'', shift:''};
+  const me = state.staff[0] || {name:'', role:'', phone:'', shift:'', employeeId:'', email:'', active:true};
   const notifs = state.notifications.slice(0,10).map(n=>`
     <div style="padding:10px 0;border-top:1px solid var(--border);font-size:13px;">
       ${escapeHtml(n.text)}
@@ -1044,10 +1186,14 @@ function renderStaffProfile(){
   <div class="grid grid-2">
     <div class="card">
       <h3 style="font-size:14px;margin-bottom:12px;">My profile</h3>
+      <div class="field"><label>Staff ID</label><input value="${escapeHtml(me.id||'—')}" disabled></div>
+      <div class="field"><label>Employee ID</label><input value="${escapeHtml(me.employeeId||'—')}" disabled></div>
+      <div class="hint" style="margin-top:-8px;">Employee ID and Staff ID are assigned by Admin at registration.</div>
       <div class="field"><label>Name</label><input id="sp_name" value="${escapeHtml(me.name)}"></div>
-      <div class="field"><label>Role</label><input id="sp_role" value="${escapeHtml(me.role)}"></div>
+      <div class="field"><label>Position</label><input id="sp_role" value="${escapeHtml(me.role)}"></div>
       <div class="field"><label>Shift</label><input id="sp_shift" value="${escapeHtml(me.shift)}"></div>
-      <div class="field"><label>Phone</label><input id="sp_phone" value="${escapeHtml(me.phone)}"></div>
+      <div class="field"><label>Number</label><input id="sp_phone" value="${escapeHtml(me.phone)}"></div>
+      <div class="field"><label>Email</label><input id="sp_email" type="email" value="${escapeHtml(me.email)}"></div>
       <button class="btn btn-primary" onclick="saveStaffProfile()">Save profile</button>
     </div>
     <div class="card">
@@ -1057,12 +1203,13 @@ function renderStaffProfile(){
   </div>`;
 }
 async function saveStaffProfile(){
-  if(!state.staff[0]) state.staff[0] = {id:uid('stf')};
+  if(!state.staff[0]) state.staff[0] = {id:uid('stf'), employeeId:'', email:'', active:true};
   const me = state.staff[0];
   me.name = document.getElementById('sp_name').value.trim();
   me.role = document.getElementById('sp_role').value.trim();
   me.shift = document.getElementById('sp_shift').value.trim();
   me.phone = document.getElementById('sp_phone').value.trim();
+  me.email = document.getElementById('sp_email').value.trim();
   await persistAndRender('Profile updated');
 }
 

@@ -22,7 +22,8 @@ CREATE TABLE hospital_profile (
   address VARCHAR(255),
   phone VARCHAR(30),
   email VARCHAR(120),
-  hours VARCHAR(100)
+  opening_time VARCHAR(5),  -- 24h "HH:MM", formatted to 12-hour on display
+  closing_time VARCHAR(5)   -- 24h "HH:MM", formatted to 12-hour on display
 );
 
 CREATE TABLE branding (
@@ -55,16 +56,20 @@ CREATE TABLE doctors (
   phone VARCHAR(30),
   photo_initials VARCHAR(5),
   availability doctor_availability DEFAULT 'available',
-  schedule JSONB DEFAULT '{}'::jsonb
+  schedule JSONB DEFAULT '{}'::jsonb,  -- per-day {start,end} 24h times, formatted to 12-hour on display
+  slots JSONB DEFAULT '[]'::jsonb      -- bookable time slots: [{id,start,end,status}], 24h times
 );
 
 CREATE TABLE staff (
   id VARCHAR(20) PRIMARY KEY,
+  employee_id VARCHAR(30),
   name VARCHAR(100) NOT NULL,
   role VARCHAR(80),
   department_id VARCHAR(20) REFERENCES departments(id) ON DELETE SET NULL,
   shift VARCHAR(80),
-  phone VARCHAR(30)
+  phone VARCHAR(30),
+  email VARCHAR(120),
+  active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE patients (
@@ -90,7 +95,8 @@ CREATE TABLE queue (
   patient_name VARCHAR(100) NOT NULL,
   doctor_id VARCHAR(20) REFERENCES doctors(id) ON DELETE SET NULL,
   status queue_status DEFAULT 'waiting',
-  added_at BIGINT
+  added_at BIGINT,
+  appt_time VARCHAR(5)  -- 24h "HH:MM" from the booked time slot, formatted to 12-hour on display
 );
 
 CREATE TABLE notifications (
@@ -103,11 +109,11 @@ CREATE TABLE notifications (
 -- SEED DATA
 -- =========================================================
 
-INSERT INTO hospital_profile (id, name, address, phone, email, hours) VALUES
-('profile', 'St. Mercy Hospital', 'Plot 14, Shahrah-e-Faisal, Karachi', '+92 21 111 222 333', 'info@stmercy.pk', '8:00 AM - 10:00 PM');
+INSERT INTO hospital_profile (id, name, address, phone, email, opening_time, closing_time) VALUES
+('profile', 'SehatConnectAI Hospital', 'Plot 14, Shahrah-e-Faisal, Karachi', '+92 21 111 222 333', 'info@sehatconnect.pk', '08:00', '22:00');
 
 INSERT INTO branding (id, primary_color, secondary_color, logo_text) VALUES
-('branding', '#0E6F5C', '#16324F', 'SM');
+('branding', '#0E6F5C', '#16324F', 'SC');
 
 INSERT INTO users (username, password, role) VALUES
 ('admin', 'admin123', 'admin'),
@@ -118,14 +124,14 @@ INSERT INTO departments (id, name, description, head) VALUES
 ('dep_ortho', 'Orthopedics', 'Bone & joint care', 'Dr. Bilal Ahmed'),
 ('dep_pedia', 'Pediatrics', 'Child healthcare', 'Dr. Sana Rizvi');
 
-INSERT INTO doctors (id, name, specialization, department_id, phone, photo_initials, availability) VALUES
-('doc_ayesha', 'Dr. Ayesha Khan', 'Cardiologist', 'dep_cardio', '0300-1112233', 'AK', 'available'),
-('doc_bilal', 'Dr. Bilal Ahmed', 'Orthopedic Surgeon', 'dep_ortho', '0300-2223344', 'BA', 'busy'),
-('doc_sana', 'Dr. Sana Rizvi', 'Pediatrician', 'dep_pedia', '0300-3334455', 'SR', 'leave');
+INSERT INTO doctors (id, name, specialization, department_id, phone, photo_initials, availability, slots) VALUES
+('doc_ayesha', 'Dr. Ayesha Khan', 'Cardiologist', 'dep_cardio', '0300-1112233', 'AK', 'available', '[{"id":"slot_1","start":"09:00","end":"09:30","status":"available"},{"id":"slot_2","start":"09:30","end":"10:00","status":"booked"}]'),
+('doc_bilal', 'Dr. Bilal Ahmed', 'Orthopedic Surgeon', 'dep_ortho', '0300-2223344', 'BA', 'busy', '[]'),
+('doc_sana', 'Dr. Sana Rizvi', 'Pediatrician', 'dep_pedia', '0300-3334455', 'SR', 'leave', '[]');
 
-INSERT INTO staff (id, name, role, department_id, shift, phone) VALUES
-('stf_mubashir', 'Mubashir Javaid', 'Front Desk Coordinator', 'dep_cardio', 'Morning (8am-4pm)', '0301-9998877'),
-('stf_hina', 'Hina Malik', 'Nurse', 'dep_ortho', 'Evening (4pm-12am)', '0301-8887766');
+INSERT INTO staff (id, employee_id, name, role, department_id, shift, phone, email, active) VALUES
+('stf_mubashir', 'EMP-1001', 'Mubashir Javaid', 'Front Desk Coordinator', 'dep_cardio', 'Morning (8am-4pm)', '0301-9998877', 'mubashir@sehatconnect.pk', TRUE),
+('stf_hina', 'EMP-1002', 'Hina Malik', 'Nurse', 'dep_ortho', 'Evening (4pm-12am)', '0301-8887766', 'hina@sehatconnect.pk', TRUE);
 
 INSERT INTO patients (id, name, phone, age) VALUES
 ('pat_ahmed', 'Ahmed Raza', '0333-1234567', 34),

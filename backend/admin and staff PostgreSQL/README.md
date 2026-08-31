@@ -78,6 +78,46 @@ hospital-postgres-backend/
     └── hospital-module.html  ← calls GET/PUT /api/state
 ```
 
+## Role rules (Admin vs Staff)
+
+- **Admin** can only *view* staff details and *invite/register* new staff — no editing or
+  deleting existing staff records. The Staff management table shows: Staff ID, Employee ID,
+  Name, Number, Email, Department, Position, Active/Inactive.
+- **Staff** manage their own profile (name, position, shift, number, email) from
+  "Staff profile / notifications" — Staff ID and Employee ID there are read-only, since
+  Admin assigns those at registration.
+- Cancelling an appointment now also drops the matching patient from the live queue
+  (consistency) and logs a "patient notified" entry in Notifications.
+
+## Screens and roles (current)
+
+- **Admin**: Admin dashboard, Hospital profile, Branding, Departments, Doctors, Schedules,
+  Availability (incl. time slots), Staff management (view + invite/register only), Analytics
+  (total/booked/completed/cancelled appointment counts).
+- **Staff**: Staff dashboard, Today's appointments (confirm/complete/cancel — full appointment
+  status control lives here now), Patient check-in (with time-slot picker), Queue management,
+  Doctor availability (read-only, incl. time slots), Staff profile / notifications.
+- All schedule, working-hours, time-slot, appointment, and queue times are stored as 24-hour
+  values and displayed in 12-hour format (`to12h()` helper in `hospital-module.html`).
+
+## Upgrading an existing database
+
+If you already ran `schema.sql` before this update, add the new columns manually:
+
+```sql
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS employee_id VARCHAR(30);
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS email VARCHAR(120);
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+
+ALTER TABLE hospital_profile ADD COLUMN IF NOT EXISTS opening_time VARCHAR(5);
+ALTER TABLE hospital_profile ADD COLUMN IF NOT EXISTS closing_time VARCHAR(5);
+ALTER TABLE hospital_profile DROP COLUMN IF EXISTS hours;
+
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS slots JSONB DEFAULT '[]'::jsonb;
+
+ALTER TABLE queue ADD COLUMN IF NOT EXISTS appt_time VARCHAR(5);
+```
+
 ## Notes
 
 - Passwords in `users` are stored in plain text for local/demo purposes.
