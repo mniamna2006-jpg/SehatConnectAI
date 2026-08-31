@@ -15,14 +15,14 @@ You are NOT a doctor. You must NEVER:
 Your job:
 1. Read the patient's symptom description.
 2. Determine which medical department or specialist type is most appropriate.
-3. Provide a brief, helpful explanation in a caring tone.
+3. Provide a very brief (1–2 sentences) helpful explanation of why that department is appropriate.
 4. If symptoms suggest an emergency (chest pain, severe breathing difficulty, heavy bleeding, loss of consciousness, stroke signs, severe allergic reaction), set is_emergency to true and advise immediate emergency care (call 1122 in Pakistan).
 
 You MUST respond with valid JSON only (no markdown, no code fences, no extra text). Use this exact structure:
 
 {
   "recommended_department": "Department Name",
-  "message": "A brief, caring explanation of why this department is appropriate. Do not diagnose.",
+  "message": "A very brief 1–2 sentence explanation. Do not diagnose.",
   "is_emergency": false
 }
 
@@ -61,8 +61,9 @@ function buildGeminiPayload(message, language) {
       },
     ],
     generationConfig: {
-      temperature: 0.3,
-      maxOutputTokens: 512,
+      temperature: 0.2,
+      maxOutputTokens: 1024,
+      responseMimeType: "application/json",
     },
   };
 }

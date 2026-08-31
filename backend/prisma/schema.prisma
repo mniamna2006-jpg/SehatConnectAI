@@ -98,16 +98,17 @@ model HospitalStaff {
 }
 
 model Patient {
-  patient_id        String        @id @default(uuid()) @db.Uuid
-  user_id           String        @unique @db.Uuid
+  patient_id        String            @id @default(uuid()) @db.Uuid
+  user_id           String            @unique @db.Uuid
   date_of_birth     DateTime?
   gender            String?
   address           String?
   city              String?
   emergency_contact String?
-  created_at        DateTime      @default(now())
+  created_at        DateTime          @default(now())
   appointments      Appointment[]
-  user              User          @relation(fields: [user_id], references: [user_id])
+  ai_conversations  AIConversation[]
+  user              User              @relation(fields: [user_id], references: [user_id])
 
   @@index([city])
   @@map("patients")
@@ -333,6 +334,36 @@ model ChatMessage {
   @@index([conversation_id])
   @@index([created_at])
   @@map("chat_messages")
+}
+
+model AIConversation {
+  conversation_id String       @id @default(uuid()) @db.Uuid
+  patient_id      String       @db.Uuid
+  title           String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  patient         Patient      @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade)
+  messages        AIMessage[]
+
+  @@index([patient_id])
+  @@index([updated_at])
+  @@map("ai_conversations")
+}
+
+model AIMessage {
+  message_id               String         @id @default(uuid()) @db.Uuid
+  conversation_id          String         @db.Uuid
+  sender                   ChatSender
+  message                  String
+  language                 PreferredLanguage?
+  recommended_department   String?
+  is_emergency             Boolean        @default(false)
+  created_at               DateTime       @default(now())
+  conversation             AIConversation @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
+
+  @@index([conversation_id])
+  @@index([created_at])
+  @@map("ai_messages")
 }
 
 model AuditLog {
