@@ -1,7 +1,7 @@
 # Hospital Module — PostgreSQL edition
 
 Same dashboard as the MySQL edition, but backed by PostgreSQL instead.
-`server.js` serves `login.html` / `hospital-module.html` and reads/writes
+`server.js` serves `index.html` / `hospital-module.html` and reads/writes
 real data through `/api/state`. Every open tab polls the database every
 4 seconds, so changes made by one user show up for everyone else without
 a refresh.
@@ -48,7 +48,7 @@ npm start
 You should see:
 ```
 Hospital Module (PostgreSQL) running at http://localhost:4001
-Open http://localhost:4001/login.html to sign in.
+Open http://localhost:4001/index.html to sign in.
 ```
 
 (Note the port is 4001, not 4000 — that's so you can run the MySQL and
@@ -56,7 +56,7 @@ PostgreSQL editions side by side without a conflict.)
 
 ## 4. Use it
 
-Open **http://localhost:4001/login.html** in your browser.
+Open **http://localhost:4001/index.html** in your browser.
 
 - Admin: `admin` / `admin123`
 - Staff: `staff` / `staff123`
@@ -74,7 +74,7 @@ hospital-postgres-backend/
 ├── package.json
 ├── .env.example        ← copy to .env and fill in your Postgres password
 └── public/
-    ├── login.html         ← calls POST /api/auth/login
+    ├── index.html         ← calls POST /api/auth/login
     └── hospital-module.html  ← calls GET/PUT /api/state
 ```
 
