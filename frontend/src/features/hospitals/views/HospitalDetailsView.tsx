@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
 import { Screen } from '../../../shared/components/Screen';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
 import { LoadingState } from '../../../shared/components/LoadingState';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
+import { openHospitalNavigation } from '../../../core/navigation/openHospitalNavigation';
 import type { WorkingHours } from '../model/types';
 
 interface HospitalDetailsViewProps {
@@ -14,6 +15,23 @@ interface HospitalDetailsViewProps {
 
 export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
   const { hospital, isLoading, isError, refetch } = useHospitalDetailsViewModel(hospitalId);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  async function handleGetDirections() {
+    if (!hospital) return;
+    setIsNavigating(true);
+    try {
+      await openHospitalNavigation({
+        latitude: hospital.latitude,
+        longitude: hospital.longitude,
+        address: hospital.address,
+        city: hospital.city,
+        hospitalName: hospital.name,
+      });
+    } finally {
+      setIsNavigating(false);
+    }
+  }
 
   return (
     <Screen>
@@ -31,6 +49,19 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           {hospital.address && (
             <Text testID="hospital-address">{hospital.address}</Text>
           )}
+
+          <Pressable
+            onPress={handleGetDirections}
+            disabled={isNavigating}
+            testID="get-directions-button"
+            accessibilityLabel="Get directions to this hospital"
+          >
+            {isNavigating ? (
+              <ActivityIndicator testID="get-directions-loading" />
+            ) : (
+              <Text testID="get-directions-text">Get Directions</Text>
+            )}
+          </Pressable>
 
           {hospital.working_hours && hospital.working_hours.length > 0 && (
             <View testID="hospital-working-hours-section">

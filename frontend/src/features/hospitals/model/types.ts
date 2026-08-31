@@ -27,3 +27,12 @@ export interface HospitalDetail extends Hospital {
   departments: { department_id: string; name: string }[];
   doctors: { doctor_id: string; name: string; specialization?: string }[];
 }
+
+export interface HospitalLocation {
+  hospital_id: string;
+  name: string;
+  address: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+}
