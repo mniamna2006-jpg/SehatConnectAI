@@ -7,6 +7,8 @@ export interface TimeSlot {
   date: string;
   start_time: string;
   end_time: string;
+  start_time_12h?: string;
+  end_time_12h?: string;
   status: TimeSlotStatus;
 }
 
@@ -19,6 +21,7 @@ export interface Appointment {
   slot_id: string;
   appointment_date: string;
   appointment_time: string;
+  appointment_time_12h?: string;
   status: AppointmentStatus;
   booking_reference: string;
   token_number?: number;
@@ -36,4 +39,8 @@ export interface QueueEntry {
   token_number: number;
   queue_status: QueueStatus;
   estimated_wait_time?: number;
+  appointment?: {
+    appointment_time: string;
+    appointment_time_12h?: string;
+  };
 }

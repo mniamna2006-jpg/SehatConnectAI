@@ -1,9 +1,17 @@
-import React from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import type { ReactNode } from 'react';
+import type { ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useOptionalLocale } from '../../providers/LocaleProvider';
+import { colors } from '../theme';
 
-export function Screen({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
-  return <SafeAreaView style={[styles.root, style]}>{children}</SafeAreaView>;
+export function Screen({ children, style }: { children: ReactNode; style?: ViewStyle }) {
+  const locale = useOptionalLocale();
+  return <SafeAreaView style={[styles.root, locale?.isRTL ? styles.rtl : styles.ltr, style]}>{children}</SafeAreaView>;
 }
 
-const styles = StyleSheet.create({ root: { flex: 1, padding: 16 } });
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.canvas },
+  ltr: { direction: 'ltr' },
+  rtl: { direction: 'rtl' },
+});

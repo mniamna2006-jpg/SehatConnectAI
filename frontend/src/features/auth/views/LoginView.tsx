@@ -1,51 +1,76 @@
-import React from 'react';
-import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
-import { Controller } from 'react-hook-form';
 import { Link } from 'expo-router';
-import { Screen } from '../../../shared/components/Screen';
+import { StyleSheet, Text, View } from 'react-native';
+import { Controller } from 'react-hook-form';
+import { AppButton } from '../../../shared/components/Buttons';
+import { FormField } from '../../../shared/components/FormField';
+import { useTranslations } from '../../../providers/LocaleProvider';
+import { colors, typography } from '../../../shared/theme';
 import { useLoginViewModel } from '../viewmodels/useLoginViewModel';
+import { AuthScaffold } from './AuthScaffold';
 
 export function LoginView() {
+  const t = useTranslations();
   const { control, errors, onSubmit, isSubmitting, apiError } = useLoginViewModel();
 
   return (
-    <Screen>
-      <Text accessibilityRole="header">Log In</Text>
+    <AuthScaffold
+      title={t('auth.login.title')}
+      subtitle={t('auth.login.subtitle')}
+      footer={
+        <>
+          <View style={styles.createRow}>
+            <Text style={styles.footerText}>{t('auth.login.footerPrompt')}</Text>
+            <Link href="/register" style={styles.link}>{t('auth.login.footerAction')}</Link>
+          </View>
+          <Link href="/forgot-password" style={styles.quietLink}>{t('auth.login.forgotPassword')}</Link>
+        </>
+      }
+    >
       <Controller
         control={control}
         name="email"
         render={({ field }) => (
-          <TextInput
+          <FormField
             testID="login-email"
-            placeholder="Email"
+            label={t('auth.login.fields.email')}
+            icon="mail-outline"
+            placeholder="you@example.com"
             autoCapitalize="none"
+            autoComplete="email"
             keyboardType="email-address"
             value={field.value ?? ''}
             onChangeText={field.onChange}
+            error={errors.email?.message}
           />
         )}
       />
-      {errors.email && <Text>{errors.email.message}</Text>}
       <Controller
         control={control}
         name="password"
         render={({ field }) => (
-          <TextInput
+          <FormField
             testID="login-password"
-            placeholder="Password"
+            label={t('auth.login.fields.password')}
+            icon="lock-closed-outline"
+            placeholder="Enter your password"
+            autoComplete="current-password"
             secureTextEntry
             value={field.value ?? ''}
             onChangeText={field.onChange}
+            error={errors.password?.message}
           />
         )}
       />
-      {errors.password && <Text>{errors.password.message}</Text>}
-      {apiError && <Text testID="login-error">{apiError}</Text>}
-      <Pressable testID="login-submit" onPress={onSubmit} disabled={isSubmitting}>
-        {isSubmitting ? <ActivityIndicator /> : <Text>Log In</Text>}
-      </Pressable>
-      <Link href="/register">Create an account</Link>
-      <Link href="/forgot-password">Forgot password?</Link>
-    </Screen>
+      {apiError ? <Text accessibilityRole="alert" testID="login-error" style={styles.error}>{apiError}</Text> : null}
+      <AppButton testID="login-submit" label={t('auth.login.submit')} loading={isSubmitting} onPress={onSubmit} />
+    </AuthScaffold>
   );
 }
+
+const styles = StyleSheet.create({
+  createRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: 5 },
+  footerText: { ...typography.body, color: colors.muted },
+  link: { ...typography.body, color: colors.primary, fontWeight: '700' },
+  quietLink: { ...typography.body, color: colors.inkSoft, fontWeight: '600' },
+  error: { ...typography.metadata, color: colors.danger, textAlign: 'center' },
+});

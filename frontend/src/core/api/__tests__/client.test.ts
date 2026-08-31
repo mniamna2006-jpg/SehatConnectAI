@@ -5,10 +5,21 @@ import * as secureStore from '../../storage/secureStore';
 jest.mock('../../storage/secureStore');
 
 const okResponse = (data: unknown) =>
-  Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true, data }) } as Response);
+  Promise.resolve({
+    ok: true,
+    status: 200,
+    text: () => Promise.resolve(JSON.stringify({ success: true, data })),
+  } as Response);
 
 const failResponse = (status: number, message: string) =>
-  Promise.resolve({ ok: false, status, json: () => Promise.resolve({ success: false, message }) } as Response);
+  Promise.resolve({
+    ok: false,
+    status,
+    text: () => Promise.resolve(JSON.stringify({ success: false, message })),
+  } as Response);
+
+const rawResponse = (status: number, ok: boolean, body: string) =>
+  Promise.resolve({ ok, status, text: () => Promise.resolve(body) } as Response);
 
 describe('apiRequest', () => {
   beforeEach(() => {
@@ -69,5 +80,22 @@ describe('apiRequest', () => {
 
     await expect(apiRequest('/api/auth/login', { auth: false })).rejects.toThrow();
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  test('throws a typed ApiError (not a raw SyntaxError) on an empty response body', async () => {
+    (global.fetch as jest.Mock).mockReturnValue(rawResponse(403, false, ''));
+    await expect(apiRequest('/x')).rejects.toBeInstanceOf(ApiError);
+  });
+
+  test('throws a typed ApiError on a non-JSON response body (e.g. an HTML/AirPlay response)', async () => {
+    (global.fetch as jest.Mock).mockReturnValue(
+      rawResponse(200, true, '<html>Not JSON</html>')
+    );
+    await expect(apiRequest('/x')).rejects.toBeInstanceOf(ApiError);
+  });
+
+  test('throws a typed ApiError when fetch itself rejects (network failure)', async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new TypeError('Network request failed'));
+    await expect(apiRequest('/x')).rejects.toBeInstanceOf(ApiError);
   });
 });

@@ -1,100 +1,133 @@
-import React from 'react';
-import { View, Text, FlatList } from 'react-native';
 import { Link } from 'expo-router';
-import { Screen } from '../../../shared/components/Screen';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { useTranslations } from '../../../providers/LocaleProvider';
+import { AppIcon } from '../../../shared/components/AppIcon';
+import { DoctorCard } from '../../../shared/components/DoctorCard';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
 import { LoadingState } from '../../../shared/components/LoadingState';
+import { PageHeader } from '../../../shared/components/PageHeader';
+import { PressableSurface } from '../../../shared/components/Buttons';
+import { Screen } from '../../../shared/components/Screen';
+import { SectionHeader } from '../../../shared/components/SectionHeader';
+import { colors, radius, typography } from '../../../shared/theme';
+import { displayTime12h } from '../../../shared/utils/time';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
-import type { WorkingHours } from '../model/types';
 
-interface HospitalDetailsViewProps {
-  hospitalId: string;
-}
+interface HospitalDetailsViewProps { hospitalId: string }
 
 export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
+  const t = useTranslations();
   const { hospital, isLoading, isError, refetch } = useHospitalDetailsViewModel(hospitalId);
+  if (isLoading) return <Screen><LoadingState label="Loading hospital profile…" /></Screen>;
+  if (isError) return <Screen><ErrorState onRetry={() => void refetch()} /></Screen>;
+  if (!hospital) return <Screen><EmptyState title="Hospital not found" message="This hospital profile is not available." icon="business-outline" /></Screen>;
 
   return (
     <Screen>
-      {isLoading && <LoadingState />}
-      {!isLoading && isError && <ErrorState onRetry={() => void refetch()} />}
-      {!isLoading && !isError && !hospital && (
-        <EmptyState message="Hospital not found." />
-      )}
-      {!isLoading && !isError && hospital && (
-        <View>
-          <Text accessibilityRole="header" testID="hospital-name">
-            {hospital.name}
-          </Text>
-
-          {hospital.address && (
-            <Text testID="hospital-address">{hospital.address}</Text>
-          )}
-
-          {hospital.working_hours && hospital.working_hours.length > 0 && (
-            <View testID="hospital-working-hours-section">
-              <Text testID="hospital-working-hours-title">Working Hours</Text>
-              <FlatList
-                testID="hospital-working-hours-list"
-                scrollEnabled={false}
-                data={hospital.working_hours}
-                keyExtractor={(item: WorkingHours, index: number) => `${item.day_of_week}-${index}`}
-                renderItem={({ item }: { item: WorkingHours }) => (
-                  <Text testID={`working-hours-${item.day_of_week}`}>
-                    {item.day_of_week}: {item.open_time} - {item.close_time}
-                  </Text>
-                )}
-              />
-            </View>
-          )}
-
-          {hospital.departments && hospital.departments.length > 0 && (
-            <View testID="hospital-departments-section">
-              <Text testID="hospital-departments-title">Departments</Text>
-              <FlatList
-                testID="hospital-departments-list"
-                scrollEnabled={false}
-                data={hospital.departments}
-                keyExtractor={(item) => item.department_id}
-                renderItem={({ item }) => (
-                  <Link
-                    href={`/find-department?hospitalId=${hospitalId}&departmentId=${item.department_id}`}
-                    testID={`department-link-${item.department_id}`}
-                  >
-                    <Text testID={`department-name-${item.department_id}`}>{item.name}</Text>
-                  </Link>
-                )}
-              />
-            </View>
-          )}
-
-          {hospital.doctors && hospital.doctors.length > 0 && (
-            <View testID="hospital-doctors-section">
-              <Text testID="hospital-doctors-title">Doctors</Text>
-              <FlatList
-                testID="hospital-doctors-list"
-                scrollEnabled={false}
-                data={hospital.doctors}
-                keyExtractor={(item) => item.doctor_id}
-                renderItem={({ item }) => (
-                  <Link
-                    href={`/appointments?doctorId=${item.doctor_id}`}
-                    testID={`doctor-link-${item.doctor_id}`}
-                  >
-                    <Text testID={`doctor-name-${item.doctor_id}`}>{item.name}</Text>
-                    {item.specialization && (
-                      <Text testID={`doctor-specialization-${item.doctor_id}`}>
-                        {item.specialization}
-                      </Text>
-                    )}
-                  </Link>
-                )}
-              />
-            </View>
-          )}
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <PageHeader title="Hospital Profile" />
+        <View style={styles.hero}>
+          {hospital.cover_image_url ? <Image source={{ uri: hospital.cover_image_url }} style={StyleSheet.absoluteFill} contentFit="cover" transition={180} accessibilityLabel={`${hospital.name} building`} /> : null}
+          <View style={styles.scrim} />
+          <View style={styles.heroTop}>
+            {hospital.logo_url ? <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" accessibilityLabel={`${hospital.name} logo`} /> : <View style={styles.logoFallback}><AppIcon name="business" color={colors.primary} size={29} /></View>}
+            {hospital.working_hours.length > 0 ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText}>Working hours available</Text></View> : null}
+          </View>
+          <View>
+            <Text accessibilityRole="header" testID="hospital-name" style={styles.heroName}>{hospital.name}</Text>
+            {hospital.address || hospital.city ? <View style={styles.heroMeta}><AppIcon name="location-outline" color="#DCE8FF" size={18} /><Text testID="hospital-address" style={styles.heroMetaText}>{[hospital.address, hospital.city].filter(Boolean).join(', ')}</Text></View> : null}
+          </View>
         </View>
-      )}
+
+        {hospital.description ? <View style={styles.about}><SectionHeader title="About" /><Text style={styles.aboutText}>{hospital.description}</Text></View> : null}
+
+        {(hospital.phone || hospital.email) ? (
+          <View style={styles.section}>
+            <SectionHeader title="Contact information" />
+            <View style={styles.contactPanel}>
+              {hospital.phone ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="call-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>Phone</Text><Text style={styles.contactValue}>{hospital.phone}</Text></View></View> : null}
+              {hospital.email ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="mail-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>Email</Text><Text style={styles.contactValue}>{hospital.email}</Text></View></View> : null}
+            </View>
+          </View>
+        ) : null}
+
+        {hospital.working_hours.length > 0 ? (
+          <View testID="hospital-working-hours-section" style={styles.section}>
+            <SectionHeader title={t('hospitals.workingHours')} />
+            <ScrollView testID="hospital-working-hours-list" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hoursList}>
+              {hospital.working_hours.map((item, index) => (
+                <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={styles.hoursCard}>
+                  <Text style={styles.day}>{item.day_of_week}</Text>
+                  <Text style={styles.time}>{displayTime12h(item.opening_time_12h, item.opening_time)}</Text>
+                  <Text style={styles.timeMuted}>to {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
+
+        {hospital.departments.length > 0 ? (
+          <View testID="hospital-departments-section" style={styles.section}>
+            <SectionHeader title={t('hospitals.departmentsTitle')} detail={`${hospital.departments.length} available`} />
+            <View testID="hospital-departments-list" style={styles.departmentGrid}>
+              {hospital.departments.map((item) => (
+                <Link key={item.department_id} href={`/find-department?hospitalId=${hospitalId}&departmentId=${item.department_id}`} asChild>
+                  <PressableSurface testID={`department-link-${item.department_id}`} accessibilityRole="button" style={styles.departmentTile}>
+                    <View style={styles.departmentIcon}><AppIcon name="medical-outline" color={colors.teal} size={20} /></View>
+                    <Text testID={`department-name-${item.department_id}`} style={styles.departmentName}>{item.name}</Text>
+                    <AppIcon name="chevron-forward" color={colors.faint} size={18} />
+                  </PressableSurface>
+                </Link>
+              ))}
+            </View>
+          </View>
+        ) : null}
+
+        {hospital.doctors.length > 0 ? (
+          <View testID="hospital-doctors-section" style={styles.section}>
+            <SectionHeader title={t('hospitals.doctorsTitle')} detail={`${hospital.doctors.length} available`} />
+            <View testID="hospital-doctors-list" style={styles.doctorList}>
+              {hospital.doctors.map((item) => (
+                <DoctorCard key={item.doctor_id} id={item.doctor_id} name={item.name} specialization={item.specialization} hospital={hospital.name} bookingHref={`/appointments?doctorId=${item.doctor_id}`} testID={`doctor-link-${item.doctor_id}`} />
+              ))}
+            </View>
+          </View>
+        ) : null}
+      </ScrollView>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  content: { paddingHorizontal: 22, paddingTop: 10, paddingBottom: 42, gap: 28 },
+  hero: { minHeight: 250, borderRadius: radius.lg, backgroundColor: colors.primary, padding: 20, justifyContent: 'space-between', overflow: 'hidden' },
+  scrim: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: '#102C5BCC' },
+  heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  logo: { width: 66, height: 66, borderRadius: 20, backgroundColor: colors.surface },
+  logoFallback: { width: 66, height: 66, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  hoursBadge: { minHeight: 36, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12 },
+  hoursBadgeText: { ...typography.metadata, color: colors.inkSoft, fontWeight: '700' },
+  heroName: { fontSize: 27, lineHeight: 33, color: colors.surface, fontWeight: '800', letterSpacing: -0.6 },
+  heroMeta: { flexDirection: 'row', alignItems: 'flex-start', gap: 7, marginTop: 9 },
+  heroMetaText: { ...typography.body, color: '#DCE8FF', flex: 1 },
+  about: { gap: 10 },
+  aboutText: { ...typography.body, color: colors.inkSoft },
+  section: { gap: 14 },
+  contactPanel: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: 17, gap: 16 },
+  contactRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  contactIcon: { width: 42, height: 42, borderRadius: 14, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  contactLabel: { ...typography.metadata, color: colors.muted },
+  contactValue: { ...typography.body, color: colors.ink, fontWeight: '600', marginTop: 1 },
+  hoursList: { gap: 10, paddingRight: 22 },
+  hoursCard: { width: 126, minHeight: 112, borderRadius: radius.lg, backgroundColor: colors.surface, padding: 15, borderWidth: 1, borderColor: colors.line },
+  day: { ...typography.metadata, color: colors.primary, fontWeight: '800' },
+  time: { ...typography.entityTitle, color: colors.ink, marginTop: 12 },
+  timeMuted: { ...typography.metadata, color: colors.muted, marginTop: 2 },
+  departmentGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  departmentTile: { width: '48%', minHeight: 86, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, padding: 13, flexDirection: 'row', alignItems: 'center', gap: 9 },
+  departmentIcon: { width: 36, height: 36, borderRadius: 12, backgroundColor: colors.tealSoft, alignItems: 'center', justifyContent: 'center' },
+  departmentName: { ...typography.metadata, color: colors.ink, fontWeight: '700', flex: 1 },
+  doctorList: { gap: 14 },
+});

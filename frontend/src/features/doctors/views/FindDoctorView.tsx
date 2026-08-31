@@ -1,72 +1,82 @@
-import React from 'react';
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
-import { Link } from 'expo-router';
-import { Screen } from '../../../shared/components/Screen';
-import { LocationPicker } from '../../../shared/components/LocationPicker';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../../providers/LocaleProvider';
+import { DoctorCard } from '../../../shared/components/DoctorCard';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
 import { LoadingState } from '../../../shared/components/LoadingState';
+import { LocationPicker } from '../../../shared/components/LocationPicker';
+import { PageHeader } from '../../../shared/components/PageHeader';
+import { Screen } from '../../../shared/components/Screen';
+import { SearchBar } from '../../../shared/components/SearchBar';
+import { SectionHeader } from '../../../shared/components/SectionHeader';
+import { colors, typography } from '../../../shared/theme';
 import type { DoctorDetail } from '../model/types';
 import { useFindDoctorViewModel } from '../viewmodels/useFindDoctorViewModel';
 
 function DoctorResult({ doctor }: { doctor: DoctorDetail }) {
   const bookingHref = `/appointments?doctorId=${doctor.doctor_id}&hospitalId=${doctor.hospital_id}&departmentId=${doctor.department_id}`;
-
   return (
-    <View testID={`doctor-row-${doctor.doctor_id}`}>
-      <Text>{doctor.name}</Text>
-      {doctor.specialization ? <Text>{doctor.specialization}</Text> : null}
-      <Text>{doctor.hospital.name}</Text>
-      <Text>Available Days</Text>
-      <Text>Available Timings</Text>
-      {doctor.schedules.length > 0 ? (
-        doctor.schedules.map((schedule) => (
-          <View key={schedule.schedule_id}>
-            <Text>{schedule.day_of_week}</Text>
-            <Text>{schedule.start_time} - {schedule.end_time}</Text>
-          </View>
-        ))
-      ) : (
-        <EmptyState message="No schedule available." />
-      )}
-      <Link href={bookingHref} asChild>
-        <Pressable accessibilityRole="button">
-          <Text>Book Appointment</Text>
-        </Pressable>
-      </Link>
-    </View>
+    <DoctorCard
+      id={doctor.doctor_id}
+      testID={`doctor-row-${doctor.doctor_id}`}
+      name={doctor.name}
+      specialization={doctor.specialization}
+      hospital={doctor.hospital.name}
+      bookingHref={bookingHref}
+      schedules={doctor.schedules.map((schedule) => ({
+        id: schedule.schedule_id,
+        day: schedule.day_of_week,
+        start: schedule.start_time,
+        end: schedule.end_time,
+        start12h: schedule.start_time_12h,
+        end12h: schedule.end_time_12h,
+      }))}
+    />
   );
 }
 
 export function FindDoctorView() {
-  const { doctors, isLoading, isError, refetch, query, setQuery, selector } =
-    useFindDoctorViewModel();
+  const t = useTranslations();
+  const { doctors, isLoading, isError, refetch, query, setQuery, selector } = useFindDoctorViewModel();
   const hasQuery = query.trim().length > 0;
 
   return (
     <Screen>
-      <Text accessibilityRole="header">Find Doctor</Text>
-      <LocationPicker selector={selector} />
-      <TextInput
-        accessibilityLabel="Search doctors"
-        placeholder="Doctor name or specialty"
-        value={query}
-        onChangeText={setQuery}
+      <FlatList
+        testID="find-doctor-list"
+        data={doctors}
+        keyExtractor={(doctor) => doctor.doctor_id}
+        renderItem={({ item }) => <DoctorResult doctor={item} />}
+        contentContainerStyle={styles.content}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <PageHeader title={t('doctors.findTitle')} subtitle="Connect with the right clinician for your care" />
+            <LocationPicker selector={selector} />
+            <View style={styles.searchGroup}>
+              <Text style={styles.searchLabel}>Search by name or specialty</Text>
+              <SearchBar accessibilityLabel={t('doctors.searchLabel')} placeholder={t('doctors.searchPlaceholder')} value={query} onChangeText={setQuery} />
+            </View>
+            {doctors.length > 0 ? <SectionHeader title="Doctors" detail={`${doctors.length} found`} /> : null}
+          </View>
+        }
+        ListEmptyComponent={
+          isLoading ? <LoadingState label="Finding doctors…" />
+            : isError ? <ErrorState onRetry={() => void refetch()} />
+              : hasQuery ? <EmptyState title="No doctors found" message="Try another name, specialty or location." icon="medkit-outline" />
+                : <EmptyState title="Start your search" message="Enter a doctor name or specialty to see available clinicians." icon="search-outline" />
+        }
       />
-
-      {isLoading ? <LoadingState /> : null}
-      {!isLoading && isError ? <ErrorState onRetry={() => void refetch()} /> : null}
-      {!isLoading && !isError && hasQuery && doctors.length === 0 ? (
-        <EmptyState message="No doctors found." />
-      ) : null}
-      {!isLoading && !isError && doctors.length > 0 ? (
-        <FlatList
-          testID="find-doctor-list"
-          data={doctors}
-          keyExtractor={(doctor) => doctor.doctor_id}
-          renderItem={({ item }) => <DoctorResult doctor={item} />}
-        />
-      ) : null}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  content: { paddingHorizontal: 22, paddingTop: 10, paddingBottom: 36 },
+  header: { gap: 24, marginBottom: 18 },
+  searchGroup: { gap: 9 },
+  searchLabel: { ...typography.metadata, color: colors.inkSoft, fontWeight: '700' },
+  separator: { height: 14 },
+});

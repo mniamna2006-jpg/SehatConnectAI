@@ -2,9 +2,177 @@
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",
-    "retry": "Try again"
+    "retry": "Try again",
+    "back": "Back",
+    "bookAppointment": "Book Appointment",
+    "useCurrentLocation": "Use Current Location",
+    "searchLocationManually": "Search Location Manually",
+    "or": "or",
+    "locationDenied": "Couldn't use your location. Search by city instead.",
+    "noResults": "No results found.",
+    "cancel": "Cancel",
+    "status": {
+      "BOOKED": "Booked",
+      "CONFIRMED": "Confirmed",
+      "CHECKED_IN": "Checked In",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "NO_SHOW": "No Show",
+      "WAITING": "Waiting",
+      "CALLED": "Called",
+      "SKIPPED": "Skipped"
+    }
   },
   "home": {
-    "greeting": "Welcome"
+    "greeting": "Welcome",
+    "prompt": "How can we help you today?",
+    "profile": "Profile",
+    "logout": "Logout",
+    "actions": {
+      "findHospital": {
+        "title": "Find Hospital",
+        "description": "Locate nearby hospitals and facilities"
+      },
+      "findDoctor": {
+        "title": "Find Doctor",
+        "description": "Search doctors by hospital or department"
+      },
+      "findDepartment": {
+        "title": "Find Department",
+        "description": "Browse departments and specialties"
+      }
+    },
+    "appointmentDetails": {
+      "title": "Appointment Details",
+      "description": "View bookings, history, and queue status"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editTitle": "Edit Profile",
+    "makeChanges": "Make Changes",
+    "save": "Save",
+    "cancel": "Cancel",
+    "readOnly": "read-only",
+    "sections": {
+      "personal": "Personal Information",
+      "contact": "Contact",
+      "emergency": "Emergency",
+      "preferences": "Preferences"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "city": "City",
+      "emergencyContact": "Emergency Contact",
+      "preferredLanguage": "Preferred Language"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue your care journey.",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "forgotPassword": "Forgot password?",
+      "submit": "Log In",
+      "footerPrompt": "New to SehatConnect?",
+      "footerAction": "Create an account"
+    },
+    "register": {
+      "title": "Create your account",
+      "sections": {
+        "personalDetails": "Personal details",
+        "accountSecurity": "Account security",
+        "languagePreference": "Language preference"
+      },
+      "fields": {
+        "fullName": "Full name",
+        "email": "Email",
+        "phone": "Phone number",
+        "password": "Password",
+        "confirmPassword": "Confirm password"
+      },
+      "languageOptions": {
+        "english": "English",
+        "urdu": "اردو",
+        "romanUrdu": "Roman Urdu"
+      },
+      "submit": "Create account",
+      "footerPrompt": "Already have an account?",
+      "footerAction": "Log in"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "body": "Enter your email address and we'll send next steps if we find a match.",
+      "fields": {
+        "email": "Email"
+      },
+      "submit": "Send reset link",
+      "success": {
+        "title": "Check your email",
+        "message": "If an account exists, reset instructions will be sent.",
+        "action": "Back to log in"
+      }
+    }
+  },
+  "hospitals": {
+    "findTitle": "Find Hospital",
+    "findContext": "Search hospitals near you",
+    "notFound": "Hospital not found.",
+    "workingHours": "Working Hours",
+    "departmentsTitle": "Departments",
+    "doctorsTitle": "Doctors"
+  },
+  "doctors": {
+    "findTitle": "Find Doctor",
+    "searchLabel": "Search doctors",
+    "searchPlaceholder": "Doctor name or specialty"
+  },
+  "departments": {
+    "findTitle": "Find Department",
+    "searchLabel": "Search departments",
+    "searchPlaceholder": "Department name",
+    "doctorsTitle": "Department Doctors"
+  },
+  "appointments": {
+    "tabs": {
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "noneInCategory": "No appointments in this category.",
+    "booking": {
+      "title": "Book Appointment",
+      "hospital": "Hospital",
+      "department": "Department",
+      "doctor": "Doctor",
+      "dateTime": "Date & Time",
+      "appointmentDate": "Appointment date",
+      "reason": "Reason",
+      "reasonPlaceholder": "Reason (optional)",
+      "confirm": "Confirm Booking",
+      "noSlots": "No available time slots. Try another date.",
+      "loadingHospitals": "Loading hospitals…",
+      "loadingDepartments": "Loading departments…",
+      "loadingDoctors": "Loading doctors…",
+      "loadingSlots": "Loading time slots…"
+    },
+    "queue": {
+      "yourToken": "Your Token",
+      "doctorLabel": "Doctor",
+      "hospitalLabel": "Hospital",
+      "appointmentTime": "Appointment time",
+      "estimatedWait": "Estimated wait",
+      "minutes": "minutes",
+      "empty": "No active queue entries."
+    }
   }
 }

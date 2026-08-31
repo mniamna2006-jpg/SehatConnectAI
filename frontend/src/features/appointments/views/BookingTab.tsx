@@ -1,110 +1,203 @@
-import React from 'react';
-import { Pressable, ScrollView, Text, TextInput } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Controller } from 'react-hook-form';
+import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
+import { Avatar } from '../../../shared/components/Avatar';
+import { AppButton } from '../../../shared/components/Buttons';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
+import { FormField } from '../../../shared/components/FormField';
 import { LoadingState } from '../../../shared/components/LoadingState';
+import { colors, radius, typography } from '../../../shared/theme';
+import { displayTime12h } from '../../../shared/utils/time';
 import type { AppointmentPrefill } from '../viewmodels/useAppointmentsViewModel';
 import { useAppointmentBookingViewModel } from '../viewmodels/useAppointmentBookingViewModel';
 
+function StageHeader({ icon, title, detail }: { icon: AppIconName; title: string; detail?: string }) {
+  return (
+    <View style={styles.stageHeader}>
+      <View style={styles.stageIcon}><AppIcon name={icon} color={colors.primary} size={19} /></View>
+      <View style={styles.stageHeadingCopy}><Text style={styles.stageTitle}>{title}</Text>{detail ? <Text style={styles.stageDetail}>{detail}</Text> : null}</View>
+    </View>
+  );
+}
+
+function nextSevenDays(): Date[] {
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() + index);
+    return date;
+  });
+}
+
+function toDateValue(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
   const vm = useAppointmentBookingViewModel(prefill);
+  const days = nextSevenDays();
 
   return (
-    <ScrollView keyboardShouldPersistTaps="handled">
-      <Text accessibilityRole="header">Book Appointment</Text>
+    <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <View style={styles.introCard}>
+        <View style={styles.introIcon}><AppIcon name="calendar-clear" color={colors.surface} size={27} /></View>
+        <View style={styles.introCopy}><Text accessibilityRole="header" style={styles.introTitle}>Book an appointment</Text><Text style={styles.introText}>Choose your care team, date and available time.</Text></View>
+      </View>
 
-      <Text>Hospital</Text>
-      {vm.isLoadingHospitals ? <LoadingState label="Loading hospitals…" /> : null}
-      {vm.hospitals.map((hospital) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: vm.hospitalId === hospital.hospital_id }}
-          key={hospital.hospital_id}
-          onPress={() => vm.onSelectHospital(hospital.hospital_id)}
-        >
-          <Text>{hospital.name}</Text>
-        </Pressable>
-      ))}
-      {vm.errors.hospital_id ? <Text>{vm.errors.hospital_id.message}</Text> : null}
-
-      <Text>Department</Text>
-      {vm.isLoadingDepartments ? <LoadingState label="Loading departments…" /> : null}
-      {vm.departments.map((department) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: vm.departmentId === department.department_id }}
-          key={department.department_id}
-          onPress={() => vm.onSelectDepartment(department.department_id)}
-        >
-          <Text>{department.name}</Text>
-        </Pressable>
-      ))}
-      {vm.errors.department_id ? <Text>{vm.errors.department_id.message}</Text> : null}
-
-      <Text>Doctor</Text>
-      {vm.isLoadingDoctors ? <LoadingState label="Loading doctors…" /> : null}
-      {vm.doctors.map((doctor) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: vm.doctorId === doctor.doctor_id }}
-          key={doctor.doctor_id}
-          onPress={() => vm.onSelectDoctor(doctor.doctor_id)}
-        >
-          <Text>{doctor.name}</Text>
-        </Pressable>
-      ))}
-      {vm.errors.doctor_id ? <Text>{vm.errors.doctor_id.message}</Text> : null}
-
-      <TextInput
-        accessibilityLabel="Appointment date"
-        placeholder="YYYY-MM-DD"
-        value={vm.selectedDate}
-        onChangeText={vm.onSelectDate}
-      />
-      {vm.isLoadingSlots ? <LoadingState label="Loading time slots…" /> : null}
-      {!vm.isLoadingSlots && vm.isSlotsError ? (
-        <ErrorState onRetry={() => void vm.refetchSlots()} />
-      ) : null}
-      {!vm.isLoadingSlots && !vm.isSlotsError && vm.selectedDate && vm.timeSlots.length === 0 ? (
-        <EmptyState message="No available time slots. Try another date." />
-      ) : null}
-      {vm.timeSlots.map((slot) => (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ selected: vm.selectedSlotId === slot.slot_id }}
-          key={slot.slot_id}
-          onPress={() => vm.onSelectSlot(slot.slot_id)}
-        >
-          <Text>{slot.start_time} - {slot.end_time}</Text>
-        </Pressable>
-      ))}
-      {vm.errors.slot_id ? <Text>{vm.errors.slot_id.message}</Text> : null}
-
-      <Controller
-        control={vm.control}
-        name="reason"
-        render={({ field }) => (
-          <TextInput
-            accessibilityLabel="Reason for appointment"
-            placeholder="Reason (optional)"
-            value={field.value ?? ''}
-            onBlur={field.onBlur}
-            onChangeText={field.onChange}
-            multiline
-          />
+      <View style={styles.stage}>
+        <StageHeader icon="business-outline" title="Choose Hospital" detail={vm.hospitalId ? 'Selected' : 'Start here'} />
+        {vm.isLoadingHospitals ? <LoadingState label="Loading hospitals…" /> : (
+          <View style={styles.entityList}>
+            {vm.hospitals.map((hospital) => {
+              const selected = vm.hospitalId === hospital.hospital_id;
+              return (
+                <Pressable key={hospital.hospital_id} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => vm.onSelectHospital(hospital.hospital_id)} style={({ pressed }) => [styles.entityRow, selected && styles.entityRowSelected, pressed && styles.pressed]}>
+                  <View style={[styles.entityIcon, selected && styles.entityIconSelected]}><AppIcon name="business" color={selected ? colors.surface : colors.teal} size={20} /></View>
+                  <Text style={[styles.entityName, selected && styles.entityNameSelected]}>{hospital.name}</Text>
+                  {selected ? <AppIcon name="checkmark-circle" color={colors.primary} size={22} /> : <AppIcon name="chevron-forward" color={colors.faint} size={19} />}
+                </Pressable>
+              );
+            })}
+            {!vm.isLoadingHospitals && vm.hospitals.length === 0 ? <Text style={styles.inlineEmpty}>No hospitals available.</Text> : null}
+          </View>
         )}
-      />
+        {vm.errors.hospital_id ? <Text style={styles.error}>{vm.errors.hospital_id.message}</Text> : null}
+      </View>
+
+      <View style={styles.stage}>
+        <StageHeader icon="grid-outline" title="Choose Department" detail={vm.departmentId ? 'Selected' : 'Select a hospital first'} />
+        {vm.isLoadingDepartments ? <LoadingState label="Loading departments…" /> : (
+          <View style={styles.departmentGrid}>
+            {vm.departments.map((department) => {
+              const selected = vm.departmentId === department.department_id;
+              return (
+                <Pressable key={department.department_id} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => vm.onSelectDepartment(department.department_id)} style={({ pressed }) => [styles.departmentOption, selected && styles.departmentOptionSelected, pressed && styles.pressed]}>
+                  <View style={[styles.departmentOptionIcon, selected && styles.departmentOptionIconSelected]}><AppIcon name="medical-outline" color={selected ? colors.surface : colors.primary} size={19} /></View>
+                  <Text style={[styles.departmentOptionText, selected && styles.entityNameSelected]} numberOfLines={2}>{department.name}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+        {vm.errors.department_id ? <Text style={styles.error}>{vm.errors.department_id.message}</Text> : null}
+      </View>
+
+      <View style={styles.stage}>
+        <StageHeader icon="medkit-outline" title="Choose Doctor" detail={vm.doctorId ? 'Selected' : undefined} />
+        {vm.isLoadingDoctors ? <LoadingState label="Loading doctors…" /> : (
+          <View style={styles.doctorList}>
+            {vm.doctors.map((doctor) => {
+              const selected = vm.doctorId === doctor.doctor_id;
+              return (
+                <Pressable key={doctor.doctor_id} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => vm.onSelectDoctor(doctor.doctor_id)} style={({ pressed }) => [styles.doctorOption, selected && styles.doctorOptionSelected, pressed && styles.pressed]}>
+                  <Avatar name={doctor.name} size={50} />
+                  <View style={styles.doctorCopy}><Text style={styles.doctorName}>{doctor.name}</Text>{doctor.specialization ? <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text> : null}</View>
+                  {selected ? <AppIcon name="checkmark-circle" color={colors.primary} size={22} /> : <AppIcon name="ellipse-outline" color={colors.faint} size={20} />}
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+        {vm.errors.doctor_id ? <Text style={styles.error}>{vm.errors.doctor_id.message}</Text> : null}
+      </View>
+
+      <View style={styles.stage}>
+        <StageHeader icon="calendar-outline" title="Choose Date" detail={vm.selectedDate || 'Next 7 days'} />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dateStrip}>
+          {days.map((date, index) => {
+            const value = toDateValue(date);
+            const selected = vm.selectedDate === value;
+            return (
+              <Pressable key={value} testID={`date-option-${index}`} accessibilityRole="radio" accessibilityState={{ selected }} onPress={() => vm.onSelectDate(value)} style={({ pressed }) => [styles.dateOption, selected && styles.dateOptionSelected, pressed && styles.pressed]}>
+                <Text style={[styles.dateDay, selected && styles.dateTextSelected]}>{date.toLocaleDateString('en-US', { weekday: 'short' })}</Text>
+                <Text style={[styles.dateNumber, selected && styles.dateTextSelected]}>{date.getDate()}</Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+        <FormField accessibilityLabel="Appointment date" label="Or enter a date" icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} />
+      </View>
+
+      <View style={styles.stage}>
+        <StageHeader icon="time-outline" title="Available Time" detail={vm.timeSlots.length > 0 ? `${vm.timeSlots.length} slots` : undefined} />
+        {vm.isLoadingSlots ? <LoadingState label="Loading time slots…" /> : null}
+        {!vm.isLoadingSlots && vm.isSlotsError ? <ErrorState onRetry={() => void vm.refetchSlots()} /> : null}
+        {!vm.isLoadingSlots && !vm.isSlotsError && vm.selectedDate && vm.timeSlots.length === 0 ? <EmptyState title="No times available" message="Try another date to see more time slots." icon="time-outline" /> : null}
+        <View style={styles.timeGrid}>
+          {vm.timeSlots.map((slot) => {
+            const selected = vm.selectedSlotId === slot.slot_id;
+            return (
+              <Pressable key={slot.slot_id} accessibilityRole="radio" accessibilityLabel={`${displayTime12h(slot.start_time_12h, slot.start_time)} to ${displayTime12h(slot.end_time_12h, slot.end_time)}`} accessibilityState={{ selected }} onPress={() => vm.onSelectSlot(slot.slot_id)} style={({ pressed }) => [styles.timeOption, selected && styles.timeOptionSelected, pressed && styles.pressed]}>
+                <Text style={[styles.timeText, selected && styles.timeTextSelected]}>{displayTime12h(slot.start_time_12h, slot.start_time)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        {vm.errors.slot_id ? <Text style={styles.error}>{vm.errors.slot_id.message}</Text> : null}
+      </View>
+
+      <View style={styles.stage}>
+        <StageHeader icon="document-text-outline" title="Reason for visit" detail="Optional" />
+        <Controller control={vm.control} name="reason" render={({ field }) => <FormField label="Reason" accessibilityLabel="Reason for appointment" placeholder="Tell the doctor what you need help with" value={field.value ?? ''} onBlur={field.onBlur} onChangeText={field.onChange} multiline />} />
+      </View>
 
       {vm.bookingError ? <ErrorState message={vm.bookingError} /> : null}
-      {vm.bookingSuccess ? <Text>{vm.bookingSuccess}</Text> : null}
-      <Pressable
-        accessibilityRole="button"
-        disabled={vm.isSubmitting}
-        onPress={vm.onSubmit}
-      >
-        <Text>{vm.isSubmitting ? 'Booking...' : 'Confirm Booking'}</Text>
-      </Pressable>
+      {vm.bookingSuccess ? <View style={styles.success}><AppIcon name="checkmark-circle" color={colors.success} size={22} /><Text style={styles.successText}>{vm.bookingSuccess}</Text></View> : null}
+      <AppButton label="Confirm Appointment" icon="checkmark-circle-outline" loading={vm.isSubmitting} onPress={vm.onSubmit} />
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  content: { paddingHorizontal: 22, paddingBottom: 44, gap: 26 },
+  introCard: { minHeight: 112, borderRadius: radius.lg, backgroundColor: colors.primary, padding: 18, flexDirection: 'row', alignItems: 'center', gap: 14 },
+  introIcon: { width: 56, height: 56, borderRadius: 18, backgroundColor: '#FFFFFF24', alignItems: 'center', justifyContent: 'center' },
+  introCopy: { flex: 1 },
+  introTitle: { ...typography.sectionTitle, color: colors.surface },
+  introText: { ...typography.body, color: '#DCE8FF', marginTop: 4 },
+  stage: { gap: 13 },
+  stageHeader: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  stageIcon: { width: 40, height: 40, borderRadius: 13, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  stageHeadingCopy: { flex: 1 },
+  stageTitle: { ...typography.entityTitle, color: colors.ink },
+  stageDetail: { ...typography.metadata, color: colors.muted, marginTop: 1 },
+  entityList: { gap: 10 },
+  entityRow: { minHeight: 64, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 11 },
+  entityRowSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  entityIcon: { width: 40, height: 40, borderRadius: 13, backgroundColor: colors.tealSoft, alignItems: 'center', justifyContent: 'center' },
+  entityIconSelected: { backgroundColor: colors.primary },
+  entityName: { ...typography.body, color: colors.ink, fontWeight: '700', flex: 1 },
+  entityNameSelected: { color: colors.primary },
+  inlineEmpty: { ...typography.body, color: colors.muted, paddingVertical: 8 },
+  departmentGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  departmentOption: { width: '48%', minHeight: 90, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, padding: 13, gap: 10 },
+  departmentOptionSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  departmentOptionIcon: { width: 34, height: 34, borderRadius: 11, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  departmentOptionIconSelected: { backgroundColor: colors.primary },
+  departmentOptionText: { ...typography.metadata, color: colors.ink, fontWeight: '700' },
+  doctorList: { gap: 10 },
+  doctorOption: { minHeight: 74, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, padding: 11, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  doctorOptionSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  doctorCopy: { flex: 1 },
+  doctorName: { ...typography.body, color: colors.ink, fontWeight: '700' },
+  doctorSpecialty: { ...typography.metadata, color: colors.muted, marginTop: 2 },
+  dateStrip: { gap: 10, paddingRight: 22 },
+  dateOption: { width: 66, minHeight: 82, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', gap: 4 },
+  dateOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  dateDay: { ...typography.metadata, color: colors.muted },
+  dateNumber: { fontSize: 22, lineHeight: 27, color: colors.ink, fontWeight: '800' },
+  dateTextSelected: { color: colors.surface },
+  timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  timeOption: { minWidth: '30%', minHeight: 48, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
+  timeOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  timeText: { ...typography.metadata, color: colors.ink, fontWeight: '700' },
+  timeTextSelected: { color: colors.surface },
+  error: { ...typography.metadata, color: colors.danger },
+  success: { minHeight: 58, borderRadius: radius.md, backgroundColor: colors.successSoft, flexDirection: 'row', alignItems: 'center', gap: 9, padding: 14 },
+  successText: { ...typography.body, color: colors.success, fontWeight: '600', flex: 1 },
+  pressed: { opacity: 0.76 },
+});
