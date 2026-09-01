@@ -307,5 +307,16 @@
       "minutes": "minute",
       "empty": "Koi active queue entry nahi."
     }
+  },
+  "hospitalAuth": {
+    "login": {
+      "title": "Hospital Sign In",
+      "subtitle": "Apna workspace manage karne ke liye hospital email se sign in karein.",
+      "fields": {
+        "email": "Work Email",
+        "password": "Password"
+      },
+      "submit": "Sign In"
+    }
   }
 }

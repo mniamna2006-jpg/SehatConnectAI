@@ -307,5 +307,16 @@
       "minutes": "minutes",
       "empty": "No active queue entries."
     }
+  },
+  "hospitalAuth": {
+    "login": {
+      "title": "Hospital sign in",
+      "subtitle": "Sign in with your hospital email to manage your workspace.",
+      "fields": {
+        "email": "Work email",
+        "password": "Password"
+      },
+      "submit": "Sign In"
+    }
   }
 }

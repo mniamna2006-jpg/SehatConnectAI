@@ -1,4 +1,4 @@
-import { getToken } from '../storage/secureStore';
+import { getToken, getHospitalToken } from '../storage/secureStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:5000';
 
@@ -15,9 +15,12 @@ interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
   auth?: boolean;
+  /** Which credential to attach — separate from patient auth so hospital (admin/staff) sessions never mix with patient sessions. */
+  scope?: 'patient' | 'hospital';
 }
 
 let unauthorizedHandler: (() => void) | null = null;
+let hospitalUnauthorizedHandler: (() => void) | null = null;
 
 export function registerUnauthorizedHandler(handler: () => void): () => void {
   unauthorizedHandler = handler;
@@ -26,12 +29,19 @@ export function registerUnauthorizedHandler(handler: () => void): () => void {
   };
 }
 
+export function registerHospitalUnauthorizedHandler(handler: () => void): () => void {
+  hospitalUnauthorizedHandler = handler;
+  return () => {
+    if (hospitalUnauthorizedHandler === handler) hospitalUnauthorizedHandler = null;
+  };
+}
+
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, auth = true } = options;
+  const { method = 'GET', body, auth = true, scope = 'patient' } = options;
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
 
   if (auth) {
-    const token = await getToken();
+    const token = await (scope === 'hospital' ? getHospitalToken() : getToken());
     if (token) headers.Authorization = `Bearer ${token}`;
   }
 
@@ -57,7 +67,9 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   if (!response.ok || json.success === false) {
-    if (auth && response.status === 401) unauthorizedHandler?.();
+    if (auth && response.status === 401) {
+      (scope === 'hospital' ? hospitalUnauthorizedHandler : unauthorizedHandler)?.();
+    }
     throw new ApiError(response.status, json.message ?? json.error ?? 'Request failed');
   }
 
