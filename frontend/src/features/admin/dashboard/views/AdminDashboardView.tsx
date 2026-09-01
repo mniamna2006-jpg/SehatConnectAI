@@ -12,7 +12,13 @@ import { SectionHeader } from '../../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../../shared/theme';
 import { useAdminDashboardViewModel } from '../viewmodels/useAdminDashboardViewModel';
 
-const QUICK_LINKS: { href: '/admin/analytics' | '/admin/profile'; icon: AppIconName; labelKey: string }[] = [
+const QUICK_LINKS: {
+  href: '/admin/analytics' | '/admin/departments' | '/admin/doctors' | '/admin/profile';
+  icon: AppIconName;
+  labelKey: string;
+}[] = [
+  { href: '/admin/departments', icon: 'layers-outline', labelKey: 'admin.dashboard.links.departments' },
+  { href: '/admin/doctors', icon: 'medkit-outline', labelKey: 'admin.dashboard.links.doctors' },
   { href: '/admin/analytics', icon: 'bar-chart-outline', labelKey: 'admin.dashboard.links.analytics' },
   { href: '/admin/profile', icon: 'business-outline', labelKey: 'admin.dashboard.links.profile' },
 ];

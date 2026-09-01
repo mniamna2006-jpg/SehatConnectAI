@@ -21,6 +21,9 @@ test('keeps Admin keys in parity across English, Urdu, and Roman Urdu', () => {
     'dashboard.subtitle',
     'profile.title',
     'analytics.title',
+    'departments.title',
+    'doctors.title',
+    'schedules.generation.title',
   ]));
 });
 
@@ -28,4 +31,6 @@ test('provides native Urdu and Roman Urdu Admin labels instead of English fallba
   expect(ur.admin.profile.title).toBe('ہسپتال پروفائل');
   expect(urRoman.admin.profile.title).toBe('Hospital Profile');
   expect(ur.admin.analytics.title).not.toBe(en.admin.analytics.title);
+  expect(ur.admin.departments.title).not.toBe(en.admin.departments.title);
+  expect(urRoman.admin.schedules.generation.title).not.toBe(en.admin.schedules.generation.title);
 });

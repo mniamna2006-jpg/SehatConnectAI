@@ -337,6 +337,8 @@
       "links": {
         "title": "Admin tools",
         "analytics": "Analytics",
+        "departments": "Departments",
+        "doctors": "Doctors",
         "profile": "Hospital profile"
       },
       "appointmentCountsTitle": "Appointment status",
@@ -424,6 +426,124 @@
       },
       "minutes": "min",
       "noBreakdown": "No breakdown data returned."
+    },
+    "departments": {
+      "title": "Departments",
+      "subtitle": "Manage the clinical departments at this hospital.",
+      "loading": "Loading departments…",
+      "emptyTitle": "No departments yet",
+      "empty": "Create the first department for this hospital.",
+      "add": "Add department",
+      "create": "Create department",
+      "save": "Save changes",
+      "edit": "Edit department",
+      "deactivate": "Deactivate department",
+      "deactivateTitle": "Deactivate department?",
+      "deactivateMessage": "This removes the department from active hospital listings.",
+      "deactivateConfirm": "Deactivate",
+      "noChanges": "No department changes to save.",
+      "fields": {
+        "name": "Department name",
+        "description": "Description"
+      },
+      "validation": {
+        "name": "Enter a department name with at least 2 characters."
+      },
+      "success": {
+        "created": "Department created.",
+        "updated": "Department updated.",
+        "deactivated": "Department deactivated."
+      }
+    },
+    "doctors": {
+      "title": "Doctors",
+      "subtitle": "Manage doctors assigned to this hospital and its departments.",
+      "loading": "Loading doctors…",
+      "emptyTitle": "No doctors yet",
+      "empty": "Add the first doctor for this hospital.",
+      "departmentRequired": "Create a department before adding a doctor.",
+      "add": "Add doctor",
+      "create": "Create doctor",
+      "save": "Save changes",
+      "edit": "Edit doctor",
+      "deactivate": "Deactivate doctor",
+      "schedules": "Manage schedules",
+      "deactivateTitle": "Deactivate doctor?",
+      "deactivateMessage": "This removes the doctor from active hospital listings.",
+      "deactivateConfirm": "Deactivate",
+      "noChanges": "No doctor changes to save.",
+      "fields": {
+        "department": "Department",
+        "name": "Doctor name",
+        "specialization": "Specialization",
+        "qualification": "Qualification",
+        "licenseNumber": "License number",
+        "bio": "Bio",
+        "consultationFee": "Consultation fee"
+      },
+      "validation": {
+        "department": "Select a department.",
+        "name": "Enter the doctor’s name.",
+        "specialization": "Enter a specialization.",
+        "licenseNumber": "Enter a license number.",
+        "consultationFee": "Enter a non-negative consultation fee."
+      },
+      "success": {
+        "created": "Doctor created.",
+        "updated": "Doctor updated.",
+        "deactivated": "Doctor deactivated."
+      }
+    },
+    "schedules": {
+      "subtitle": "Maintain this doctor’s recurring hours and generate dated appointment slots.",
+      "loading": "Loading doctor schedules…",
+      "doctorMissingTitle": "Doctor unavailable",
+      "doctorMissing": "This doctor is not active at your hospital.",
+      "add": "Add schedule",
+      "create": "Create schedule",
+      "weekly": "Weekly schedules",
+      "emptyTitle": "No schedules yet",
+      "empty": "Add recurring hours before generating time slots.",
+      "minutesPerAppointment": "minutes per appointment",
+      "fields": {
+        "day": "Day",
+        "startTime": "Start time (24-hour)",
+        "endTime": "End time (24-hour)",
+        "duration": "Appointment duration (minutes)"
+      },
+      "days": {
+        "MONDAY": "Monday",
+        "TUESDAY": "Tuesday",
+        "WEDNESDAY": "Wednesday",
+        "THURSDAY": "Thursday",
+        "FRIDAY": "Friday",
+        "SATURDAY": "Saturday",
+        "SUNDAY": "Sunday"
+      },
+      "statuses": {
+        "AVAILABLE": "Available",
+        "BOOKED": "Booked",
+        "BLOCKED": "Blocked",
+        "COMPLETED": "Completed"
+      },
+      "generation": {
+        "title": "Generate time slots",
+        "subtitle": "Choose a real date that matches an active weekly schedule.",
+        "date": "Slot date",
+        "submit": "Generate slots",
+        "generatedSingle": "time slot generated.",
+        "generatedMany": "time slots generated."
+      },
+      "validation": {
+        "time": "Use 24-hour time in HH:mm format.",
+        "duration": "Enter a positive whole number of minutes.",
+        "endAfterStart": "End time must be after start time.",
+        "durationFits": "Duration must fit within the schedule window.",
+        "date": "Enter a real date in YYYY-MM-DD format."
+      },
+      "success": {
+        "created": "Schedule created."
+      }
     }
   }
 }

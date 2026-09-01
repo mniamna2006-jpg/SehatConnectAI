@@ -337,6 +337,8 @@
       "links": {
         "title": "Admin tools",
         "analytics": "Analytics",
+        "departments": "Departments",
+        "doctors": "Doctors",
         "profile": "Hospital profile"
       },
       "appointmentCountsTitle": "Appointment status",
@@ -424,6 +426,124 @@
       },
       "minutes": "min",
       "noBreakdown": "Breakdown data wapas nahi aaya."
+    },
+    "departments": {
+      "title": "Departments",
+      "subtitle": "Is hospital ke clinical departments manage karein.",
+      "loading": "Departments load ho rahe hain…",
+      "emptyTitle": "Abhi koi department nahi",
+      "empty": "Is hospital ka pehla department banayein.",
+      "add": "Department shamil karein",
+      "create": "Department banayein",
+      "save": "Tabdeeliyan save karein",
+      "edit": "Department edit karein",
+      "deactivate": "Department deactivate karein",
+      "deactivateTitle": "Department deactivate karein?",
+      "deactivateMessage": "Is se department active hospital listings se hat jayega.",
+      "deactivateConfirm": "Deactivate karein",
+      "noChanges": "Save karne ke liye department mein koi tabdeeli nahi.",
+      "fields": {
+        "name": "Department ka naam",
+        "description": "Tafseel"
+      },
+      "validation": {
+        "name": "Kam az kam 2 huroof ka department naam likhein."
+      },
+      "success": {
+        "created": "Department ban gaya.",
+        "updated": "Department update ho gaya.",
+        "deactivated": "Department deactivate ho gaya."
+      }
+    },
+    "doctors": {
+      "title": "Doctors",
+      "subtitle": "Is hospital aur is ke departments ke doctors manage karein.",
+      "loading": "Doctors load ho rahe hain…",
+      "emptyTitle": "Abhi koi doctor nahi",
+      "empty": "Is hospital ka pehla doctor shamil karein.",
+      "departmentRequired": "Doctor shamil karne se pehle department banayein.",
+      "add": "Doctor shamil karein",
+      "create": "Doctor banayein",
+      "save": "Tabdeeliyan save karein",
+      "edit": "Doctor edit karein",
+      "deactivate": "Doctor deactivate karein",
+      "schedules": "Schedules manage karein",
+      "deactivateTitle": "Doctor deactivate karein?",
+      "deactivateMessage": "Is se doctor active hospital listings se hat jayega.",
+      "deactivateConfirm": "Deactivate karein",
+      "noChanges": "Save karne ke liye doctor mein koi tabdeeli nahi.",
+      "fields": {
+        "department": "Department",
+        "name": "Doctor ka naam",
+        "specialization": "Specialization",
+        "qualification": "Qualification",
+        "licenseNumber": "License number",
+        "bio": "Taaruf",
+        "consultationFee": "Consultation fee"
+      },
+      "validation": {
+        "department": "Department chunein.",
+        "name": "Doctor ka naam likhein.",
+        "specialization": "Specialization likhein.",
+        "licenseNumber": "License number likhein.",
+        "consultationFee": "Zero ya us se zyada consultation fee likhein."
+      },
+      "success": {
+        "created": "Doctor shamil ho gaya.",
+        "updated": "Doctor update ho gaya.",
+        "deactivated": "Doctor deactivate ho gaya."
+      }
+    },
+    "schedules": {
+      "subtitle": "Is doctor ke haftawar auqaat rakhein aur tareekh ke appointment slots banayein.",
+      "loading": "Doctor schedules load ho rahe hain…",
+      "doctorMissingTitle": "Doctor dastyab nahi",
+      "doctorMissing": "Yeh doctor aap ke hospital mein active nahi hai.",
+      "add": "Schedule shamil karein",
+      "create": "Schedule banayein",
+      "weekly": "Haftawar schedules",
+      "emptyTitle": "Abhi koi schedule nahi",
+      "empty": "Slots banane se pehle haftawar schedule shamil karein.",
+      "minutesPerAppointment": "minute har appointment",
+      "fields": {
+        "day": "Din",
+        "startTime": "Shuru ka waqt (24-hour)",
+        "endTime": "Khatam ka waqt (24-hour)",
+        "duration": "Appointment duration (minutes)"
+      },
+      "days": {
+        "MONDAY": "Peer",
+        "TUESDAY": "Mangal",
+        "WEDNESDAY": "Budh",
+        "THURSDAY": "Jumeraat",
+        "FRIDAY": "Jumma",
+        "SATURDAY": "Hafta",
+        "SUNDAY": "Itwaar"
+      },
+      "statuses": {
+        "AVAILABLE": "Dastyab",
+        "BOOKED": "Booked",
+        "BLOCKED": "Band",
+        "COMPLETED": "Mukammal"
+      },
+      "generation": {
+        "title": "Time slots banayein",
+        "subtitle": "Active haftawar schedule se milti hui asal tareekh chunein.",
+        "date": "Slot ki tareekh",
+        "submit": "Slots banayein",
+        "generatedSingle": "time slot ban gaya.",
+        "generatedMany": "time slots ban gaye."
+      },
+      "validation": {
+        "time": "24-hour HH:mm format mein waqt likhein.",
+        "duration": "Minutes mein musbat poora number likhein.",
+        "endAfterStart": "Khatam ka waqt shuru ke waqt ke baad hona chahiye.",
+        "durationFits": "Duration schedule window mein fit hona chahiye.",
+        "date": "YYYY-MM-DD format mein asal tareekh likhein."
+      },
+      "success": {
+        "created": "Schedule ban gaya."
+      }
     }
   }
 }

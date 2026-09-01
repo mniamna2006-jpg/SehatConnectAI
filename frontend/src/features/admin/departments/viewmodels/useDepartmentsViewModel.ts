@@ -7,13 +7,9 @@ import { useHospitalAuth } from '../../../../providers/HospitalAuthProvider';
 import { useTranslations } from '../../../../providers/LocaleProvider';
 import { queryKeys } from '../../../../shared/constants/queryKeys';
 import { createDepartment, deactivateDepartment, getDepartments, updateDepartment } from '../model/api';
+import { buildDepartmentUpdate } from '../model/mappers';
 import { departmentSchema } from '../model/schemas';
-import type { Department } from '../model/types';
-
-interface DepartmentFormValues {
-  name: string;
-  description?: string;
-}
+import type { Department, DepartmentFormValues } from '../model/types';
 
 export function useDepartmentsViewModel() {
   const { hospitalUser } = useHospitalAuth();
@@ -23,8 +19,9 @@ export function useDepartmentsViewModel() {
   const [editing, setEditing] = useState<Department | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const { data: departments = [], isLoading, isError, refetch } = useQuery({
+  const { data: departments = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: queryKeys.adminDepartments(hospitalId),
     queryFn: () => getDepartments(hospitalId),
     enabled: hospitalId.length > 0,
@@ -43,6 +40,7 @@ export function useDepartmentsViewModel() {
     setEditing(null);
     reset({ name: '', description: '' });
     setApiError(null);
+    setSuccessMessage(null);
     setFormOpen(true);
   };
 
@@ -50,6 +48,7 @@ export function useDepartmentsViewModel() {
     setEditing(department);
     reset({ name: department.name, description: department.description ?? '' });
     setApiError(null);
+    setSuccessMessage(null);
     setFormOpen(true);
   };
 
@@ -57,11 +56,23 @@ export function useDepartmentsViewModel() {
 
   const onSubmit = handleSubmit(async (values) => {
     setApiError(null);
+    setSuccessMessage(null);
     try {
       if (editing) {
-        await updateDepartment(editing.department_id, values);
+        const patch = buildDepartmentUpdate(editing, values);
+        if (Object.keys(patch).length === 0) {
+          setApiError(t('admin.departments.noChanges'));
+          return;
+        }
+        await updateDepartment(editing.department_id, patch);
+        setSuccessMessage(t('admin.departments.success.updated'));
       } else {
-        await createDepartment({ hospital_id: hospitalId, ...values });
+        await createDepartment({
+          hospital_id: hospitalId,
+          name: values.name.trim(),
+          description: values.description?.trim() || null,
+        });
+        setSuccessMessage(t('admin.departments.success.created'));
       }
       await invalidate();
       setFormOpen(false);
@@ -72,10 +83,21 @@ export function useDepartmentsViewModel() {
 
   const deactivateMutation = useMutation({
     mutationFn: (id: string) => deactivateDepartment(id),
-    onSuccess: () => invalidate(),
+    onSuccess: async () => {
+      await invalidate();
+      setApiError(null);
+      setSuccessMessage(t('admin.departments.success.deactivated'));
+    },
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : t('common.error');
+      setApiError(message);
+      Alert.alert(t('common.errorTitle'), message);
+    },
   });
 
   const confirmDeactivate = (department: Department) => {
+    setApiError(null);
+    setSuccessMessage(null);
     Alert.alert(
       t('admin.departments.deactivateTitle'),
       t('admin.departments.deactivateMessage'),
@@ -84,16 +106,7 @@ export function useDepartmentsViewModel() {
         {
           text: t('admin.departments.deactivateConfirm'),
           style: 'destructive',
-          onPress: () => {
-            deactivateMutation.mutate(department.department_id, {
-              onError: (err) => {
-                Alert.alert(
-                  t('common.errorTitle'),
-                  err instanceof Error ? err.message : t('common.error')
-                );
-              },
-            });
-          },
+          onPress: () => deactivateMutation.mutate(department.department_id),
         },
       ]
     );
@@ -103,6 +116,7 @@ export function useDepartmentsViewModel() {
     departments,
     isLoading,
     isError,
+    error,
     refetch,
     control,
     setValue,
@@ -110,6 +124,7 @@ export function useDepartmentsViewModel() {
     onSubmit,
     isSubmitting,
     apiError,
+    successMessage,
     formOpen,
     editing,
     openCreate,

@@ -69,14 +69,14 @@ test('renders only hospital information returned by the dashboard contract', asy
   expect(screen.getByTestId('today-appointments-section')).toBeOnTheScreen();
 });
 
-test('links only to the implemented profile and analytics screens', async () => {
+test('links only to implemented admin screens', async () => {
   (useAdminDashboardViewModel as jest.Mock).mockReturnValue({ dashboard: baseDashboard, isLoading: false, isError: false, refetch: jest.fn() });
   await render(<AdminDashboardView />);
 
   expect(screen.getByLabelText('/admin/profile')).toBeOnTheScreen();
   expect(screen.getByLabelText('/admin/analytics')).toBeOnTheScreen();
-  expect(screen.queryByLabelText('/admin/departments')).not.toBeOnTheScreen();
-  expect(screen.queryByLabelText('/admin/doctors')).not.toBeOnTheScreen();
+  expect(screen.getByLabelText('/admin/departments')).toBeOnTheScreen();
+  expect(screen.getByLabelText('/admin/doctors')).toBeOnTheScreen();
   expect(screen.queryByLabelText('/admin/staff')).not.toBeOnTheScreen();
   expect(screen.queryByLabelText('/admin/invitations')).not.toBeOnTheScreen();
 });

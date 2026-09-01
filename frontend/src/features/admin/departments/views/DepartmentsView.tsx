@@ -25,6 +25,16 @@ export function DepartmentsView() {
           right={<IconButton icon="add" label={t('admin.departments.add')} onPress={vm.openCreate} />}
         />
 
+        {vm.successMessage ? (
+          <View accessible accessibilityRole="alert" style={styles.successBanner}>
+            <Text style={styles.successText}>{vm.successMessage}</Text>
+          </View>
+        ) : null}
+
+        {vm.apiError ? (
+          <Text accessibilityRole="alert" style={styles.errorBanner}>{vm.apiError}</Text>
+        ) : null}
+
         {vm.formOpen ? (
           <View style={styles.form} testID="department-form">
             <Controller
@@ -37,7 +47,7 @@ export function DepartmentsView() {
                   icon="business-outline"
                   value={field.value ?? ''}
                   onChangeText={field.onChange}
-                  error={vm.errors.name?.message}
+                  error={vm.errors.name?.message ? t(vm.errors.name.message) : undefined}
                 />
               )}
             />
@@ -51,11 +61,10 @@ export function DepartmentsView() {
                   multiline
                   value={field.value ?? ''}
                   onChangeText={field.onChange}
-                  error={vm.errors.description?.message}
+                  error={vm.errors.description?.message ? t(vm.errors.description.message) : undefined}
                 />
               )}
             />
-            {vm.apiError ? <Text accessibilityRole="alert" testID="department-error" style={styles.error}>{vm.apiError}</Text> : null}
             <View style={styles.formActions}>
               <AppButton testID="department-cancel" label={t('common.cancel')} variant="quiet" onPress={vm.closeForm} style={styles.flexButton} />
               <AppButton testID="department-submit" label={vm.editing ? t('admin.departments.save') : t('admin.departments.create')} loading={vm.isSubmitting} onPress={vm.onSubmit} style={styles.flexButton} />
@@ -64,11 +73,11 @@ export function DepartmentsView() {
         ) : null}
 
         {vm.isLoading ? (
-          <LoadingState />
+          <LoadingState label={t('admin.departments.loading')} />
         ) : vm.isError ? (
-          <ErrorState onRetry={vm.refetch} />
+          <ErrorState message={vm.error instanceof Error ? vm.error.message : undefined} onRetry={() => void vm.refetch()} />
         ) : vm.departments.length === 0 ? (
-          <EmptyState icon="business-outline" message={t('admin.departments.empty')} />
+          <EmptyState icon="business-outline" title={t('admin.departments.emptyTitle')} message={t('admin.departments.empty')} />
         ) : (
           <FlatList
             data={vm.departments}
@@ -101,7 +110,9 @@ const styles = StyleSheet.create({
   form: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: 16, gap: 14, shadowColor: shadow.color, shadowOpacity: shadow.opacity, shadowRadius: shadow.radius, shadowOffset: shadow.offset, elevation: shadow.elevation },
   formActions: { flexDirection: 'row', gap: 10 },
   flexButton: { flex: 1 },
-  error: { ...typography.metadata, color: colors.danger },
+  successBanner: { backgroundColor: colors.successSoft, borderRadius: radius.md, paddingHorizontal: 14, paddingVertical: 12 },
+  successText: { ...typography.body, color: colors.success, fontWeight: '700' },
+  errorBanner: { ...typography.body, color: colors.danger, backgroundColor: colors.dangerSoft, borderRadius: radius.md, paddingHorizontal: 14, paddingVertical: 12 },
   list: { gap: 10, paddingBottom: 24 },
   row: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.lg, padding: 14, shadowColor: shadow.color, shadowOpacity: shadow.opacity, shadowRadius: shadow.radius, shadowOffset: shadow.offset, elevation: shadow.elevation },
   rowInfo: { flex: 1, gap: 4 },

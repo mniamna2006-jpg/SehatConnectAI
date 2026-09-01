@@ -9,10 +9,15 @@ export interface Department {
 export interface DepartmentInput {
   hospital_id: string;
   name: string;
-  description?: string;
+  description?: string | null;
 }
 
 export interface DepartmentUpdateInput {
   name?: string;
+  description?: string | null;
+}
+
+export interface DepartmentFormValues {
+  name: string;
   description?: string;
 }
