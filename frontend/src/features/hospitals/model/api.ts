@@ -1,6 +1,6 @@
 import { apiRequest } from '../../../core/api/client';
 import type { Coordinates } from '../../../core/location/useLocationSelector';
-import type { Hospital, HospitalDetail, HospitalLocation } from './types';
+import type { Hospital, HospitalDetail } from './types';
 
 export function getHospitals(): Promise<Hospital[]> {
   return apiRequest<Hospital[]>('/api/hospitals');
@@ -18,8 +18,4 @@ export function searchHospitalsByCity(city: string): Promise<Hospital[]> {
 
 export function getHospitalById(id: string): Promise<HospitalDetail> {
   return apiRequest<HospitalDetail>(`/api/hospitals/${id}`);
-}
-
-export function getHospitalLocation(id: string): Promise<HospitalLocation> {
-  return apiRequest<HospitalLocation>(`/api/hospitals/${id}/location`);
 }

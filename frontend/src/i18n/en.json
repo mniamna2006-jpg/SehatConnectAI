@@ -2,9 +2,310 @@
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",
-    "retry": "Try again"
+    "retry": "Try again",
+    "back": "Back",
+    "bookAppointment": "Book Appointment",
+    "useCurrentLocation": "Use Current Location",
+    "searchLocationManually": "Search Location Manually",
+    "or": "or",
+    "locationDenied": "Couldn't use your location. Search by city instead.",
+    "noResults": "No results found.",
+    "cancel": "Cancel",
+    "closed": "Closed",
+    "errorTitle": "We couldn't load this",
+    "emptyTitle": "Nothing here yet",
+    "goBack": "Go back",
+    "notProvided": "Not provided",
+    "found": "found",
+    "available": "available",
+    "selected": "Selected",
+    "optional": "Optional",
+    "to": "to",
+    "patient": "Patient",
+    "status": {
+      "BOOKED": "Booked",
+      "CONFIRMED": "Confirmed",
+      "CHECKED_IN": "Checked In",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "NO_SHOW": "No Show",
+      "WAITING": "Waiting",
+      "CALLED": "Called",
+      "SKIPPED": "Skipped"
+    }
   },
   "home": {
-    "greeting": "Welcome"
+    "greeting": "Welcome",
+    "morning": "Good morning,",
+    "afternoon": "Good afternoon,",
+    "evening": "Good evening,",
+    "prompt": "How can we help you today?",
+    "profile": "Profile",
+    "logout": "Logout",
+    "openProfile": "Open profile",
+    "heroTitle": "Care starts with the right place",
+    "heroBody": "Discover hospitals, departments and doctors without the guesswork.",
+    "exploreTitle": "Explore care",
+    "exploreSubtitle": "Choose a service to get started",
+    "actions": {
+      "findHospital": {
+        "title": "Find Hospital",
+        "description": "Locate nearby hospitals and facilities"
+      },
+      "findDoctor": {
+        "title": "Find Doctor",
+        "description": "Search doctors by hospital or department"
+      },
+      "findDepartment": {
+        "title": "Find Department",
+        "description": "Browse departments and specialties"
+      }
+    },
+    "appointmentDetails": {
+      "title": "Appointment Details",
+      "description": "View bookings, history, and queue status"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editTitle": "Edit Profile",
+    "subtitle": "Your personal and contact information",
+    "editSubtitle": "Keep your details accurate and up to date",
+    "loading": "Loading your profile…",
+    "emailNotProvided": "Email not provided",
+    "saveError": "Unable to save your changes. Please try again.",
+    "makeChanges": "Make Changes",
+    "save": "Save",
+    "cancel": "Cancel",
+    "readOnly": "read-only",
+    "sections": {
+      "personal": "Personal Information",
+      "personalDetails": "Personal details",
+      "contact": "Contact",
+      "contactAddress": "Contact and address",
+      "emergency": "Emergency",
+      "preferences": "Preferences",
+      "language": "Language"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "city": "City",
+      "emergencyContact": "Emergency Contact",
+      "preferredLanguage": "Preferred Language"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue your care journey.",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "forgotPassword": "Forgot password?",
+      "submit": "Log In",
+      "footerPrompt": "New to SehatConnect?",
+      "footerAction": "Create an account"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "A few details help us personalize your care experience.",
+      "sections": {
+        "personalDetails": "Personal details",
+        "accountSecurity": "Account security",
+        "languagePreference": "Language preference",
+        "account": "Account",
+        "contact": "Contact",
+        "language": "Language"
+      },
+      "fields": {
+        "fullName": "Full name",
+        "email": "Email",
+        "phone": "Phone number",
+        "password": "Password",
+        "confirmPassword": "Confirm password"
+      },
+      "languageOptions": {
+        "english": "English",
+        "urdu": "اردو",
+        "romanUrdu": "Roman Urdu"
+      },
+      "submit": "Create account",
+      "footerPrompt": "Already have an account?",
+      "footerAction": "Log in",
+      "placeholders": {
+        "fullName": "Your full name",
+        "password": "Create a password",
+        "confirmPassword": "Enter it again",
+        "phone": "Your phone number"
+      }
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "body": "Enter your email address and we'll send next steps if we find a match.",
+      "fields": {
+        "email": "Email"
+      },
+      "submit": "Send reset link",
+      "success": {
+        "title": "Check your email",
+        "message": "If an account exists, reset instructions will be sent.",
+        "action": "Back to log in"
+      }
+    }
+  },
+  "location": {
+    "title": "Your location",
+    "subtitle": "Find care close to you",
+    "divider": "or enter your city",
+    "cityLabel": "City or area",
+    "placeholder": "e.g. Gulshan-e-Iqbal, Karachi"
+  },
+  "hospitals": {
+    "findTitle": "Find Hospital",
+    "findContext": "Search hospitals near you",
+    "notFound": "Hospital not found.",
+    "getDirections": "Get Directions",
+    "workingHours": "Working Hours",
+    "departmentsTitle": "Departments",
+    "doctorsTitle": "Doctors",
+    "resultsTitle": "Hospitals near you",
+    "fallbackLocation": "Location available in details",
+    "distanceAway": "km away",
+    "loading": "Finding hospitals…",
+    "emptyTitle": "No hospitals found",
+    "emptyMessage": "Try another city or use your current location.",
+    "profileTitle": "Hospital Profile",
+    "loadingProfile": "Loading hospital profile…",
+    "unavailableTitle": "Hospital not found",
+    "unavailableMessage": "This hospital profile is not available.",
+    "hoursAvailable": "Working hours available",
+    "about": "About",
+    "contactInformation": "Contact information",
+    "phone": "Phone",
+    "email": "Email"
+  },
+  "doctors": {
+    "findTitle": "Find Doctor",
+    "searchLabel": "Search doctors",
+    "searchPlaceholder": "Doctor name or specialty",
+    "subtitle": "Connect with the right clinician for your care",
+    "searchPrompt": "Search by name or specialty",
+    "resultsTitle": "Doctors",
+    "loading": "Finding doctors…",
+    "emptyTitle": "No doctors found",
+    "emptyMessage": "Try another name, specialty or location.",
+    "startTitle": "Start your search",
+    "startMessage": "Enter a doctor name or specialty to see available clinicians.",
+    "availableTimings": "Available Timings",
+    "scheduleUnavailable": "Schedule not available"
+  },
+  "departments": {
+    "findTitle": "Find Department",
+    "searchLabel": "Search departments",
+    "searchPlaceholder": "Department name",
+    "doctorsTitle": "Department Doctors",
+    "subtitle": "Browse care by medical specialty",
+    "scopedSubtitle": "Explore departments at this hospital",
+    "directoryTitle": "Hospital directory",
+    "directoryMessage": "Choose a department to view its doctors",
+    "browseTitle": "Browse Departments",
+    "viewDoctors": "View available doctors",
+    "loading": "Loading departments…",
+    "emptyTitle": "No departments found",
+    "emptyMessage": "Try a broader department name or another location.",
+    "startTitle": "Search the directory",
+    "startMessage": "Enter a specialty to browse matching departments.",
+    "doctorsSubtitle": "Find the right specialist for your care",
+    "identityTitle": "Specialist care team",
+    "identityMessage": "Doctors currently available in this department",
+    "availableDoctors": "Available Doctors",
+    "loadingDoctors": "Loading doctors…",
+    "noDoctorsTitle": "No doctors available",
+    "noDoctorsMessage": "Please check again later or browse another department."
+  },
+  "appointments": {
+    "title": "Appointments",
+    "subtitle": "Book and manage your care",
+    "mainTabs": {
+      "booking": "Booking",
+      "history": "History",
+      "queue": "Queue"
+    },
+    "tabs": {
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "noneInCategory": "No appointments in this category.",
+    "booking": {
+      "title": "Book Appointment",
+      "introTitle": "Book an appointment",
+      "introMessage": "Choose your care team, date and available time.",
+      "chooseHospital": "Choose Hospital",
+      "startHere": "Start here",
+      "noHospitals": "No hospitals available.",
+      "chooseDepartment": "Choose Department",
+      "selectHospitalFirst": "Select a hospital first",
+      "chooseDoctor": "Choose Doctor",
+      "chooseDate": "Choose Date",
+      "nextSevenDays": "Next 7 days",
+      "enterDate": "Or enter a date",
+      "availableTime": "Available Time",
+      "slots": "slots",
+      "noTimesTitle": "No times available",
+      "noTimesMessage": "Try another date to see more time slots.",
+      "reasonForVisit": "Reason for visit",
+      "reasonAccessibility": "Reason for appointment",
+      "reasonHelpPlaceholder": "Tell the doctor what you need help with",
+      "confirmAppointment": "Confirm Appointment",
+      "slotTaken": "This slot was just taken",
+      "failed": "Booking failed. Please try again.",
+      "booked": "Booked",
+      "hospital": "Hospital",
+      "department": "Department",
+      "doctor": "Doctor",
+      "dateTime": "Date & Time",
+      "appointmentDate": "Appointment date",
+      "reason": "Reason",
+      "reasonPlaceholder": "Reason (optional)",
+      "confirm": "Confirm Booking",
+      "noSlots": "No available time slots. Try another date.",
+      "loadingHospitals": "Loading hospitals…",
+      "loadingDepartments": "Loading departments…",
+      "loadingDoctors": "Loading doctors…",
+      "loadingSlots": "Loading time slots…"
+    },
+    "history": {
+      "title": "Appointment history",
+      "subtitle": "Your scheduled and past care",
+      "loading": "Loading appointments…",
+      "emptyTitle": "No appointments here",
+      "emptyMessage": "Appointments in this category will appear here.",
+      "date": "Date",
+      "time": "Time",
+      "bookingReference": "Booking reference",
+      "cancelling": "Cancelling..."
+    },
+    "queue": {
+      "title": "Queue status",
+      "subtitle": "Follow your active token and estimated wait",
+      "checking": "Checking your queue…",
+      "emptyTitle": "No active queue",
+      "emptyMessage": "Your token will appear here after check-in.",
+      "yourToken": "Your Token",
+      "doctorLabel": "Doctor reference",
+      "hospitalLabel": "Hospital reference",
+      "appointmentTime": "Appointment time",
+      "estimatedWait": "Estimated wait",
+      "minutes": "minutes",
+      "empty": "No active queue entries."
+    }
   }
 }

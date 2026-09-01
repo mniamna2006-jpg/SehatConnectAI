@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "SehatConnect",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -28,7 +28,14 @@
       "expo-secure-store",
       "expo-image",
       "expo-localization",
-      ["expo-location", { "locationWhenInUsePermission": "Allow SehatConnectAI to use your location to find nearby hospitals." }]
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow SehatConnectAI to use your location to find nearby hospitals."
+        }
+      ],
+      "expo-asset",
+      "expo-font"
     ]
   }
 }

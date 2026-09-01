@@ -64,7 +64,7 @@ test('shows each doctor hospital, available schedule, and booking action', async
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
   expect(screen.getByText('MONDAY')).toBeOnTheScreen();
   expect(screen.getByText('Available Timings')).toBeOnTheScreen();
-  expect(screen.getByText('09:00 - 12:00')).toBeOnTheScreen();
+  expect(screen.getByText('9:00 AM - 12:00 PM')).toBeOnTheScreen();
   expect(screen.getByText('Book Appointment')).toBeOnTheScreen();
   expect(
     screen.getByLabelText('/appointments?doctorId=d1&hospitalId=h1&departmentId=dep1')

@@ -3,6 +3,10 @@ import { apiRequest } from '../../../../core/api/client';
 
 jest.mock('../../../../core/api/client');
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 test('login posts credentials without auth header and returns AuthResult', async () => {
   (apiRequest as jest.Mock).mockResolvedValue({ token: 't', user: { user_id: '1' } });
   const result = await login({ email: 'a@b.com', password: 'secret1' });
@@ -28,4 +32,10 @@ test('getMe calls GET /api/auth/me with auth', async () => {
   (apiRequest as jest.Mock).mockResolvedValue({ user_id: '1' });
   await getMe();
   expect(apiRequest).toHaveBeenCalledWith('/api/auth/me');
+});
+
+test('a login API failure rejects', async () => {
+  (apiRequest as jest.Mock).mockRejectedValue(new Error('network down'));
+
+  await expect(login({ email: 'a@b.com', password: 'secret1' })).rejects.toThrow('network down');
 });

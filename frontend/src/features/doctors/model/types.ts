@@ -6,6 +6,8 @@ export interface DoctorSchedule {
   day_of_week: DayOfWeek;
   start_time: string;
   end_time: string;
+  start_time_12h?: string;
+  end_time_12h?: string;
   appointment_duration: number;
   is_active: boolean;
 }

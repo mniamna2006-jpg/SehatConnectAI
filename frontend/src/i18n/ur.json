@@ -2,9 +2,310 @@
   "common": {
     "loading": "لوڈ ہو رہا ہے…",
     "error": "کچھ غلط ہو گیا",
-    "retry": "دوبارہ کوشش کریں"
+    "retry": "دوبارہ کوشش کریں",
+    "back": "واپس",
+    "bookAppointment": "اپائنٹمنٹ بک کریں",
+    "useCurrentLocation": "موجودہ مقام استعمال کریں",
+    "searchLocationManually": "مقام دستی طور پر تلاش کریں",
+    "or": "یا",
+    "locationDenied": "آپ کا مقام استعمال نہیں ہو سکا۔ شہر سے تلاش کریں۔",
+    "noResults": "کوئی نتیجہ نہیں ملا۔",
+    "cancel": "منسوخ کریں",
+    "closed": "بند",
+    "errorTitle": "ہم یہ لوڈ نہیں کر سکے",
+    "emptyTitle": "ابھی یہاں کچھ نہیں",
+    "goBack": "واپس جائیں",
+    "notProvided": "معلومات موجود نہیں",
+    "found": "ملے",
+    "available": "دستیاب",
+    "selected": "منتخب",
+    "optional": "اختیاری",
+    "to": "سے",
+    "patient": "مریض",
+    "status": {
+      "BOOKED": "بک شدہ",
+      "CONFIRMED": "تصدیق شدہ",
+      "CHECKED_IN": "چیک اِن",
+      "IN_PROGRESS": "جاری",
+      "COMPLETED": "مکمل",
+      "CANCELLED": "منسوخ شدہ",
+      "NO_SHOW": "حاضر نہیں ہوا",
+      "WAITING": "انتظار میں",
+      "CALLED": "بلایا گیا",
+      "SKIPPED": "چھوڑ دیا گیا"
+    }
   },
   "home": {
-    "greeting": "خوش آمدید"
+    "greeting": "خوش آمدید",
+    "morning": "صبح بخیر،",
+    "afternoon": "دوپہر بخیر،",
+    "evening": "شام بخیر،",
+    "prompt": "آج ہم آپ کی کیسے مدد کر سکتے ہیں؟",
+    "profile": "پروفائل",
+    "logout": "لاگ آؤٹ",
+    "openProfile": "پروفائل کھولیں",
+    "heroTitle": "بہتر نگہداشت صحیح جگہ سے شروع ہوتی ہے",
+    "heroBody": "ہسپتال، شعبے اور ڈاکٹر آسانی سے تلاش کریں۔",
+    "exploreTitle": "نگہداشت تلاش کریں",
+    "exploreSubtitle": "شروع کرنے کے لیے سروس منتخب کریں",
+    "actions": {
+      "findHospital": {
+        "title": "ہسپتال تلاش کریں",
+        "description": "قریبی ہسپتال اور سہولیات تلاش کریں"
+      },
+      "findDoctor": {
+        "title": "ڈاکٹر تلاش کریں",
+        "description": "ہسپتال یا شعبے کے مطابق ڈاکٹر تلاش کریں"
+      },
+      "findDepartment": {
+        "title": "شعبہ تلاش کریں",
+        "description": "شعبہ جات اور مہارتیں دیکھیں"
+      }
+    },
+    "appointmentDetails": {
+      "title": "اپائنٹمنٹ کی تفصیلات",
+      "description": "بکنگز، ہسٹری اور قطار کی صورتحال دیکھیں"
+    }
+  },
+  "profile": {
+    "title": "پروفائل",
+    "editTitle": "پروفائل میں ترمیم کریں",
+    "subtitle": "آپ کی ذاتی اور رابطے کی معلومات",
+    "editSubtitle": "اپنی معلومات درست اور تازہ رکھیں",
+    "loading": "آپ کا پروفائل لوڈ ہو رہا ہے…",
+    "emailNotProvided": "ای میل موجود نہیں",
+    "saveError": "تبدیلیاں محفوظ نہیں ہو سکیں۔ دوبارہ کوشش کریں۔",
+    "makeChanges": "تبدیلیاں کریں",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ کریں",
+    "readOnly": "صرف پڑھنے کے لیے",
+    "sections": {
+      "personal": "ذاتی معلومات",
+      "personalDetails": "ذاتی تفصیلات",
+      "contact": "رابطہ",
+      "contactAddress": "رابطہ اور پتہ",
+      "emergency": "ہنگامی رابطہ",
+      "preferences": "ترجیحات",
+      "language": "زبان"
+    },
+    "fields": {
+      "fullName": "پورا نام",
+      "dateOfBirth": "تاریخ پیدائش",
+      "gender": "جنس",
+      "email": "ای میل",
+      "phone": "فون",
+      "address": "پتہ",
+      "city": "شہر",
+      "emergencyContact": "ہنگامی رابطہ",
+      "preferredLanguage": "پسندیدہ زبان"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "واپس خوش آمدید",
+      "subtitle": "اپنی نگہداشت کے سفر کو جاری رکھنے کے لیے سائن اِن کریں۔",
+      "fields": {
+        "email": "ای میل",
+        "password": "پاس ورڈ"
+      },
+      "forgotPassword": "پاس ورڈ بھول گئے؟",
+      "submit": "لاگ اِن",
+      "footerPrompt": "SehatConnect پر نئے ہیں؟",
+      "footerAction": "اکاؤنٹ بنائیں"
+    },
+    "register": {
+      "title": "اپنا اکاؤنٹ بنائیں",
+      "subtitle": "چند معلومات سے ہم آپ کی نگہداشت بہتر بنا سکتے ہیں۔",
+      "sections": {
+        "personalDetails": "ذاتی تفصیلات",
+        "accountSecurity": "اکاؤنٹ سیکیورٹی",
+        "languagePreference": "زبان کی ترجیح",
+        "account": "اکاؤنٹ",
+        "contact": "رابطہ",
+        "language": "زبان"
+      },
+      "fields": {
+        "fullName": "پورا نام",
+        "email": "ای میل",
+        "phone": "فون نمبر",
+        "password": "پاس ورڈ",
+        "confirmPassword": "پاس ورڈ کی تصدیق کریں"
+      },
+      "languageOptions": {
+        "english": "English",
+        "urdu": "اردو",
+        "romanUrdu": "Roman Urdu"
+      },
+      "submit": "اکاؤنٹ بنائیں",
+      "footerPrompt": "کیا آپ کے پاس پہلے سے اکاؤنٹ ہے؟",
+      "footerAction": "لاگ اِن",
+      "placeholders": {
+        "fullName": "اپنا پورا نام",
+        "password": "پاس ورڈ بنائیں",
+        "confirmPassword": "دوبارہ درج کریں",
+        "phone": "اپنا فون نمبر"
+      }
+    },
+    "forgot": {
+      "title": "اپنا پاس ورڈ ری سیٹ کریں",
+      "body": "اپنا ای میل درج کریں، اگر اکاؤنٹ ملا تو ہم اگلے مراحل بھیج دیں گے۔",
+      "fields": {
+        "email": "ای میل"
+      },
+      "submit": "ری سیٹ لنک بھیجیں",
+      "success": {
+        "title": "اپنا ای میل دیکھیں",
+        "message": "اگر اکاؤنٹ موجود ہوا تو ری سیٹ کی ہدایات بھیج دی جائیں گی۔",
+        "action": "لاگ اِن پر واپس جائیں"
+      }
+    }
+  },
+  "location": {
+    "title": "آپ کا مقام",
+    "subtitle": "اپنے قریب نگہداشت تلاش کریں",
+    "divider": "یا اپنا شہر درج کریں",
+    "cityLabel": "شہر یا علاقہ",
+    "placeholder": "مثال: گلشن اقبال، کراچی"
+  },
+  "hospitals": {
+    "findTitle": "ہسپتال تلاش کریں",
+    "findContext": "اپنے قریب ہسپتال تلاش کریں",
+    "notFound": "ہسپتال نہیں ملا۔",
+    "getDirections": "راستہ دکھائیں",
+    "workingHours": "اوقاتِ کار",
+    "departmentsTitle": "شعبہ جات",
+    "doctorsTitle": "ڈاکٹرز",
+    "resultsTitle": "آپ کے قریب ہسپتال",
+    "fallbackLocation": "مقام کی معلومات تفصیلات میں ہیں",
+    "distanceAway": "کلومیٹر دور",
+    "loading": "ہسپتال تلاش ہو رہے ہیں…",
+    "emptyTitle": "کوئی ہسپتال نہیں ملا",
+    "emptyMessage": "دوسرا شہر یا موجودہ مقام آزمائیں۔",
+    "profileTitle": "ہسپتال پروفائل",
+    "loadingProfile": "ہسپتال پروفائل لوڈ ہو رہا ہے…",
+    "unavailableTitle": "ہسپتال نہیں ملا",
+    "unavailableMessage": "یہ ہسپتال پروفائل دستیاب نہیں۔",
+    "hoursAvailable": "اوقاتِ کار دستیاب ہیں",
+    "about": "تعارف",
+    "contactInformation": "رابطے کی معلومات",
+    "phone": "فون",
+    "email": "ای میل"
+  },
+  "doctors": {
+    "findTitle": "ڈاکٹر تلاش کریں",
+    "searchLabel": "ڈاکٹر تلاش کریں",
+    "searchPlaceholder": "ڈاکٹر کا نام یا شعبہ",
+    "subtitle": "اپنی نگہداشت کے لیے صحیح ڈاکٹر سے رابطہ کریں",
+    "searchPrompt": "نام یا مہارت سے تلاش کریں",
+    "resultsTitle": "ڈاکٹرز",
+    "loading": "ڈاکٹر تلاش ہو رہے ہیں…",
+    "emptyTitle": "کوئی ڈاکٹر نہیں ملا",
+    "emptyMessage": "دوسرا نام، مہارت یا مقام آزمائیں۔",
+    "startTitle": "تلاش شروع کریں",
+    "startMessage": "دستیاب ڈاکٹر دیکھنے کے لیے نام یا مہارت درج کریں۔",
+    "availableTimings": "دستیاب اوقات",
+    "scheduleUnavailable": "شیڈول دستیاب نہیں"
+  },
+  "departments": {
+    "findTitle": "شعبہ تلاش کریں",
+    "searchLabel": "شعبہ تلاش کریں",
+    "searchPlaceholder": "شعبے کا نام",
+    "doctorsTitle": "شعبے کے ڈاکٹرز",
+    "subtitle": "طبی مہارت کے مطابق نگہداشت تلاش کریں",
+    "scopedSubtitle": "اس ہسپتال کے شعبے دیکھیں",
+    "directoryTitle": "ہسپتال ڈائریکٹری",
+    "directoryMessage": "ڈاکٹر دیکھنے کے لیے شعبہ منتخب کریں",
+    "browseTitle": "شعبے دیکھیں",
+    "viewDoctors": "دستیاب ڈاکٹر دیکھیں",
+    "loading": "شعبے لوڈ ہو رہے ہیں…",
+    "emptyTitle": "کوئی شعبہ نہیں ملا",
+    "emptyMessage": "وسیع نام یا دوسرا مقام آزمائیں۔",
+    "startTitle": "ڈائریکٹری تلاش کریں",
+    "startMessage": "متعلقہ شعبوں کے لیے مہارت درج کریں۔",
+    "doctorsSubtitle": "اپنی نگہداشت کے لیے صحیح ماہر تلاش کریں",
+    "identityTitle": "ماہر نگہداشت ٹیم",
+    "identityMessage": "اس شعبے میں موجود ڈاکٹر",
+    "availableDoctors": "دستیاب ڈاکٹر",
+    "loadingDoctors": "ڈاکٹر لوڈ ہو رہے ہیں…",
+    "noDoctorsTitle": "کوئی ڈاکٹر دستیاب نہیں",
+    "noDoctorsMessage": "بعد میں دوبارہ دیکھیں یا دوسرا شعبہ منتخب کریں۔"
+  },
+  "appointments": {
+    "title": "اپائنٹمنٹس",
+    "subtitle": "اپنی نگہداشت بک اور منظم کریں",
+    "mainTabs": {
+      "booking": "بکنگ",
+      "history": "ہسٹری",
+      "queue": "قطار"
+    },
+    "tabs": {
+      "upcoming": "آئندہ",
+      "completed": "مکمل",
+      "cancelled": "منسوخ شدہ"
+    },
+    "noneInCategory": "اس زمرے میں کوئی اپائنٹمنٹ نہیں۔",
+    "booking": {
+      "title": "اپائنٹمنٹ بک کریں",
+      "introTitle": "اپائنٹمنٹ بک کریں",
+      "introMessage": "اپنی نگہداشت ٹیم، تاریخ اور دستیاب وقت منتخب کریں۔",
+      "chooseHospital": "ہسپتال منتخب کریں",
+      "startHere": "یہاں سے شروع کریں",
+      "noHospitals": "کوئی ہسپتال دستیاب نہیں۔",
+      "chooseDepartment": "شعبہ منتخب کریں",
+      "selectHospitalFirst": "پہلے ہسپتال منتخب کریں",
+      "chooseDoctor": "ڈاکٹر منتخب کریں",
+      "chooseDate": "تاریخ منتخب کریں",
+      "nextSevenDays": "اگلے 7 دن",
+      "enterDate": "یا تاریخ درج کریں",
+      "availableTime": "دستیاب وقت",
+      "slots": "اوقات",
+      "noTimesTitle": "کوئی وقت دستیاب نہیں",
+      "noTimesMessage": "مزید اوقات کے لیے دوسری تاریخ آزمائیں۔",
+      "reasonForVisit": "ملاقات کی وجہ",
+      "reasonAccessibility": "اپائنٹمنٹ کی وجہ",
+      "reasonHelpPlaceholder": "ڈاکٹر کو بتائیں آپ کو کس مدد کی ضرورت ہے",
+      "confirmAppointment": "اپائنٹمنٹ کی تصدیق کریں",
+      "slotTaken": "یہ وقت ابھی کسی اور نے لے لیا",
+      "failed": "بکنگ نہیں ہو سکی۔ دوبارہ کوشش کریں۔",
+      "booked": "بک ہو گیا",
+      "hospital": "ہسپتال",
+      "department": "شعبہ",
+      "doctor": "ڈاکٹر",
+      "dateTime": "تاریخ اور وقت",
+      "appointmentDate": "اپائنٹمنٹ کی تاریخ",
+      "reason": "وجہ",
+      "reasonPlaceholder": "وجہ (اختیاری)",
+      "confirm": "بکنگ کی تصدیق کریں",
+      "noSlots": "کوئی وقت دستیاب نہیں۔ دوسری تاریخ آزمائیں۔",
+      "loadingHospitals": "ہسپتال لوڈ ہو رہے ہیں…",
+      "loadingDepartments": "شعبہ جات لوڈ ہو رہے ہیں…",
+      "loadingDoctors": "ڈاکٹرز لوڈ ہو رہے ہیں…",
+      "loadingSlots": "اوقات لوڈ ہو رہے ہیں…"
+    },
+    "history": {
+      "title": "اپائنٹمنٹ ہسٹری",
+      "subtitle": "آپ کی آئندہ اور سابقہ نگہداشت",
+      "loading": "اپائنٹمنٹس لوڈ ہو رہی ہیں…",
+      "emptyTitle": "یہاں کوئی اپائنٹمنٹ نہیں",
+      "emptyMessage": "اس زمرے کی اپائنٹمنٹس یہاں نظر آئیں گی۔",
+      "date": "تاریخ",
+      "time": "وقت",
+      "bookingReference": "بکنگ حوالہ",
+      "cancelling": "منسوخ ہو رہی ہے..."
+    },
+    "queue": {
+      "title": "قطار کی صورتحال",
+      "subtitle": "اپنا فعال ٹوکن اور متوقع انتظار دیکھیں",
+      "checking": "آپ کی قطار دیکھی جا رہی ہے…",
+      "emptyTitle": "کوئی فعال قطار نہیں",
+      "emptyMessage": "چیک اِن کے بعد آپ کا ٹوکن یہاں نظر آئے گا۔",
+      "yourToken": "آپ کا ٹوکن",
+      "doctorLabel": "ڈاکٹر حوالہ",
+      "hospitalLabel": "ہسپتال حوالہ",
+      "appointmentTime": "اپائنٹمنٹ کا وقت",
+      "estimatedWait": "متوقع انتظار",
+      "minutes": "منٹ",
+      "empty": "کوئی فعال قطار اندراج نہیں۔"
+    }
   }
 }

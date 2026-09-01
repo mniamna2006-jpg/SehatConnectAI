@@ -79,7 +79,7 @@ test('a 401 clears the token, user, and private query cache', async () => {
   global.fetch = jest.fn().mockResolvedValue({
     ok: false,
     status: 401,
-    json: async () => ({ success: false, message: 'Token expired' }),
+    text: async () => JSON.stringify({ success: false, message: 'Token expired' }),
   } as Response);
 
   await act(async () => {

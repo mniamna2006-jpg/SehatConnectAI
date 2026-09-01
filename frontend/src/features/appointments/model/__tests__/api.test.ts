@@ -57,3 +57,9 @@ test('getMyQueue calls GET /api/queue/my', async () => {
   await getMyQueue();
   expect(apiRequest).toHaveBeenCalledWith('/api/queue/my');
 });
+
+test('an appointment API failure rejects', async () => {
+  (apiRequest as jest.Mock).mockRejectedValue(new Error('network down'));
+
+  await expect(getMyAppointments()).rejects.toThrow('network down');
+});

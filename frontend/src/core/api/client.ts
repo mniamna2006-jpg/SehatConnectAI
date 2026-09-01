@@ -35,13 +35,26 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     if (token) headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new ApiError(0, 'Network request failed');
+  }
 
-  const json = await response.json();
+  const text = await response.text();
+  let json: { success?: boolean; data?: unknown; message?: string; error?: string } = {};
+  if (text) {
+    try {
+      json = JSON.parse(text);
+    } catch {
+      throw new ApiError(response.status, 'Unexpected response from server');
+    }
+  }
 
   if (!response.ok || json.success === false) {
     if (auth && response.status === 401) unauthorizedHandler?.();

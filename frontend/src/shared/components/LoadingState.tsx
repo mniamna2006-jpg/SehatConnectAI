@@ -1,11 +1,19 @@
-import React from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../providers/LocaleProvider';
+import { colors, radius, typography } from '../theme';
 
-export function LoadingState({ label = 'Loading…' }: { label?: string }) {
+export function LoadingState({ label }: { label?: string }) {
+  const t = useTranslations();
   return (
-    <View>
-      <ActivityIndicator />
-      <Text>{label}</Text>
+    <View style={styles.wrap} accessibilityLiveRegion="polite">
+      <View style={styles.iconBox}><ActivityIndicator color={colors.primary} /></View>
+      <Text style={styles.label}>{label ?? t('common.loading')}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: { minHeight: 170, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 24 },
+  iconBox: { width: 52, height: 52, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  label: { ...typography.body, color: colors.muted, textAlign: 'center' },
+});

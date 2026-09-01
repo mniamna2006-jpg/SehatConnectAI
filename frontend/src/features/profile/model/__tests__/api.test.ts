@@ -18,3 +18,9 @@ test('updateProfile PATCHes the backend-mounted /api/patients/profile route', as
   await updateProfile({ city: 'Karachi' });
   expect(apiRequest).toHaveBeenCalledWith('/api/patients/profile', { method: 'PATCH', body: { city: 'Karachi' } });
 });
+
+test('a profile API failure rejects', async () => {
+  (apiRequest as jest.Mock).mockRejectedValue(new Error('network down'));
+
+  await expect(getProfile()).rejects.toThrow('network down');
+});

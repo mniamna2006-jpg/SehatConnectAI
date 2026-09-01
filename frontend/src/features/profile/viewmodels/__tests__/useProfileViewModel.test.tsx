@@ -2,9 +2,11 @@ import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { useProfileViewModel } from '../useProfileViewModel';
 import { TestQueryProvider } from '../../../../core/query/testUtils';
+import { useOptionalLocale } from '../../../../providers/LocaleProvider';
 import * as api from '../../model/api';
 
 jest.mock('../../model/api');
+jest.mock('../../../../providers/LocaleProvider');
 
 const wrapper = ({ children }: { children: React.ReactNode }) => <TestQueryProvider>{children}</TestQueryProvider>;
 
@@ -43,4 +45,29 @@ test('onSave sets saveError and does not throw when the mutation rejects', async
 
   await waitFor(() => expect(result.current.saveError).toBeTruthy());
   expect(result.current.isEditing).toBe(true);
+});
+
+test('applies a saved preferred language immediately', async () => {
+  const setLocale = jest.fn();
+  (useOptionalLocale as jest.Mock).mockReturnValue({ setLocale });
+  (api.getProfile as jest.Mock).mockResolvedValue({
+    patient_id: '1',
+    full_name: 'Ayesha',
+    preferred_language: 'ENGLISH',
+  });
+  (api.updateProfile as jest.Mock).mockResolvedValue({
+    patient_id: '1',
+    full_name: 'Ayesha',
+    preferred_language: 'URDU',
+  });
+
+  const { result } = await renderHook(() => useProfileViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+  await act(() => result.current.onEdit());
+  await act(() => result.current.setValue('preferred_language', 'URDU'));
+  await act(async () => {
+    await result.current.onSave();
+  });
+
+  expect(setLocale).toHaveBeenCalledWith('URDU');
 });

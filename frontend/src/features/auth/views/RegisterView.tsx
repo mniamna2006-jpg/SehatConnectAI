@@ -1,111 +1,107 @@
-import React from 'react';
-import { Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
-import { Controller } from 'react-hook-form';
 import { Link } from 'expo-router';
-import { Screen } from '../../../shared/components/Screen';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Controller } from 'react-hook-form';
+import { AppIcon } from '../../../shared/components/AppIcon';
+import { AppButton } from '../../../shared/components/Buttons';
+import { FormField } from '../../../shared/components/FormField';
+import { useTranslations } from '../../../providers/LocaleProvider';
+import { colors, radius, typography } from '../../../shared/theme';
+import type { PreferredLanguage } from '../../../shared/types/api';
 import { useRegisterViewModel } from '../viewmodels/useRegisterViewModel';
+import { AuthScaffold } from './AuthScaffold';
 
-const LANGUAGE_OPTIONS = ['ENGLISH', 'URDU', 'ROMAN_URDU'] as const;
+function FormSection({ icon, title }: { icon: 'person-outline' | 'call-outline' | 'language-outline'; title: string }) {
+  return (
+    <View style={styles.sectionHeading}>
+      <View style={styles.sectionIcon}><AppIcon name={icon} color={colors.primary} size={18} /></View>
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+}
 
 export function RegisterView() {
+  const t = useTranslations();
   const { control, errors, onSubmit, isSubmitting, apiError } = useRegisterViewModel();
+  const languageOptions: { id: PreferredLanguage; label: string }[] = [
+    { id: 'ENGLISH', label: t('auth.register.languageOptions.english') },
+    { id: 'URDU', label: t('auth.register.languageOptions.urdu') },
+    { id: 'ROMAN_URDU', label: t('auth.register.languageOptions.romanUrdu') },
+  ];
 
   return (
-    <Screen>
-      <Text accessibilityRole="header">Create Account</Text>
-      <Controller
-        control={control}
-        name="full_name"
-        render={({ field }) => (
-          <TextInput
-            testID="register-full-name"
-            placeholder="Full name"
-            value={field.value ?? ''}
-            onChangeText={field.onChange}
-          />
-        )}
-      />
-      {errors.full_name && <Text>{errors.full_name.message}</Text>}
-      <Controller
-        control={control}
-        name="email"
-        render={({ field }) => (
-          <TextInput
-            testID="register-email"
-            placeholder="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            value={field.value ?? ''}
-            onChangeText={field.onChange}
-          />
-        )}
-      />
-      {errors.email && <Text>{errors.email.message}</Text>}
-      <Controller
-        control={control}
-        name="phone"
-        render={({ field }) => (
-          <TextInput
-            testID="register-phone"
-            placeholder="Phone"
-            keyboardType="phone-pad"
-            value={field.value ?? ''}
-            onChangeText={field.onChange}
-          />
-        )}
-      />
-      {errors.phone && <Text>{errors.phone.message}</Text>}
-      <Controller
-        control={control}
-        name="password"
-        render={({ field }) => (
-          <TextInput
-            testID="register-password"
-            placeholder="Password"
-            secureTextEntry
-            value={field.value ?? ''}
-            onChangeText={field.onChange}
-          />
-        )}
-      />
-      {errors.password && <Text>{errors.password.message}</Text>}
-      <Controller
-        control={control}
-        name="confirmPassword"
-        render={({ field }) => (
-          <TextInput
-            testID="register-confirm-password"
-            placeholder="Confirm password"
-            secureTextEntry
-            value={field.value ?? ''}
-            onChangeText={field.onChange}
-          />
-        )}
-      />
-      {errors.confirmPassword && <Text>{errors.confirmPassword.message}</Text>}
+    <AuthScaffold
+      title={t('auth.register.title')}
+      subtitle="A few details help us personalize your care experience."
+      footer={
+        <View style={styles.loginRow}>
+          <Text style={styles.footerText}>{t('auth.register.footerPrompt')}</Text>
+          <Link href="/login" style={styles.link}>{t('auth.register.footerAction')}</Link>
+        </View>
+      }
+    >
+      <FormSection icon="person-outline" title="Account" />
+      <Controller control={control} name="full_name" render={({ field }) => (
+        <FormField testID="register-full-name" label={t('auth.register.fields.fullName')} icon="person-outline" placeholder="Your full name" value={field.value ?? ''} onChangeText={field.onChange} error={errors.full_name?.message} />
+      )} />
+      <Controller control={control} name="email" render={({ field }) => (
+        <FormField testID="register-email" label={t('auth.register.fields.email')} icon="mail-outline" placeholder="you@example.com" autoCapitalize="none" autoComplete="email" keyboardType="email-address" value={field.value ?? ''} onChangeText={field.onChange} error={errors.email?.message} />
+      )} />
+      <Controller control={control} name="password" render={({ field }) => (
+        <FormField testID="register-password" label={t('auth.register.fields.password')} icon="lock-closed-outline" placeholder="Create a password" autoComplete="new-password" secureTextEntry value={field.value ?? ''} onChangeText={field.onChange} error={errors.password?.message} />
+      )} />
+      <Controller control={control} name="confirmPassword" render={({ field }) => (
+        <FormField testID="register-confirm-password" label={t('auth.register.fields.confirmPassword')} icon="shield-checkmark-outline" placeholder="Enter it again" autoComplete="new-password" secureTextEntry value={field.value ?? ''} onChangeText={field.onChange} error={errors.confirmPassword?.message} />
+      )} />
+
+      <FormSection icon="call-outline" title="Contact" />
+      <Controller control={control} name="phone" render={({ field }) => (
+        <FormField testID="register-phone" label={t('auth.register.fields.phone')} icon="call-outline" placeholder="Your phone number" autoComplete="tel" keyboardType="phone-pad" value={field.value ?? ''} onChangeText={field.onChange} error={errors.phone?.message} />
+      )} />
+
+      <FormSection icon="language-outline" title="Language" />
       <Controller
         control={control}
         name="preferred_language"
         render={({ field }) => (
-          <>
-            {LANGUAGE_OPTIONS.map((option) => (
-              <Pressable
-                key={option}
-                testID={`register-language-${option}`}
-                onPress={() => field.onChange(option)}
-              >
-                <Text>{field.value === option ? '● ' : '○ '}{option}</Text>
-              </Pressable>
-            ))}
-          </>
+          <View accessibilityRole="radiogroup" style={styles.languageGroup}>
+            {languageOptions.map((option) => {
+              const selected = field.value === option.id;
+              return (
+                <Pressable
+                  key={option.id}
+                  testID={`register-language-${option.id}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected }}
+                  onPress={() => field.onChange(option.id)}
+                  style={({ pressed }) => [styles.languageOption, selected && styles.languageOptionSelected, pressed && styles.pressed]}
+                >
+                  <Text style={[styles.languageLabel, selected && styles.languageLabelSelected]}>{option.label}</Text>
+                  {selected ? <AppIcon name="checkmark-circle" color={colors.primary} size={19} /> : null}
+                </Pressable>
+              );
+            })}
+          </View>
         )}
       />
-      {errors.preferred_language && <Text>{errors.preferred_language.message}</Text>}
-      {apiError && <Text testID="register-error">{apiError}</Text>}
-      <Pressable testID="register-submit" onPress={onSubmit} disabled={isSubmitting}>
-        {isSubmitting ? <ActivityIndicator /> : <Text>Create Account</Text>}
-      </Pressable>
-      <Link href="/login">Already have an account? Log in</Link>
-    </Screen>
+      {errors.preferred_language ? <Text style={styles.error}>{errors.preferred_language.message}</Text> : null}
+      {apiError ? <Text testID="register-error" accessibilityRole="alert" style={styles.error}>{apiError}</Text> : null}
+      <AppButton testID="register-submit" label={t('auth.register.submit')} loading={isSubmitting} onPress={onSubmit} />
+    </AuthScaffold>
   );
 }
+
+const styles = StyleSheet.create({
+  sectionHeading: { flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 8 },
+  sectionIcon: { width: 34, height: 34, borderRadius: 11, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  sectionTitle: { ...typography.sectionTitle, color: colors.ink },
+  languageGroup: { gap: 10 },
+  languageOption: { minHeight: 50, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  languageOptionSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  languageLabel: { ...typography.body, color: colors.inkSoft, fontWeight: '600' },
+  languageLabelSelected: { color: colors.primary, fontWeight: '700' },
+  error: { ...typography.metadata, color: colors.danger },
+  pressed: { opacity: 0.78 },
+  loginRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 5 },
+  footerText: { ...typography.body, color: colors.muted },
+  link: { ...typography.body, color: colors.primary, fontWeight: '700' },
+});

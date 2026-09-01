@@ -2,9 +2,310 @@
   "common": {
     "loading": "Load ho raha hai…",
     "error": "Kuch ghalat ho gaya",
-    "retry": "Dobara koshish karein"
+    "retry": "Dobara koshish karein",
+    "back": "Wapas",
+    "bookAppointment": "Appointment Book Karein",
+    "useCurrentLocation": "Mojooda Muqam Istemal Karein",
+    "searchLocationManually": "Muqam Dasti Talaash Karein",
+    "or": "ya",
+    "locationDenied": "Aap ka muqam istemal nahi ho saka. Shehar se talaash karein.",
+    "noResults": "Koi nateeja nahi mila.",
+    "cancel": "Cancel Karein",
+    "closed": "Band",
+    "errorTitle": "Hum yeh load nahi kar sakay",
+    "emptyTitle": "Abhi yahan kuch nahi",
+    "goBack": "Wapas jayein",
+    "notProvided": "Maloomat mojood nahi",
+    "found": "milay",
+    "available": "dastyab",
+    "selected": "Muntakhib",
+    "optional": "Ikhtiyari",
+    "to": "se",
+    "patient": "Mareez",
+    "status": {
+      "BOOKED": "Book Shuda",
+      "CONFIRMED": "Tasdeeq Shuda",
+      "CHECKED_IN": "Check In",
+      "IN_PROGRESS": "Jaari",
+      "COMPLETED": "Mukammal",
+      "CANCELLED": "Mansookh Shuda",
+      "NO_SHOW": "Hazir Nahi Hua",
+      "WAITING": "Intezar Mein",
+      "CALLED": "Bulaya Gaya",
+      "SKIPPED": "Chhor Diya Gaya"
+    }
   },
   "home": {
-    "greeting": "Khush aamdeed"
+    "greeting": "Khush aamdeed",
+    "morning": "Subah bakhair,",
+    "afternoon": "Dopehar bakhair,",
+    "evening": "Shaam bakhair,",
+    "prompt": "Aaj hum aap ki kya madad kar saktay hain?",
+    "profile": "Profile",
+    "logout": "Logout",
+    "openProfile": "Profile kholein",
+    "heroTitle": "Behtar dekh bhal sahi jagah se shuru hoti hai",
+    "heroBody": "Hospital, departments aur doctors asani se talaash karein.",
+    "exploreTitle": "Dekh bhal talaash karein",
+    "exploreSubtitle": "Shuru karne ke liye service chunein",
+    "actions": {
+      "findHospital": {
+        "title": "Hospital Talaash Karein",
+        "description": "Qareebi hospital aur sahulaat talaash karein"
+      },
+      "findDoctor": {
+        "title": "Doctor Talaash Karein",
+        "description": "Hospital ya department ke mutabiq doctor talaash karein"
+      },
+      "findDepartment": {
+        "title": "Department Talaash Karein",
+        "description": "Departments aur mahaarat dekhein"
+      }
+    },
+    "appointmentDetails": {
+      "title": "Appointment Ki Tafseelat",
+      "description": "Bookings, history aur queue ki soorat-e-haal dekhein"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editTitle": "Profile Mein Tarmeem Karein",
+    "subtitle": "Aap ki zaati aur rabtay ki maloomat",
+    "editSubtitle": "Apni maloomat durust aur taza rakhein",
+    "loading": "Aap ka profile load ho raha hai…",
+    "emailNotProvided": "Email mojood nahi",
+    "saveError": "Tabdeeliyan mehfooz nahi ho sakin. Dobara koshish karein.",
+    "makeChanges": "Tabdeeliyan Karein",
+    "save": "Mehfooz Karein",
+    "cancel": "Munsakh Karein",
+    "readOnly": "Sirf Parhne Ke Liye",
+    "sections": {
+      "personal": "Zaati Maloomat",
+      "personalDetails": "Zaati tafseelat",
+      "contact": "Rabta",
+      "contactAddress": "Rabta aur pata",
+      "emergency": "Hangami Rabta",
+      "preferences": "Tarjeehaat",
+      "language": "Zaban"
+    },
+    "fields": {
+      "fullName": "Pura Naam",
+      "dateOfBirth": "Tareekh Paidaish",
+      "gender": "Jins",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Pata",
+      "city": "Shehar",
+      "emergencyContact": "Hangami Rabta Number",
+      "preferredLanguage": "Pasandeeda Zaban"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Khush aamdeed wapas",
+      "subtitle": "Apni dekh bhal ka safar jari rakhne ke liye sign in karein.",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "forgotPassword": "Password bhool gaye?",
+      "submit": "Login Karein",
+      "footerPrompt": "SehatConnect par naye hain?",
+      "footerAction": "Account Banayein"
+    },
+    "register": {
+      "title": "Apna account banayein",
+      "subtitle": "Kuch maloomat se hum aap ki dekh bhal behtar bana saktay hain.",
+      "sections": {
+        "personalDetails": "Zaati tafseelat",
+        "accountSecurity": "Account Ki Hifazat",
+        "languagePreference": "Zaban ki tarjeeh",
+        "account": "Account",
+        "contact": "Rabta",
+        "language": "Zaban"
+      },
+      "fields": {
+        "fullName": "Pura Naam",
+        "email": "Email",
+        "phone": "Rabta Number",
+        "password": "Password",
+        "confirmPassword": "Password Ki Tasdeeq Karein"
+      },
+      "languageOptions": {
+        "english": "English",
+        "urdu": "اردو",
+        "romanUrdu": "Roman Urdu"
+      },
+      "submit": "Account Banayein",
+      "footerPrompt": "Kya aap ka pehle se account hai?",
+      "footerAction": "Login Karein",
+      "placeholders": {
+        "fullName": "Apna pura naam",
+        "password": "Password banayein",
+        "confirmPassword": "Dobara darj karein",
+        "phone": "Apna phone number"
+      }
+    },
+    "forgot": {
+      "title": "Apna password reset karein",
+      "body": "Apna email daalein, agar account mila to hum aglay marahil bhej denge.",
+      "fields": {
+        "email": "Email"
+      },
+      "submit": "Reset Link Bhejein",
+      "success": {
+        "title": "Apna email check karein",
+        "message": "Agar account mojood hua to reset hidayaat bhej di jayengi.",
+        "action": "Log in par wapas"
+      }
+    }
+  },
+  "location": {
+    "title": "Aap ka muqam",
+    "subtitle": "Apne qareeb dekh bhal talaash karein",
+    "divider": "ya apna shehar darj karein",
+    "cityLabel": "Shehar ya ilaqa",
+    "placeholder": "misal: Gulshan-e-Iqbal, Karachi"
+  },
+  "hospitals": {
+    "findTitle": "Hospital Talash Karein",
+    "findContext": "Apne qareeb hospital talash karein",
+    "notFound": "Hospital nahi mila.",
+    "getDirections": "Raasta Dikhayen",
+    "workingHours": "Auqaat-e-Kaar",
+    "departmentsTitle": "Shobajaat",
+    "doctorsTitle": "Doctors",
+    "resultsTitle": "Aap ke qareeb hospitals",
+    "fallbackLocation": "Muqam ki maloomat tafseelat mein hai",
+    "distanceAway": "km door",
+    "loading": "Hospitals talaash ho rahe hain…",
+    "emptyTitle": "Koi hospital nahi mila",
+    "emptyMessage": "Doosra shehar ya mojooda muqam azmayein.",
+    "profileTitle": "Hospital Profile",
+    "loadingProfile": "Hospital profile load ho raha hai…",
+    "unavailableTitle": "Hospital nahi mila",
+    "unavailableMessage": "Yeh hospital profile dastyab nahi.",
+    "hoursAvailable": "Auqaat-e-kaar dastyab hain",
+    "about": "Taaruf",
+    "contactInformation": "Rabta ki maloomat",
+    "phone": "Phone",
+    "email": "Email"
+  },
+  "doctors": {
+    "findTitle": "Doctor Talash Karein",
+    "searchLabel": "Doctor talash karein",
+    "searchPlaceholder": "Doctor ka naam ya shoba",
+    "subtitle": "Apni dekh bhal ke liye sahi doctor se rabta karein",
+    "searchPrompt": "Naam ya mahaarat se talaash karein",
+    "resultsTitle": "Doctors",
+    "loading": "Doctors talaash ho rahe hain…",
+    "emptyTitle": "Koi doctor nahi mila",
+    "emptyMessage": "Doosra naam, mahaarat ya muqam azmayein.",
+    "startTitle": "Talaash shuru karein",
+    "startMessage": "Dastyab doctors dekhne ke liye naam ya mahaarat darj karein.",
+    "availableTimings": "Dastyab Auqaat",
+    "scheduleUnavailable": "Schedule dastyab nahi"
+  },
+  "departments": {
+    "findTitle": "Shoba Talash Karein",
+    "searchLabel": "Shoba talash karein",
+    "searchPlaceholder": "Shobay ka naam",
+    "doctorsTitle": "Shobay ke Doctors",
+    "subtitle": "Medical mahaarat ke mutabiq dekh bhal talaash karein",
+    "scopedSubtitle": "Is hospital ke shobajaat dekhein",
+    "directoryTitle": "Hospital directory",
+    "directoryMessage": "Doctors dekhne ke liye shoba chunein",
+    "browseTitle": "Shobajaat Dekhein",
+    "viewDoctors": "Dastyab doctors dekhein",
+    "loading": "Shobajaat load ho rahe hain…",
+    "emptyTitle": "Koi shoba nahi mila",
+    "emptyMessage": "Wasee naam ya doosra muqam azmayein.",
+    "startTitle": "Directory talaash karein",
+    "startMessage": "Mutabiq shobajaat ke liye mahaarat darj karein.",
+    "doctorsSubtitle": "Apni dekh bhal ke liye sahi specialist talaash karein",
+    "identityTitle": "Specialist care team",
+    "identityMessage": "Is shobay mein mojood doctors",
+    "availableDoctors": "Dastyab Doctors",
+    "loadingDoctors": "Doctors load ho rahe hain…",
+    "noDoctorsTitle": "Koi doctor dastyab nahi",
+    "noDoctorsMessage": "Baad mein dobara dekhein ya doosra shoba chunein."
+  },
+  "appointments": {
+    "title": "Appointments",
+    "subtitle": "Apni dekh bhal book aur manage karein",
+    "mainTabs": {
+      "booking": "Booking",
+      "history": "History",
+      "queue": "Queue"
+    },
+    "tabs": {
+      "upcoming": "Aainda",
+      "completed": "Mukammal",
+      "cancelled": "Mansookh Shuda"
+    },
+    "noneInCategory": "Is category mein koi appointment nahi.",
+    "booking": {
+      "title": "Appointment Book Karein",
+      "introTitle": "Appointment book karein",
+      "introMessage": "Apni care team, tareekh aur dastyab waqt chunein.",
+      "chooseHospital": "Hospital Chunein",
+      "startHere": "Yahan se shuru karein",
+      "noHospitals": "Koi hospital dastyab nahi.",
+      "chooseDepartment": "Shoba Chunein",
+      "selectHospitalFirst": "Pehle hospital chunein",
+      "chooseDoctor": "Doctor Chunein",
+      "chooseDate": "Tareekh Chunein",
+      "nextSevenDays": "Aglay 7 din",
+      "enterDate": "Ya tareekh darj karein",
+      "availableTime": "Dastyab Waqt",
+      "slots": "waqt",
+      "noTimesTitle": "Koi waqt dastyab nahi",
+      "noTimesMessage": "Mazeed waqt ke liye doosri tareekh azmayein.",
+      "reasonForVisit": "Mulaqat ki wajah",
+      "reasonAccessibility": "Appointment ki wajah",
+      "reasonHelpPlaceholder": "Doctor ko batayein kis madad ki zaroorat hai",
+      "confirmAppointment": "Appointment Ki Tasdeeq Karein",
+      "slotTaken": "Yeh waqt abhi kisi aur ne le liya",
+      "failed": "Booking nahi ho saki. Dobara koshish karein.",
+      "booked": "Book ho gaya",
+      "hospital": "Hospital",
+      "department": "Shoba",
+      "doctor": "Doctor",
+      "dateTime": "Tareekh aur Waqt",
+      "appointmentDate": "Appointment ki tareekh",
+      "reason": "Wajah",
+      "reasonPlaceholder": "Wajah (ikhtiyari)",
+      "confirm": "Booking ki Tasdeeq Karein",
+      "noSlots": "Koi waqt dastyab nahi. Doosri tareekh azmayein.",
+      "loadingHospitals": "Hospital load ho rahe hain…",
+      "loadingDepartments": "Shobajaat load ho rahe hain…",
+      "loadingDoctors": "Doctors load ho rahe hain…",
+      "loadingSlots": "Waqt load ho raha hai…"
+    },
+    "history": {
+      "title": "Appointment history",
+      "subtitle": "Aap ki aainda aur guzri dekh bhal",
+      "loading": "Appointments load ho rahi hain…",
+      "emptyTitle": "Yahan koi appointment nahi",
+      "emptyMessage": "Is category ki appointments yahan nazar aayengi.",
+      "date": "Tareekh",
+      "time": "Waqt",
+      "bookingReference": "Booking reference",
+      "cancelling": "Mansookh ho rahi hai..."
+    },
+    "queue": {
+      "title": "Queue ki soorat-e-haal",
+      "subtitle": "Apna active token aur mutawaqqe intezar dekhein",
+      "checking": "Aap ki queue check ho rahi hai…",
+      "emptyTitle": "Koi active queue nahi",
+      "emptyMessage": "Check-in ke baad aap ka token yahan nazar aayega.",
+      "yourToken": "Aap ka Token",
+      "doctorLabel": "Doctor reference",
+      "hospitalLabel": "Hospital reference",
+      "appointmentTime": "Appointment ka waqt",
+      "estimatedWait": "Mutawaqqe Intezar",
+      "minutes": "minute",
+      "empty": "Koi active queue entry nahi."
+    }
   }
 }

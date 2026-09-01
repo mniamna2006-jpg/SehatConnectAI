@@ -122,3 +122,25 @@ test('onSubmit maps a 400 response to the slot-taken message', async () => {
     expect(result.current.bookingError).toBe('This slot was just taken');
   });
 });
+
+test('exposes hospital, department, and doctor query failures with retry actions', async () => {
+  (getHospitals as jest.Mock).mockRejectedValue(new Error('hospital outage'));
+  (getDepartmentsByHospital as jest.Mock).mockRejectedValue(new Error('department outage'));
+  (getDoctorsByHospital as jest.Mock).mockRejectedValue(new Error('doctor outage'));
+
+  const { result } = await renderHook(
+    () => useAppointmentBookingViewModel({ hospitalId: 'h1', departmentId: 'dep1' }),
+    { wrapper }
+  );
+
+  await waitFor(() => {
+    expect([
+      result.current.isHospitalsError,
+      result.current.isDepartmentsError,
+      result.current.isDoctorsError,
+    ]).toEqual([true, true, true]);
+  });
+  expect(typeof result.current.refetchHospitals).toBe('function');
+  expect(typeof result.current.refetchDepartments).toBe('function');
+  expect(typeof result.current.refetchDoctors).toBe('function');
+});

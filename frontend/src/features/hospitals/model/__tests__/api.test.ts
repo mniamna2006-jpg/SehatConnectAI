@@ -3,6 +3,10 @@ import { apiRequest } from '../../../../core/api/client';
 
 jest.mock('../../../../core/api/client');
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 test('getHospitals calls GET /api/hospitals', async () => {
   (apiRequest as jest.Mock).mockResolvedValue([]);
   await getHospitals();
@@ -25,4 +29,9 @@ test('getHospitalById calls GET /api/hospitals/:id', async () => {
   (apiRequest as jest.Mock).mockResolvedValue({ hospital_id: 'h1' });
   await getHospitalById('h1');
   expect(apiRequest).toHaveBeenCalledWith('/api/hospitals/h1');
+});
+
+test('a hospital API failure rejects', async () => {
+  (apiRequest as jest.Mock).mockRejectedValue(new Error('network down'));
+  await expect(getHospitals()).rejects.toThrow('network down');
 });
