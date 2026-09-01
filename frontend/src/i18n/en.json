@@ -171,6 +171,7 @@
     "findTitle": "Find Hospital",
     "findContext": "Search hospitals near you",
     "notFound": "Hospital not found.",
+    "getDirections": "Get Directions",
     "workingHours": "Working Hours",
     "departmentsTitle": "Departments",
     "doctorsTitle": "Doctors",

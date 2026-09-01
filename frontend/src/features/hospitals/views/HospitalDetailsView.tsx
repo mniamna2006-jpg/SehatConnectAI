@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon } from '../../../shared/components/AppIcon';
@@ -13,6 +14,7 @@ import { Screen } from '../../../shared/components/Screen';
 import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
 import { displayTime12h } from '../../../shared/utils/time';
+import { openHospitalNavigation } from '../../../core/navigation/openHospitalNavigation';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
 
 interface HospitalDetailsViewProps { hospitalId: string }
@@ -20,9 +22,26 @@ interface HospitalDetailsViewProps { hospitalId: string }
 export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
   const t = useTranslations();
   const { hospital, isLoading, isError, refetch } = useHospitalDetailsViewModel(hospitalId);
+  const [isNavigating, setIsNavigating] = useState(false);
   if (isLoading) return <Screen><LoadingState label="Loading hospital profile…" /></Screen>;
   if (isError) return <Screen><ErrorState onRetry={() => void refetch()} /></Screen>;
   if (!hospital) return <Screen><EmptyState title="Hospital not found" message="This hospital profile is not available." icon="business-outline" /></Screen>;
+
+  async function handleGetDirections() {
+    if (!hospital) return;
+    setIsNavigating(true);
+    try {
+      await openHospitalNavigation({
+        latitude: hospital.latitude,
+        longitude: hospital.longitude,
+        address: hospital.address,
+        city: hospital.city,
+        hospitalName: hospital.name,
+      });
+    } finally {
+      setIsNavigating(false);
+    }
+  }
 
   return (
     <Screen>
@@ -38,6 +57,23 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           <View>
             <Text accessibilityRole="header" testID="hospital-name" style={styles.heroName}>{hospital.name}</Text>
             {hospital.address || hospital.city ? <View style={styles.heroMeta}><AppIcon name="location-outline" color="#DCE8FF" size={18} /><Text testID="hospital-address" style={styles.heroMetaText}>{[hospital.address, hospital.city].filter(Boolean).join(', ')}</Text></View> : null}
+            <PressableSurface
+              onPress={handleGetDirections}
+              disabled={isNavigating}
+              testID="get-directions-button"
+              accessibilityRole="button"
+              accessibilityLabel={t('hospitals.getDirections')}
+              style={styles.directionsButton}
+            >
+              {isNavigating ? (
+                <ActivityIndicator testID="get-directions-loading" color={colors.primary} size="small" />
+              ) : (
+                <>
+                  <AppIcon name="navigate-outline" color={colors.primary} size={16} />
+                  <Text testID="get-directions-text" style={styles.directionsButtonText}>{t('hospitals.getDirections')}</Text>
+                </>
+              )}
+            </PressableSurface>
           </View>
         </View>
 
@@ -116,6 +152,8 @@ const styles = StyleSheet.create({
   heroName: { fontSize: 27, lineHeight: 33, color: colors.surface, fontWeight: '800', letterSpacing: -0.6 },
   heroMeta: { flexDirection: 'row', alignItems: 'flex-start', gap: 7, marginTop: 9 },
   heroMetaText: { ...typography.body, color: '#DCE8FF', flex: 1 },
+  directionsButton: { marginTop: 14, alignSelf: 'flex-start', minHeight: 40, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 16 },
+  directionsButtonText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
   about: { gap: 10 },
   aboutText: { ...typography.body, color: colors.inkSoft },
   section: { gap: 14 },
