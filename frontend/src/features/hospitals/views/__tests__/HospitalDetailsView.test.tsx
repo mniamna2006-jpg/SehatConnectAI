@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import { useHospitalDetailsViewModel } from '../../viewmodels/useHospitalDetailsViewModel';
+import { openHospitalNavigation } from '../../../../core/navigation/openHospitalNavigation';
 import { HospitalDetailsView } from '../HospitalDetailsView';
 
 jest.mock('../../viewmodels/useHospitalDetailsViewModel');
+jest.mock('../../../../core/navigation/openHospitalNavigation');
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => {
   const { View: MockView } = require('react-native');
@@ -57,6 +59,39 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
 
   await fireEvent.press(screen.getByRole('button', { name: 'Go back' }));
   expect(router.back).toHaveBeenCalledTimes(1);
+});
+
+test('pressing Get Directions opens navigation with the hospital location', async () => {
+  (useHospitalDetailsViewModel as jest.Mock).mockReturnValue({
+    hospital: {
+      hospital_id: 'h1',
+      name: 'City Hospital',
+      facility_type: 'HOSPITAL',
+      address: 'Main Road',
+      city: 'Karachi',
+      latitude: 24.86,
+      longitude: 67.0,
+      working_hours: [],
+      departments: [],
+      doctors: [],
+    },
+    isLoading: false,
+    isError: false,
+    refetch: jest.fn(),
+  });
+  (openHospitalNavigation as jest.Mock).mockResolvedValue(true);
+
+  await render(<HospitalDetailsView hospitalId="h1" />);
+
+  await fireEvent.press(screen.getByTestId('get-directions-button'));
+
+  await waitFor(() => expect(openHospitalNavigation).toHaveBeenCalledWith({
+    latitude: 24.86,
+    longitude: 67.0,
+    address: 'Main Road',
+    city: 'Karachi',
+    hospitalName: 'City Hospital',
+  }));
 });
 
 test('safely renders absent optional logo, contact, timing, departments, and doctors', async () => {
