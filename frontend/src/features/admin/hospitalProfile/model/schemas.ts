@@ -11,8 +11,8 @@ export const hospitalProfileSchema = z.object({
   email: z.string().email().optional().or(z.literal('')),
   address: z.string().min(2),
   city: z.string().min(2),
-  latitude: z.coerce.number(),
-  longitude: z.coerce.number(),
+  latitude: z.coerce.number().min(-90).max(90),
+  longitude: z.coerce.number().min(-180).max(180),
 });
 
 export type HospitalProfileFormInput = z.input<typeof hospitalProfileSchema>;

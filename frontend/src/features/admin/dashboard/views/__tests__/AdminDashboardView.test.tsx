@@ -28,32 +28,60 @@ const baseDashboard = {
   today_queue: { total: 0, by_status: {} },
 };
 
-test('shows loading state', () => {
+test('shows loading state', async () => {
   (useAdminDashboardViewModel as jest.Mock).mockReturnValue({ isLoading: true, isError: false, refetch: jest.fn() });
-  render(<AdminDashboardView />);
+  await render(<AdminDashboardView />);
   expect(screen.getByText(/Preparing|Loading/i)).toBeOnTheScreen();
 });
 
-test('shows error state with retry', () => {
+test('shows error state with retry', async () => {
   const refetch = jest.fn();
   (useAdminDashboardViewModel as jest.Mock).mockReturnValue({ isLoading: false, isError: true, error: new Error('Hospital is inactive'), refetch });
-  render(<AdminDashboardView />);
+  await render(<AdminDashboardView />);
   expect(screen.getByText('Hospital is inactive')).toBeOnTheScreen();
 });
 
-test('renders hospital stats, quick links, and empty today appointments', () => {
-  (useAdminDashboardViewModel as jest.Mock).mockReturnValue({ dashboard: baseDashboard, isLoading: false, isError: false, refetch: jest.fn() });
-  render(<AdminDashboardView />);
+test('renders only hospital information returned by the dashboard contract', async () => {
+  (useAdminDashboardViewModel as jest.Mock).mockReturnValue({
+    dashboard: {
+      ...baseDashboard,
+      hospital: {
+        ...baseDashboard.hospital,
+        phone: '+92 21 111 222 333',
+        email: 'ops@cityhospital.test',
+      },
+    },
+    isLoading: false,
+    isError: false,
+    refetch: jest.fn(),
+  });
+  await render(<AdminDashboardView />);
 
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
-  expect(screen.getByTestId('stat-departments')).toHaveTextContent('4');
-  expect(screen.getByTestId('stat-doctors')).toHaveTextContent('10');
-  expect(screen.getByTestId('stat-staff')).toHaveTextContent('6');
-  expect(screen.getByTestId('stat-patients')).toHaveTextContent('120');
+  expect(screen.getByText('Karachi')).toBeOnTheScreen();
+  expect(screen.getByText('Hospital')).toBeOnTheScreen();
+  expect(screen.getByText('+92 21 111 222 333')).toBeOnTheScreen();
+  expect(screen.getByText('ops@cityhospital.test')).toBeOnTheScreen();
+  expect(screen.getByTestId('stat-departments')).toHaveTextContent(/^4/);
+  expect(screen.getByTestId('stat-doctors')).toHaveTextContent(/^10/);
+  expect(screen.getByTestId('stat-staff')).toHaveTextContent(/^6/);
+  expect(screen.getByTestId('stat-patients')).toHaveTextContent(/^120/);
   expect(screen.getByTestId('today-appointments-section')).toBeOnTheScreen();
 });
 
-test('renders today appointments with patient, doctor, department, and status', () => {
+test('links only to the implemented profile and analytics screens', async () => {
+  (useAdminDashboardViewModel as jest.Mock).mockReturnValue({ dashboard: baseDashboard, isLoading: false, isError: false, refetch: jest.fn() });
+  await render(<AdminDashboardView />);
+
+  expect(screen.getByLabelText('/admin/profile')).toBeOnTheScreen();
+  expect(screen.getByLabelText('/admin/analytics')).toBeOnTheScreen();
+  expect(screen.queryByLabelText('/admin/departments')).not.toBeOnTheScreen();
+  expect(screen.queryByLabelText('/admin/doctors')).not.toBeOnTheScreen();
+  expect(screen.queryByLabelText('/admin/staff')).not.toBeOnTheScreen();
+  expect(screen.queryByLabelText('/admin/invitations')).not.toBeOnTheScreen();
+});
+
+test('renders today appointments with patient, doctor, department, and status', async () => {
   (useAdminDashboardViewModel as jest.Mock).mockReturnValue({
     dashboard: {
       ...baseDashboard,
@@ -73,9 +101,10 @@ test('renders today appointments with patient, doctor, department, and status', 
     isError: false,
     refetch: jest.fn(),
   });
-  render(<AdminDashboardView />);
+  await render(<AdminDashboardView />);
 
-  expect(screen.getByTestId('appointment-row-a1')).toHaveTextContent('Sara Khan');
-  expect(screen.getByTestId('appointment-row-a1')).toHaveTextContent('Dr. Ali');
-  expect(screen.getByTestId('appointment-row-a1')).toHaveTextContent('CONFIRMED');
+  expect(screen.getByTestId('appointment-row-a1')).toHaveTextContent(/Sara Khan/);
+  expect(screen.getByTestId('appointment-row-a1')).toHaveTextContent(/Dr\. Ali/);
+  expect(screen.getByTestId('appointment-row-a1')).toHaveTextContent(/Confirmed/);
+  expect(screen.getByText('Confirmed: 1')).toBeOnTheScreen();
 });

@@ -31,3 +31,18 @@ export interface HospitalProfileInput {
   latitude: number;
   longitude: number;
 }
+
+export interface HospitalProfilePatch {
+  name?: string;
+  facility_type?: FacilityType;
+  description?: string | null;
+  logo_url?: string | null;
+  cover_image_url?: string | null;
+  theme?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+}

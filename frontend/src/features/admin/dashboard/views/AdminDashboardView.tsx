@@ -12,11 +12,7 @@ import { SectionHeader } from '../../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../../shared/theme';
 import { useAdminDashboardViewModel } from '../viewmodels/useAdminDashboardViewModel';
 
-const QUICK_LINKS: { href: '/admin/departments' | '/admin/doctors' | '/admin/staff' | '/admin/invitations' | '/admin/analytics' | '/admin/profile'; icon: AppIconName; labelKey: string }[] = [
-  { href: '/admin/departments', icon: 'layers-outline', labelKey: 'admin.dashboard.links.departments' },
-  { href: '/admin/doctors', icon: 'medkit-outline', labelKey: 'admin.dashboard.links.doctors' },
-  { href: '/admin/staff', icon: 'people-outline', labelKey: 'admin.dashboard.links.staff' },
-  { href: '/admin/invitations', icon: 'mail-outline', labelKey: 'admin.dashboard.links.invitations' },
+const QUICK_LINKS: { href: '/admin/analytics' | '/admin/profile'; icon: AppIconName; labelKey: string }[] = [
   { href: '/admin/analytics', icon: 'bar-chart-outline', labelKey: 'admin.dashboard.links.analytics' },
   { href: '/admin/profile', icon: 'business-outline', labelKey: 'admin.dashboard.links.profile' },
 ];
@@ -41,6 +37,13 @@ export function AdminDashboardView() {
             </Text>
           </View>
         } />
+
+        <View style={styles.hospitalInfo}>
+          <InfoItem icon="location-outline" value={hospital.city} />
+          <InfoItem icon="business-outline" value={t(`admin.profile.facilityTypes.${hospital.facility_type}`)} />
+          {hospital.phone ? <InfoItem icon="call-outline" value={hospital.phone} /> : null}
+          {hospital.email ? <InfoItem icon="mail-outline" value={hospital.email} /> : null}
+        </View>
 
         <View style={styles.statGrid}>
           <StatTile testID="stat-departments" icon="layers-outline" label={t('admin.dashboard.stats.departments')} total={departments.total} active={departments.active} />
@@ -86,7 +89,7 @@ export function AdminDashboardView() {
                     <Text style={styles.appointmentPatient}>{apt.patient?.user.full_name ?? t('admin.dashboard.unknownPatient')}</Text>
                     <Text style={styles.appointmentMeta}>{[apt.doctor?.name, apt.department?.name].filter(Boolean).join(' · ')}</Text>
                   </View>
-                  <Text style={styles.appointmentStatus}>{apt.status}</Text>
+                  <Text style={styles.appointmentStatus}>{t(`common.status.${apt.status}`)}</Text>
                 </View>
               ))}
             </View>
@@ -98,24 +101,35 @@ export function AdminDashboardView() {
 }
 
 function StatTile({ testID, icon, label, total, active }: { testID: string; icon: AppIconName; label: string; total: number; active?: number }) {
+  const t = useTranslations();
   return (
     <View testID={testID} style={styles.statTile}>
       <View style={styles.statIcon}><AppIcon name={icon} color={colors.primary} size={18} /></View>
       <Text style={styles.statTotal}>{total}</Text>
       <Text style={styles.statLabel}>{label}</Text>
-      {active !== undefined ? <Text style={styles.statActive}>{active} active</Text> : null}
+      {active !== undefined ? <Text style={styles.statActive}>{active} {t('common.active')}</Text> : null}
+    </View>
+  );
+}
+
+function InfoItem({ icon, value }: { icon: AppIconName; value: string }) {
+  return (
+    <View style={styles.infoItem}>
+      <AppIcon name={icon} color={colors.muted} size={16} />
+      <Text style={styles.infoText}>{value}</Text>
     </View>
   );
 }
 
 function StatusPillRow({ counts }: { counts: Partial<Record<string, number>> }) {
+  const t = useTranslations();
   const entries = Object.entries(counts).filter(([, value]) => (value ?? 0) > 0);
   if (entries.length === 0) return <Text style={styles.noStatus}>—</Text>;
   return (
     <View style={styles.pillRow}>
       {entries.map(([status, value]) => (
         <View key={status} style={styles.pill}>
-          <Text style={styles.pillText}>{status.replace(/_/g, ' ')}: {value}</Text>
+          <Text style={styles.pillText}>{t(`common.status.${status}`)}: {value}</Text>
         </View>
       ))}
     </View>
@@ -130,6 +144,9 @@ const styles = StyleSheet.create({
   statusText: { ...typography.metadata, fontWeight: '700' },
   statusTextActive: { color: colors.success },
   statusTextInactive: { color: colors.danger },
+  hospitalInfo: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12 },
+  infoItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  infoText: { ...typography.metadata, color: colors.muted },
   statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   statTile: { width: '48%', backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, padding: 15, gap: 4 },
   statIcon: { width: 34, height: 34, borderRadius: 11, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
@@ -138,7 +155,7 @@ const styles = StyleSheet.create({
   statActive: { ...typography.metadata, color: colors.success, fontWeight: '700' },
   section: { gap: 12 },
   linkGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  linkTile: { width: '31%', minHeight: 84, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, padding: 12, gap: 8, justifyContent: 'center' },
+  linkTile: { flex: 1, minWidth: 140, minHeight: 76, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, padding: 12, gap: 8, justifyContent: 'center' },
   linkIcon: { width: 32, height: 32, borderRadius: 10, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
   linkLabel: { ...typography.metadata, color: colors.ink, fontWeight: '700' },
   pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

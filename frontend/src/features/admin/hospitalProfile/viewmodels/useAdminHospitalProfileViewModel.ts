@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAdminHospitalProfile, updateAdminHospitalProfile } from '../model/api';
+import { buildHospitalProfilePatch } from '../model/mappers';
 import { hospitalProfileSchema } from '../model/schemas';
 import type { HospitalProfileFormInput } from '../model/schemas';
-import type { HospitalProfileInput } from '../model/types';
+import type { HospitalProfileInput, HospitalProfilePatch } from '../model/types';
 import { useHospitalAuth } from '../../../../providers/HospitalAuthProvider';
 import { queryKeys } from '../../../../shared/constants/queryKeys';
 
@@ -15,8 +16,10 @@ export function useAdminHospitalProfileViewModel() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [noChanges, setNoChanges] = useState(false);
 
-  const { data: hospital, isLoading, isError, refetch } = useQuery({
+  const { data: hospital, isLoading, isError, error, refetch } = useQuery({
     queryKey: queryKeys.adminHospitalProfile(hospitalId),
     queryFn: () => getAdminHospitalProfile(hospitalId),
     enabled: !!hospitalId,
@@ -29,9 +32,11 @@ export function useAdminHospitalProfileViewModel() {
   >({ resolver: zodResolver(hospitalProfileSchema) });
 
   const mutation = useMutation({
-    mutationFn: (values: HospitalProfileInput) => updateAdminHospitalProfile(hospitalId, values),
+    mutationFn: (patch: HospitalProfilePatch) => updateAdminHospitalProfile(hospitalId, patch),
     onSuccess: (updated) => {
       queryClient.setQueryData(queryKeys.adminHospitalProfile(hospitalId), updated);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.adminDashboard });
+      setSaveSuccess(true);
       setIsEditing(false);
     },
   });
@@ -54,6 +59,8 @@ export function useAdminHospitalProfileViewModel() {
       });
     }
     setSaveError(null);
+    setSaveSuccess(false);
+    setNoChanges(false);
     setIsEditing(true);
   };
 
@@ -61,8 +68,19 @@ export function useAdminHospitalProfileViewModel() {
 
   const onSave = handleSubmit(async (values) => {
     setSaveError(null);
+    setSaveSuccess(false);
+    setNoChanges(false);
+    if (!hospital) return;
+
+    const patch = buildHospitalProfilePatch(hospital, values);
+    if (Object.keys(patch).length === 0) {
+      setNoChanges(true);
+      setIsEditing(false);
+      return;
+    }
+
     try {
-      await mutation.mutateAsync(values);
+      await mutation.mutateAsync(patch);
     } catch (err) {
       console.warn('[useAdminHospitalProfileViewModel] save failed', err);
       setSaveError(err instanceof Error ? err.message : 'Unable to save changes. Please try again.');
@@ -70,7 +88,7 @@ export function useAdminHospitalProfileViewModel() {
   });
 
   return {
-    hospital, isLoading, isError, refetch, isEditing, control, errors,
-    onEdit, onCancel, onSave, isSaving: mutation.isPending, saveError,
+    hospital, isLoading, isError, error, refetch, isEditing, control, errors,
+    onEdit, onCancel, onSave, isSaving: mutation.isPending, saveError, saveSuccess, noChanges,
   };
 }

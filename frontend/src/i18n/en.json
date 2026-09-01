@@ -22,6 +22,7 @@
     "optional": "Optional",
     "to": "to",
     "patient": "Patient",
+    "active": "active",
     "status": {
       "BOOKED": "Booked",
       "CONFIRMED": "Confirmed",
@@ -317,6 +318,112 @@
         "password": "Password"
       },
       "submit": "Sign In"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "subtitle": "Today’s hospital operations at a glance.",
+      "loading": "Loading admin dashboard…",
+      "empty": "No dashboard data is available.",
+      "hospitalActive": "Active",
+      "hospitalInactive": "Inactive",
+      "total": "total",
+      "stats": {
+        "departments": "Departments",
+        "doctors": "Doctors",
+        "staff": "Staff",
+        "patients": "Patients"
+      },
+      "links": {
+        "title": "Admin tools",
+        "analytics": "Analytics",
+        "profile": "Hospital profile"
+      },
+      "appointmentCountsTitle": "Appointment status",
+      "queueTitle": "Today’s queue",
+      "todayAppointmentsTitle": "Today’s appointments",
+      "noAppointmentsTitle": "No appointments today",
+      "noAppointmentsMessage": "There are no appointments scheduled for today.",
+      "unknownPatient": "Unknown patient"
+    },
+    "profile": {
+      "title": "Hospital profile",
+      "subtitle": "Maintain the operational and public details supported by the hospital service.",
+      "loading": "Loading hospital profile…",
+      "emptyTitle": "Hospital profile unavailable",
+      "empty": "No hospital profile was returned.",
+      "edit": "Edit profile",
+      "save": "Save changes",
+      "cancel": "Cancel",
+      "success": "Hospital profile updated.",
+      "noChanges": "No profile changes to save.",
+      "sections": {
+        "details": "Hospital details",
+        "branding": "Branding URLs"
+      },
+      "fields": {
+        "name": "Hospital name",
+        "facilityType": "Facility type",
+        "description": "Description",
+        "phone": "Phone",
+        "email": "Email",
+        "address": "Address",
+        "city": "City",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "location": "Coordinates",
+        "logoUrl": "Logo URL",
+        "coverUrl": "Cover image URL",
+        "theme": "Theme"
+      },
+      "facilityTypes": {
+        "HOSPITAL": "Hospital",
+        "CLINIC": "Clinic",
+        "MEDICAL_CENTER": "Medical center"
+      }
+    },
+    "analytics": {
+      "title": "Analytics overview",
+      "subtitle": "Current operational totals returned by the analytics service.",
+      "loading": "Loading analytics…",
+      "emptyTitle": "No analytics yet",
+      "empty": "The analytics service returned no operational activity.",
+      "sections": {
+        "appointments": "Appointments",
+        "patients": "Patients",
+        "queue": "Queue",
+        "operations": "Operations",
+        "departments": "Appointments by department",
+        "doctors": "Appointments by doctor",
+        "workload": "Doctor workload"
+      },
+      "metrics": {
+        "total": "Total",
+        "active": "Active",
+        "booked": "Booked",
+        "confirmed": "Confirmed",
+        "checkedIn": "Checked in",
+        "inProgress": "In progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No show",
+        "today": "Today",
+        "thisWeek": "This week",
+        "thisMonth": "This month",
+        "newToday": "New today",
+        "newThisWeek": "New this week",
+        "newThisMonth": "New this month",
+        "waiting": "Waiting",
+        "called": "Called",
+        "skipped": "Skipped",
+        "averageWait": "Average wait",
+        "hospitals": "Hospitals",
+        "doctors": "Doctors",
+        "departments": "Departments",
+        "queues": "Queues"
+      },
+      "minutes": "min",
+      "noBreakdown": "No breakdown data returned."
     }
   }
 }

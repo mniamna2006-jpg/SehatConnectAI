@@ -1,11 +1,11 @@
 import { apiRequest } from '../../../../core/api/client';
-import type { AdminHospitalProfile, HospitalProfileInput } from './types';
+import type { AdminHospitalProfile, HospitalProfilePatch } from './types';
 
 export function getAdminHospitalProfile(hospitalId: string): Promise<AdminHospitalProfile> {
   return apiRequest<AdminHospitalProfile>(`/api/hospitals/${hospitalId}`, { auth: false });
 }
 
-export function updateAdminHospitalProfile(hospitalId: string, input: HospitalProfileInput): Promise<AdminHospitalProfile> {
+export function updateAdminHospitalProfile(hospitalId: string, input: HospitalProfilePatch): Promise<AdminHospitalProfile> {
   return apiRequest<AdminHospitalProfile>(`/api/hospitals/${hospitalId}`, {
     method: 'PATCH',
     body: input,

@@ -22,6 +22,7 @@
     "optional": "Ikhtiyari",
     "to": "se",
     "patient": "Mareez",
+    "active": "active",
     "status": {
       "BOOKED": "Book Shuda",
       "CONFIRMED": "Tasdeeq Shuda",
@@ -317,6 +318,112 @@
         "password": "Password"
       },
       "submit": "Sign In"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "subtitle": "Aaj ke hospital operations ka mukhtasar jaiza.",
+      "loading": "Admin dashboard load ho raha hai…",
+      "empty": "Dashboard data dastyab nahi.",
+      "hospitalActive": "Active",
+      "hospitalInactive": "Inactive",
+      "total": "kul",
+      "stats": {
+        "departments": "Departments",
+        "doctors": "Doctors",
+        "staff": "Staff",
+        "patients": "Mareez"
+      },
+      "links": {
+        "title": "Admin tools",
+        "analytics": "Analytics",
+        "profile": "Hospital profile"
+      },
+      "appointmentCountsTitle": "Appointment status",
+      "queueTitle": "Aaj ki queue",
+      "todayAppointmentsTitle": "Aaj ki appointments",
+      "noAppointmentsTitle": "Aaj koi appointment nahi",
+      "noAppointmentsMessage": "Aaj ke liye koi appointment schedule nahi.",
+      "unknownPatient": "Namaloom mareez"
+    },
+    "profile": {
+      "title": "Hospital Profile",
+      "subtitle": "Hospital service ke supported operational aur public details manage karein.",
+      "loading": "Hospital profile load ho raha hai…",
+      "emptyTitle": "Hospital profile dastyab nahi",
+      "empty": "Hospital profile wapas nahi aaya.",
+      "edit": "Profile edit karein",
+      "save": "Tabdeeliyan save karein",
+      "cancel": "Cancel karein",
+      "success": "Hospital profile update ho gaya.",
+      "noChanges": "Save karne ke liye koi tabdeeli nahi.",
+      "sections": {
+        "details": "Hospital details",
+        "branding": "Branding URLs"
+      },
+      "fields": {
+        "name": "Hospital ka naam",
+        "facilityType": "Facility type",
+        "description": "Tafseel",
+        "phone": "Phone",
+        "email": "Email",
+        "address": "Pata",
+        "city": "Shehar",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "location": "Coordinates",
+        "logoUrl": "Logo URL",
+        "coverUrl": "Cover image URL",
+        "theme": "Theme"
+      },
+      "facilityTypes": {
+        "HOSPITAL": "Hospital",
+        "CLINIC": "Clinic",
+        "MEDICAL_CENTER": "Medical center"
+      }
+    },
+    "analytics": {
+      "title": "Analytics Jaiza",
+      "subtitle": "Analytics service se milne wale mojooda operational totals.",
+      "loading": "Analytics load ho rahe hain…",
+      "emptyTitle": "Abhi koi analytics nahi",
+      "empty": "Analytics service ne koi operational activity wapas nahi ki.",
+      "sections": {
+        "appointments": "Appointments",
+        "patients": "Mareez",
+        "queue": "Queue",
+        "operations": "Operations",
+        "departments": "Department ke mutabiq appointments",
+        "doctors": "Doctor ke mutabiq appointments",
+        "workload": "Doctor workload"
+      },
+      "metrics": {
+        "total": "Kul",
+        "active": "Active",
+        "booked": "Booked",
+        "confirmed": "Confirmed",
+        "checkedIn": "Check in",
+        "inProgress": "Jaari",
+        "completed": "Mukammal",
+        "cancelled": "Cancel",
+        "noShow": "Hazir nahi hua",
+        "today": "Aaj",
+        "thisWeek": "Is haftay",
+        "thisMonth": "Is mahinay",
+        "newToday": "Aaj naye",
+        "newThisWeek": "Is haftay naye",
+        "newThisMonth": "Is mahinay naye",
+        "waiting": "Intezar mein",
+        "called": "Bulaya gaya",
+        "skipped": "Chhor diya gaya",
+        "averageWait": "Ausat intezar",
+        "hospitals": "Hospitals",
+        "doctors": "Doctors",
+        "departments": "Departments",
+        "queues": "Queues"
+      },
+      "minutes": "min",
+      "noBreakdown": "Breakdown data wapas nahi aaya."
     }
   }
 }

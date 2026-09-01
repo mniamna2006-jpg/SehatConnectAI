@@ -22,6 +22,7 @@
     "optional": "اختیاری",
     "to": "سے",
     "patient": "مریض",
+    "active": "فعال",
     "status": {
       "BOOKED": "بک شدہ",
       "CONFIRMED": "تصدیق شدہ",
@@ -317,6 +318,112 @@
         "password": "پاس ورڈ"
       },
       "submit": "سائن ان کریں"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "subtitle": "آج کے ہسپتال آپریشنز کا مختصر جائزہ۔",
+      "loading": "ایڈمن ڈیش بورڈ لوڈ ہو رہا ہے…",
+      "empty": "ڈیش بورڈ کا ڈیٹا دستیاب نہیں۔",
+      "hospitalActive": "فعال",
+      "hospitalInactive": "غیر فعال",
+      "total": "کل",
+      "stats": {
+        "departments": "شعبے",
+        "doctors": "ڈاکٹر",
+        "staff": "عملہ",
+        "patients": "مریض"
+      },
+      "links": {
+        "title": "ایڈمن ٹولز",
+        "analytics": "تجزیات",
+        "profile": "ہسپتال پروفائل"
+      },
+      "appointmentCountsTitle": "اپائنٹمنٹ کی حالت",
+      "queueTitle": "آج کی قطار",
+      "todayAppointmentsTitle": "آج کی اپائنٹمنٹس",
+      "noAppointmentsTitle": "آج کوئی اپائنٹمنٹ نہیں",
+      "noAppointmentsMessage": "آج کے لیے کوئی اپائنٹمنٹ مقرر نہیں۔",
+      "unknownPatient": "نامعلوم مریض"
+    },
+    "profile": {
+      "title": "ہسپتال پروفائل",
+      "subtitle": "ہسپتال سروس کے تعاون یافتہ آپریشنل اور عوامی کوائف برقرار رکھیں۔",
+      "loading": "ہسپتال پروفائل لوڈ ہو رہا ہے…",
+      "emptyTitle": "ہسپتال پروفائل دستیاب نہیں",
+      "empty": "ہسپتال پروفائل واپس نہیں آیا۔",
+      "edit": "پروفائل میں ترمیم کریں",
+      "save": "تبدیلیاں محفوظ کریں",
+      "cancel": "منسوخ کریں",
+      "success": "ہسپتال پروفائل اپ ڈیٹ ہو گیا۔",
+      "noChanges": "محفوظ کرنے کے لیے کوئی تبدیلی نہیں۔",
+      "sections": {
+        "details": "ہسپتال کی تفصیلات",
+        "branding": "برانڈنگ یو آر ایل"
+      },
+      "fields": {
+        "name": "ہسپتال کا نام",
+        "facilityType": "ادارے کی قسم",
+        "description": "تفصیل",
+        "phone": "فون",
+        "email": "ای میل",
+        "address": "پتہ",
+        "city": "شہر",
+        "latitude": "عرض بلد",
+        "longitude": "طول بلد",
+        "location": "مقام کے نقاط",
+        "logoUrl": "لوگو یو آر ایل",
+        "coverUrl": "کور تصویر یو آر ایل",
+        "theme": "تھیم"
+      },
+      "facilityTypes": {
+        "HOSPITAL": "ہسپتال",
+        "CLINIC": "کلینک",
+        "MEDICAL_CENTER": "طبی مرکز"
+      }
+    },
+    "analytics": {
+      "title": "تجزیاتی جائزہ",
+      "subtitle": "تجزیاتی سروس سے موصول موجودہ آپریشنل اعداد۔",
+      "loading": "تجزیات لوڈ ہو رہے ہیں…",
+      "emptyTitle": "ابھی کوئی تجزیہ نہیں",
+      "empty": "تجزیاتی سروس نے کوئی آپریشنل سرگرمی واپس نہیں کی۔",
+      "sections": {
+        "appointments": "اپائنٹمنٹس",
+        "patients": "مریض",
+        "queue": "قطار",
+        "operations": "آپریشنز",
+        "departments": "شعبے کے لحاظ سے اپائنٹمنٹس",
+        "doctors": "ڈاکٹر کے لحاظ سے اپائنٹمنٹس",
+        "workload": "ڈاکٹر کا کام کا بوجھ"
+      },
+      "metrics": {
+        "total": "کل",
+        "active": "فعال",
+        "booked": "بک شدہ",
+        "confirmed": "تصدیق شدہ",
+        "checkedIn": "چیک اِن",
+        "inProgress": "جاری",
+        "completed": "مکمل",
+        "cancelled": "منسوخ",
+        "noShow": "حاضر نہیں ہوا",
+        "today": "آج",
+        "thisWeek": "اس ہفتے",
+        "thisMonth": "اس مہینے",
+        "newToday": "آج نئے",
+        "newThisWeek": "اس ہفتے نئے",
+        "newThisMonth": "اس مہینے نئے",
+        "waiting": "انتظار میں",
+        "called": "بلایا گیا",
+        "skipped": "چھوڑ دیا گیا",
+        "averageWait": "اوسط انتظار",
+        "hospitals": "ہسپتال",
+        "doctors": "ڈاکٹر",
+        "departments": "شعبے",
+        "queues": "قطاریں"
+      },
+      "minutes": "منٹ",
+      "noBreakdown": "تفصیلی ڈیٹا واپس نہیں آیا۔"
     }
   }
 }
