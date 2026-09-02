@@ -680,5 +680,14 @@
         "COMPLETED": "Complete"
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Updates on your care",
+    "markAllRead": "Mark all as read",
+    "emptyTitle": "No notifications",
+    "emptyMessage": "You're all caught up. New updates will appear here.",
+    "errorMessage": "We couldn't load your notifications.",
+    "unread": "Unread"
   }
 }

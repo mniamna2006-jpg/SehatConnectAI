@@ -13,6 +13,8 @@ export const queryKeys = {
   myAppointments: ['appointments', 'my'] as const,
   appointment: (id: string) => ['appointments', id] as const,
   myQueue: ['queue', 'my'] as const,
+  notifications: ['notifications', 'my'] as const,
+  unreadNotificationCount: ['notifications', 'unread-count'] as const,
 
   hospitalMe: ['hospitalAuth', 'me'] as const,
 
