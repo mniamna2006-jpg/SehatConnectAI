@@ -5,6 +5,7 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 const {
+  AIProviderError,
   analyzeSymptoms,
   SUPPORTED_LANGUAGES,
   MAX_MESSAGE_LENGTH,
@@ -229,11 +230,7 @@ router.post(
     } catch (error) {
       console.error("AI chat error:", error);
 
-      // If the AI provider is not configured or unreachable
-      if (
-        error.message === "AI provider is not configured" ||
-        error.message === "Failed to connect to AI provider"
-      ) {
+      if (error instanceof AIProviderError) {
         return res.status(502).json({
           success: false,
           message: "AI assistant is currently unavailable",
