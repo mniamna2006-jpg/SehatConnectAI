@@ -9,15 +9,24 @@ const routePath = path.resolve(__dirname, "../src/routes/ai.routes.js");
 
 class AIProviderError extends Error {}
 
-function loadChatHandler({ analyzeSymptoms, prisma }) {
+function loadAiRoutes({
+  analyzeSymptoms,
+  prisma,
+  authenticateToken = (_req, _res, next) => next(),
+  authorizeRole = (_req, _res, next) => next(),
+  rateLimit = (_req, _res, next) => next(),
+}) {
   const harness = createExpressMock();
 
   loadFreshWithMocks(routePath, {
     express: harness.express,
     "../config/prisma": prisma,
     "../middleware/auth.middleware": {
-      authenticateToken: (_req, _res, next) => next(),
-      authorizeRoles: () => (_req, _res, next) => next(),
+      authenticateToken,
+      authorizeRoles: () => authorizeRole,
+    },
+    "../middleware/ai-rate-limit.middleware": {
+      aiChatRateLimit: rateLimit,
     },
     "../services/ai.service": {
       AIProviderError,
@@ -27,8 +36,28 @@ function loadChatHandler({ analyzeSymptoms, prisma }) {
     },
   });
 
+  return harness;
+}
+
+function loadChatHandler(options) {
+  const harness = loadAiRoutes(options);
+
   const route = harness.findRoute("POST", "/chat");
   return route.handlers[route.handlers.length - 1];
+}
+
+async function invokeMiddlewareChain(handlers, request, response) {
+  let index = 0;
+
+  async function next() {
+    const handler = handlers[index];
+    index += 1;
+    if (handler) {
+      await handler(request, response, next);
+    }
+  }
+
+  await next();
 }
 
 async function invokeChat(handler, body = {}) {
@@ -311,4 +340,49 @@ test("conversation ownership is checked before provider invocation", async () =>
   assert.equal(providerCalls, 0);
   assert.equal(state.transactionCalls, 0);
   assert.deepEqual(state.messages, []);
+});
+
+test("AI limiter runs after authentication and only on POST /chat", async () => {
+  const events = [];
+  const prisma = {
+    patient: {
+      findUnique: async () => null,
+    },
+  };
+  const harness = loadAiRoutes({
+    analyzeSymptoms: async () => {
+      events.push("provider");
+    },
+    prisma,
+    authenticateToken: (req, _res, next) => {
+      events.push("authenticate");
+      req.user = { user_id: "user-1", role: "PATIENT" };
+      return next();
+    },
+    authorizeRole: (_req, _res, next) => {
+      events.push("authorize");
+      return next();
+    },
+    rateLimit: (_req, _res, next) => {
+      events.push("rate-limit");
+      return next();
+    },
+  });
+
+  const chat = harness.findRoute("POST", "/chat");
+  await invokeMiddlewareChain(
+    chat.handlers,
+    { body: { message: "Headache" }, headers: {} },
+    createResponse()
+  );
+  assert.deepEqual(events, ["authenticate", "authorize", "rate-limit"]);
+
+  events.length = 0;
+  const history = harness.findRoute("GET", "/history");
+  await invokeMiddlewareChain(
+    history.handlers,
+    { headers: {} },
+    createResponse()
+  );
+  assert.deepEqual(events, ["authenticate", "authorize"]);
 });

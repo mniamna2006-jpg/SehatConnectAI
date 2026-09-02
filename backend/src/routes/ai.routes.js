@@ -5,6 +5,9 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 const {
+  aiChatRateLimit,
+} = require("../middleware/ai-rate-limit.middleware");
+const {
   AIProviderError,
   analyzeSymptoms,
   SUPPORTED_LANGUAGES,
@@ -28,6 +31,7 @@ router.post(
   "/chat",
   authenticateToken,
   authorizeRoles("PATIENT"),
+  aiChatRateLimit,
   async (req, res) => {
     try {
       const { message, language, conversation_id } = req.body;
