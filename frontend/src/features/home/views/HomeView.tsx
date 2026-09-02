@@ -4,6 +4,7 @@ import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
 import { Avatar } from '../../../shared/components/Avatar';
 import { BrandMark } from '../../../shared/components/BrandMark';
 import { PressableSurface } from '../../../shared/components/Buttons';
+import { NotificationBell } from '../../notifications/views/NotificationBell';
 import { useTranslations } from '../../../providers/LocaleProvider';
 import { Screen } from '../../../shared/components/Screen';
 import { colors, radius, shadow, typography } from '../../../shared/theme';
@@ -40,6 +41,7 @@ export function HomeView() {
         <View style={styles.topBar}>
           <BrandMark compact />
           <View style={styles.topActions}>
+            <NotificationBell />
             <Pressable
               testID="home-logout"
               accessibilityLabel="Log out"

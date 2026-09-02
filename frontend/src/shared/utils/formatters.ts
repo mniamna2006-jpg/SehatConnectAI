@@ -19,6 +19,12 @@ export function formatDateLabel(value: string): string {
   });
 }
 
+export function formatDateTimeLabel(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}, ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+}
+
 export function getInitials(value?: string): string {
   const parts = value?.trim().split(/\s+/).filter(Boolean) ?? [];
   if (parts.length === 0) return 'SC';

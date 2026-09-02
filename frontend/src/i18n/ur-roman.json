@@ -680,5 +680,14 @@
         "COMPLETED": "Mukammal karein"
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Aap ki dekh bhal ki taza kaari",
+    "markAllRead": "Sab ko parha hua nishan zad karein",
+    "emptyTitle": "Koi notification nahi",
+    "emptyMessage": "Aap bilkul up to date hain. Nai updates yahan nazar aayen gi.",
+    "errorMessage": "Hum aap ki notifications load nahi kar sakay.",
+    "unread": "Ghair parha hua"
   }
 }

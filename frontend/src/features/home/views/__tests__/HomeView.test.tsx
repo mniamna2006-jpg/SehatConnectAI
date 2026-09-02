@@ -4,6 +4,7 @@ import { useHomeViewModel } from '../../viewmodels/useHomeViewModel';
 import { HomeView } from '../HomeView';
 
 jest.mock('../../viewmodels/useHomeViewModel');
+jest.mock('../../../notifications/views/NotificationBell', () => ({ NotificationBell: () => null }));
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => {
   const { View: MockView } = require('react-native');
