@@ -162,17 +162,9 @@
       }
     },
     "forgot": {
-      "title": "Reset your password",
-      "body": "Enter your email address and we'll send next steps if we find a match.",
-      "fields": {
-        "email": "Email"
-      },
-      "submit": "Send reset link",
-      "success": {
-        "title": "Check your email",
-        "message": "If an account exists, reset instructions will be sent.",
-        "action": "Back to log in"
-      }
+      "title": "Password recovery",
+      "message": "Password recovery is currently unavailable. Please contact support.",
+      "action": "Back to log in"
     }
   },
   "location": {

@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
-import { requestPasswordReset } from '../../model/adapters/forgotPasswordAdapter';
+import { render, screen } from '@testing-library/react-native';
 import { ForgotPasswordView } from '../ForgotPasswordView';
 
-jest.mock('../../model/adapters/forgotPasswordAdapter');
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => {
   const { Text: MockText } = require('react-native');
@@ -14,21 +12,13 @@ jest.mock('expo-router', () => {
   };
 });
 
-beforeEach(() => {
-  jest.clearAllMocks();
-  (requestPasswordReset as jest.Mock).mockResolvedValue(undefined);
-});
-
-test('uses email only and shows success after submission', async () => {
+test('shows the honest unavailable state with no email field or submit action', async () => {
   await render(<ForgotPasswordView />);
 
-  expect(screen.getByLabelText('Email')).toBeOnTheScreen();
-  expect(screen.queryByLabelText('Password')).not.toBeOnTheScreen();
-
-  await fireEvent.changeText(screen.getByLabelText('Email'), 'patient@example.com');
-  await fireEvent.press(screen.getByRole('button', { name: 'Send reset link' }));
-
-  expect(await screen.findByRole('header', { name: 'Check your email' })).toBeOnTheScreen();
-  expect(requestPasswordReset).toHaveBeenCalledWith('patient@example.com');
+  expect(screen.getByTestId('forgot-password-message')).toHaveTextContent(
+    'Password recovery is currently unavailable. Please contact support.'
+  );
+  expect(screen.queryByLabelText('Email')).not.toBeOnTheScreen();
+  expect(screen.queryByRole('button')).not.toBeOnTheScreen();
   expect(screen.getByLabelText('/login')).toBeOnTheScreen();
 });

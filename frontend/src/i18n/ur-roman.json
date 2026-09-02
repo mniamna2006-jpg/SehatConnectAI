@@ -162,17 +162,9 @@
       }
     },
     "forgot": {
-      "title": "Apna password reset karein",
-      "body": "Apna email daalein, agar account mila to hum aglay marahil bhej denge.",
-      "fields": {
-        "email": "Email"
-      },
-      "submit": "Reset Link Bhejein",
-      "success": {
-        "title": "Apna email check karein",
-        "message": "Agar account mojood hua to reset hidayaat bhej di jayengi.",
-        "action": "Log in par wapas"
-      }
+      "title": "Password bahaali",
+      "message": "Password bahaali is waqt dastyaab nahin hai. Baraye meherbani support se raabta karein.",
+      "action": "Log in par wapas"
     }
   },
   "location": {
