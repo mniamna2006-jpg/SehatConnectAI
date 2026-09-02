@@ -4,6 +4,13 @@ const SUPPORTED_LANGUAGES = ["ENGLISH", "URDU", "ROMAN_URDU"];
 
 const MAX_MESSAGE_LENGTH = 2000;
 
+class AIProviderError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AIProviderError";
+  }
+}
+
 const SYSTEM_PROMPT = `You are the SehatConnectAI symptom-to-specialist assistant. Your job is to help patients find the right medical department based on their symptoms.
 
 You are NOT a doctor. You must NEVER:
@@ -80,7 +87,7 @@ async function callGemini(payload) {
   const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
   if (!apiKey) {
-    throw new Error("AI provider is not configured");
+    throw new AIProviderError("AI provider is not configured");
   }
 
   const body = JSON.stringify(payload);
@@ -109,24 +116,24 @@ async function callGemini(payload) {
             if (res.statusCode !== 200) {
               const errMsg =
                 parsed?.error?.message || `Gemini API returned status ${res.statusCode}`;
-              return reject(new Error(errMsg));
+              return reject(new AIProviderError(errMsg));
             }
 
             const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!text) {
-              return reject(new Error("Gemini API returned an empty response"));
+            if (typeof text !== "string" || text.trim().length === 0) {
+              return reject(new AIProviderError("AI provider returned invalid output"));
             }
 
             resolve(text.trim());
           } catch (parseErr) {
-            reject(new Error("Failed to parse Gemini API response"));
+            reject(new AIProviderError("Failed to parse AI provider response"));
           }
         });
       }
     );
 
     req.on("error", () => {
-      reject(new Error("Failed to connect to AI provider"));
+      reject(new AIProviderError("Failed to connect to AI provider"));
     });
 
     req.write(body);
@@ -135,34 +142,42 @@ async function callGemini(payload) {
 }
 
 /**
- * Parse the AI provider's raw text response into structured JSON.
- * Falls back to a safe default if parsing fails.
+ * Parse and strictly validate the AI provider's raw JSON response.
  */
 function parseAIResponse(rawText) {
-  // Strip markdown code fences if the AI wraps JSON in them
-  let cleaned = rawText
-    .replace(/```json\s*/gi, "")
-    .replace(/```\s*/g, "")
-    .trim();
+  const invalidOutput = () => {
+    throw new AIProviderError("AI provider returned invalid output");
+  };
 
-  try {
-    const parsed = JSON.parse(cleaned);
-
-    return {
-      recommended_department: typeof parsed.recommended_department === "string"
-        ? parsed.recommended_department.trim()
-        : null,
-      message: typeof parsed.message === "string" ? parsed.message.trim() : "",
-      is_emergency: parsed.is_emergency === true,
-    };
-  } catch {
-    // If JSON parsing fails, do NOT invent a department
-    return {
-      recommended_department: null,
-      message: rawText || "We could not analyze your symptoms. Please consult a doctor directly.",
-      is_emergency: false,
-    };
+  if (typeof rawText !== "string" || rawText.trim().length === 0) {
+    invalidOutput();
   }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(rawText.trim());
+  } catch {
+    invalidOutput();
+  }
+
+  if (
+    !parsed ||
+    Array.isArray(parsed) ||
+    typeof parsed !== "object" ||
+    typeof parsed.recommended_department !== "string" ||
+    parsed.recommended_department.trim().length === 0 ||
+    typeof parsed.message !== "string" ||
+    parsed.message.trim().length === 0 ||
+    typeof parsed.is_emergency !== "boolean"
+  ) {
+    invalidOutput();
+  }
+
+  return {
+    recommended_department: parsed.recommended_department.trim(),
+    message: parsed.message.trim(),
+    is_emergency: parsed.is_emergency,
+  };
 }
 
 /**
@@ -179,6 +194,7 @@ async function analyzeSymptoms(message, language) {
 }
 
 module.exports = {
+  AIProviderError,
   analyzeSymptoms,
   SUPPORTED_LANGUAGES,
   MAX_MESSAGE_LENGTH,

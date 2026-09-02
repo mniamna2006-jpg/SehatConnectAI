@@ -31,7 +31,6 @@ router.get(
       return res.status(500).json({
         success: false,
         message: "Failed to fetch notifications",
-        error: error.message,
       });
     }
   }
@@ -62,7 +61,6 @@ router.get(
       return res.status(500).json({
         success: false,
         message: "Failed to fetch unread notification count",
-        error: error.message,
       });
     }
   }
@@ -111,7 +109,6 @@ router.patch(
       return res.status(500).json({
         success: false,
         message: "Failed to update notification",
-        error: error.message,
       });
     }
   }
@@ -146,7 +143,6 @@ router.patch(
       return res.status(500).json({
         success: false,
         message: "Failed to update notifications",
-        error: error.message,
       });
     }
   }

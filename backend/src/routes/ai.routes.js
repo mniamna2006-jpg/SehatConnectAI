@@ -5,6 +5,10 @@ const {
   authorizeRoles,
 } = require("../middleware/auth.middleware");
 const {
+  aiChatRateLimit,
+} = require("../middleware/ai-rate-limit.middleware");
+const {
+  AIProviderError,
   analyzeSymptoms,
   SUPPORTED_LANGUAGES,
   MAX_MESSAGE_LENGTH,
@@ -27,6 +31,7 @@ router.post(
   "/chat",
   authenticateToken,
   authorizeRoles("PATIENT"),
+  aiChatRateLimit,
   async (req, res) => {
     try {
       const { message, language, conversation_id } = req.body;
@@ -68,7 +73,7 @@ router.post(
         });
       }
 
-      // Resolve or create conversation
+      // Resolve an existing conversation before invoking the provider.
       let conversationId = conversation_id;
 
       if (conversationId) {
@@ -87,27 +92,7 @@ router.post(
             message: "Conversation not found",
           });
         }
-      } else {
-        // Create a new conversation
-        const newConversation = await prisma.aIConversation.create({
-          data: {
-            patient_id: patient.patient_id,
-            title: generateTitle(message),
-          },
-          select: { conversation_id: true },
-        });
-        conversationId = newConversation.conversation_id;
       }
-
-      // Save the patient's message
-      await prisma.aIMessage.create({
-        data: {
-          conversation_id: conversationId,
-          sender: "USER",
-          message: message.trim(),
-          language: lang,
-        },
-      });
 
       // Step 1: AI analyzes symptoms and recommends a department
       const aiResult = await analyzeSymptoms(message.trim(), lang);
@@ -197,23 +182,47 @@ router.post(
         city: doc.hospital.city,
       }));
 
-      // Save the AI response message
-      await prisma.aIMessage.create({
-        data: {
-          conversation_id: conversationId,
-          sender: "AI",
-          message: aiResult.message,
-          language: lang,
-          recommended_department: aiResult.recommended_department,
-          is_emergency: aiResult.is_emergency,
-        },
-      });
+      conversationId = await prisma.$transaction(async (transaction) => {
+        let persistedConversationId = conversationId;
 
-      // Touch the conversation's updated_at
-      await prisma.aIConversation.update({
-        where: { conversation_id: conversationId },
-        data: { updated_at: new Date() },
-        select: { conversation_id: true },
+        if (!persistedConversationId) {
+          const newConversation = await transaction.aIConversation.create({
+            data: {
+              patient_id: patient.patient_id,
+              title: generateTitle(message),
+            },
+            select: { conversation_id: true },
+          });
+          persistedConversationId = newConversation.conversation_id;
+        }
+
+        await transaction.aIMessage.create({
+          data: {
+            conversation_id: persistedConversationId,
+            sender: "USER",
+            message: message.trim(),
+            language: lang,
+          },
+        });
+
+        await transaction.aIMessage.create({
+          data: {
+            conversation_id: persistedConversationId,
+            sender: "AI",
+            message: aiResult.message,
+            language: lang,
+            recommended_department: aiResult.recommended_department,
+            is_emergency: aiResult.is_emergency,
+          },
+        });
+
+        await transaction.aIConversation.update({
+          where: { conversation_id: persistedConversationId },
+          data: { updated_at: new Date() },
+          select: { conversation_id: true },
+        });
+
+        return persistedConversationId;
       });
 
       return res.status(200).json({
@@ -229,11 +238,7 @@ router.post(
     } catch (error) {
       console.error("AI chat error:", error);
 
-      // If the AI provider is not configured or unreachable
-      if (
-        error.message === "AI provider is not configured" ||
-        error.message === "Failed to connect to AI provider"
-      ) {
+      if (error instanceof AIProviderError) {
         return res.status(502).json({
           success: false,
           message: "AI assistant is currently unavailable",
