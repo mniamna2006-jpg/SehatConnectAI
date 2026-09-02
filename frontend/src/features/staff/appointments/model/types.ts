@@ -17,3 +17,22 @@ export interface StaffTodayAppointments {
   total: number;
   appointments: StaffAppointment[];
 }
+
+/** Raw response shape of PATCH /api/appointments/:appointment_id/status — scalar Appointment fields, not the joined StaffAppointment shape. */
+export interface StaffAppointmentStatusUpdate {
+  appointment_id: string;
+  patient_id: string;
+  doctor_id: string;
+  hospital_id: string;
+  department_id: string;
+  slot_id: string;
+  appointment_date: string;
+  appointment_time: string;
+  appointment_time_12h: string;
+  status: AppointmentStatus;
+  booking_reference: string;
+  token_number: number | null;
+  reason: string | null;
+  created_at: string;
+  updated_at: string;
+}
