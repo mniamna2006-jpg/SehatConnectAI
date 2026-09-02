@@ -339,7 +339,9 @@
         "analytics": "تجزیات",
         "departments": "شعبے",
         "doctors": "ڈاکٹر",
-        "profile": "ہسپتال پروفائل"
+        "profile": "ہسپتال پروفائل",
+        "staff": "اسٹاف",
+        "invitations": "دعوت نامے"
       },
       "appointmentCountsTitle": "اپائنٹمنٹ کی حالت",
       "queueTitle": "آج کی قطار",
@@ -453,7 +455,8 @@
         "created": "شعبہ بنا دیا گیا۔",
         "updated": "شعبہ اپ ڈیٹ ہو گیا۔",
         "deactivated": "شعبہ غیر فعال کر دیا گیا۔"
-      }
+      },
+      "inactive": "غیر فعال"
     },
     "doctors": {
       "title": "ڈاکٹر",
@@ -543,6 +546,128 @@
       },
       "success": {
         "created": "شیڈول بنا دیا گیا۔"
+      }
+    },
+    "invitations": {
+      "title": "اسٹاف دعوت نامے",
+      "subtitle": "اس ہسپتال میں شامل ہونے کے لیے نئے اسٹاف ممبران کو دعوت دیں۔",
+      "loading": "دعوت نامے لوڈ ہو رہے ہیں…",
+      "emptyTitle": "ابھی کوئی دعوت نامہ نہیں",
+      "empty": "شروع کرنے کے لیے کسی اسٹاف ممبر کو دعوت دیں۔",
+      "add": "اسٹاف کو دعوت دیں",
+      "create": "دعوت نامہ بھیجیں",
+      "revoke": "منسوخ کریں",
+      "revokeTitle": "دعوت نامہ منسوخ کریں؟",
+      "revokeMessage": "مدعو شخص اب اس دعوت نامے کو قبول نہیں کر سکے گا۔",
+      "revokeConfirm": "منسوخ کریں",
+      "noDepartment": "کوئی شعبہ نہیں",
+      "fields": {
+        "email": "ای میل",
+        "employeeId": "ملازم آئی ڈی",
+        "position": "عہدہ",
+        "department": "شعبہ"
+      },
+      "status": {
+        "PENDING": "زیر التوا",
+        "ACCEPTED": "قبول شدہ",
+        "EXPIRED": "میعاد ختم",
+        "REVOKED": "منسوخ شدہ"
+      },
+      "success": {
+        "created": "دعوت نامہ بھیج دیا گیا۔",
+        "revoked": "دعوت نامہ منسوخ کر دیا گیا۔"
+      }
+    },
+    "staffManagement": {
+      "title": "اسٹاف",
+      "subtitle": "اس ہسپتال کے اسٹاف ممبران کا نظم کریں۔",
+      "loading": "اسٹاف لوڈ ہو رہا ہے…",
+      "emptyTitle": "ابھی کوئی اسٹاف نہیں",
+      "empty": "اس ہسپتال کے لیے پہلا اسٹاف ممبر شامل کریں۔",
+      "add": "اسٹاف شامل کریں",
+      "create": "اسٹاف بنائیں",
+      "save": "تبدیلیاں محفوظ کریں",
+      "edit": "اسٹاف میں ترمیم کریں",
+      "deactivate": "اسٹاف کو غیر فعال کریں",
+      "deactivateTitle": "اسٹاف ممبر کو غیر فعال کریں؟",
+      "deactivateMessage": "اس سے ان کی ہسپتال ورک اسپیس تک رسائی ختم ہو جائے گی۔",
+      "deactivateConfirm": "غیر فعال کریں",
+      "noChanges": "محفوظ کرنے کے لیے کوئی تبدیلی نہیں۔",
+      "inactive": "غیر فعال",
+      "noDepartment": "کوئی شعبہ نہیں",
+      "fields": {
+        "fullName": "پورا نام",
+        "employeeId": "ملازم آئی ڈی",
+        "position": "عہدہ",
+        "email": "ای میل",
+        "phone": "فون",
+        "password": "عارضی پاس ورڈ",
+        "department": "شعبہ"
+      },
+      "success": {
+        "created": "اسٹاف ممبر بن گیا۔",
+        "updated": "اسٹاف ممبر اپ ڈیٹ ہو گیا۔",
+        "deactivated": "اسٹاف ممبر غیر فعال کر دیا گیا۔"
+      }
+    }
+  },
+  "staff": {
+    "dashboard": {
+      "title": "اسٹاف ڈیش بورڈ",
+      "subtitleFallback": "آپ کا ہسپتال ورک اسپیس",
+      "loading": "ڈیش بورڈ لوڈ ہو رہا ہے…",
+      "noDepartment": "کوئی شعبہ نہیں",
+      "stats": {
+        "activeDepartments": "فعال شعبے",
+        "activeDoctors": "فعال ڈاکٹرز",
+        "availableToday": "آج دستیاب",
+        "todayAppointments": "آج کی اپائنٹمنٹس",
+        "todayQueue": "آج کی قطار"
+      }
+    },
+    "appointments": {
+      "title": "آج کی اپائنٹمنٹس",
+      "subtitle": "مریضوں کو چیک ان کریں اور ان کے وزٹ کی حیثیت کا نظم کریں۔",
+      "loading": "اپائنٹمنٹس لوڈ ہو رہی ہیں…",
+      "emptyTitle": "آج کوئی اپائنٹمنٹ نہیں",
+      "emptyMessage": "آج کے لیے بک کی گئی اپائنٹمنٹس یہاں نظر آئیں گی۔",
+      "unknownPatient": "نامعلوم مریض",
+      "status": {
+        "BOOKED": "بک شدہ",
+        "CONFIRMED": "تصدیق شدہ",
+        "CHECKED_IN": "چیک اِن",
+        "IN_PROGRESS": "جاری ہے",
+        "COMPLETED": "مکمل",
+        "CANCELLED": "منسوخ",
+        "NO_SHOW": "حاضر نہیں ہوا"
+      },
+      "actions": {
+        "CONFIRMED": "تصدیق کریں",
+        "CHECKED_IN": "چیک اِن کریں",
+        "CANCELLED": "منسوخ کریں",
+        "NO_SHOW": "حاضر نہیں کا نشان لگائیں",
+        "IN_PROGRESS": "وزٹ شروع کریں",
+        "COMPLETED": "مکمل کریں"
+      }
+    },
+    "queue": {
+      "title": "ہسپتال قطار",
+      "subtitle": "مریضوں کو ترتیب سے قطار میں آگے بڑھائیں۔",
+      "loading": "قطار لوڈ ہو رہی ہے…",
+      "emptyTitle": "قطار خالی ہے",
+      "emptyMessage": "آج چیک اِن ہونے والے مریض یہاں نظر آئیں گے۔",
+      "unknownPatient": "نامعلوم مریض",
+      "status": {
+        "WAITING": "انتظار میں",
+        "CALLED": "بلایا گیا",
+        "IN_PROGRESS": "جاری ہے",
+        "COMPLETED": "مکمل",
+        "SKIPPED": "نظر انداز"
+      },
+      "actions": {
+        "CALLED": "مریض کو بلائیں",
+        "IN_PROGRESS": "شروع کریں",
+        "COMPLETED": "مکمل کریں"
       }
     }
   }

@@ -13,12 +13,14 @@ import { colors, radius, typography } from '../../../../shared/theme';
 import { useAdminDashboardViewModel } from '../viewmodels/useAdminDashboardViewModel';
 
 const QUICK_LINKS: {
-  href: '/admin/analytics' | '/admin/departments' | '/admin/doctors' | '/admin/profile';
+  href: '/admin/analytics' | '/admin/departments' | '/admin/doctors' | '/admin/profile' | '/admin/staff' | '/admin/invitations';
   icon: AppIconName;
   labelKey: string;
 }[] = [
   { href: '/admin/departments', icon: 'layers-outline', labelKey: 'admin.dashboard.links.departments' },
   { href: '/admin/doctors', icon: 'medkit-outline', labelKey: 'admin.dashboard.links.doctors' },
+  { href: '/admin/staff', icon: 'people-outline', labelKey: 'admin.dashboard.links.staff' },
+  { href: '/admin/invitations', icon: 'mail-outline', labelKey: 'admin.dashboard.links.invitations' },
   { href: '/admin/analytics', icon: 'bar-chart-outline', labelKey: 'admin.dashboard.links.analytics' },
   { href: '/admin/profile', icon: 'business-outline', labelKey: 'admin.dashboard.links.profile' },
 ];

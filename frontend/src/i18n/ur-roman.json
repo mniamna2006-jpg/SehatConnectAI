@@ -339,7 +339,9 @@
         "analytics": "Analytics",
         "departments": "Departments",
         "doctors": "Doctors",
-        "profile": "Hospital profile"
+        "profile": "Hospital profile",
+        "staff": "Staff",
+        "invitations": "Dawat Naame"
       },
       "appointmentCountsTitle": "Appointment status",
       "queueTitle": "Aaj ki queue",
@@ -453,7 +455,8 @@
         "created": "Department ban gaya.",
         "updated": "Department update ho gaya.",
         "deactivated": "Department deactivate ho gaya."
-      }
+      },
+      "inactive": "Inactive"
     },
     "doctors": {
       "title": "Doctors",
@@ -543,6 +546,128 @@
       },
       "success": {
         "created": "Schedule ban gaya."
+      }
+    },
+    "invitations": {
+      "title": "Staff Dawat Naame",
+      "subtitle": "Is hospital mein shamil hone ke liye naye staff members ko dawat dein.",
+      "loading": "Dawat naame load ho rahe hain…",
+      "emptyTitle": "Abhi koi dawat nama nahi",
+      "empty": "Shuru karne ke liye kisi staff member ko dawat dein.",
+      "add": "Staff ko dawat dein",
+      "create": "Dawat nama bhejein",
+      "revoke": "Mansookh karein",
+      "revokeTitle": "Dawat nama mansookh karein?",
+      "revokeMessage": "Madu shakhs ab is dawat naame ko qabool nahi kar sakega.",
+      "revokeConfirm": "Mansookh karein",
+      "noDepartment": "Koi shobha nahi",
+      "fields": {
+        "email": "Email",
+        "employeeId": "Employee ID",
+        "position": "Position",
+        "department": "Shobha"
+      },
+      "status": {
+        "PENDING": "Zair-e-iltiwa",
+        "ACCEPTED": "Qabool shuda",
+        "EXPIRED": "Miyad khatam",
+        "REVOKED": "Mansookh shuda"
+      },
+      "success": {
+        "created": "Dawat nama bhej diya gaya.",
+        "revoked": "Dawat nama mansookh kar diya gaya."
+      }
+    },
+    "staffManagement": {
+      "title": "Staff",
+      "subtitle": "Is hospital ke staff members ka intezam karein.",
+      "loading": "Staff load ho raha hai…",
+      "emptyTitle": "Abhi koi staff nahi",
+      "empty": "Is hospital ke liye pehla staff member shamil karein.",
+      "add": "Staff shamil karein",
+      "create": "Staff banayein",
+      "save": "Tabdeeliyan mehfooz karein",
+      "edit": "Staff mein tarmeem karein",
+      "deactivate": "Staff ko ghair faal karein",
+      "deactivateTitle": "Staff member ko ghair faal karein?",
+      "deactivateMessage": "Is se un ki hospital workspace tak rasai khatam ho jayegi.",
+      "deactivateConfirm": "Ghair faal karein",
+      "noChanges": "Mehfooz karne ke liye koi tabdeeli nahi.",
+      "inactive": "Ghair faal",
+      "noDepartment": "Koi shobha nahi",
+      "fields": {
+        "fullName": "Pura naam",
+        "employeeId": "Employee ID",
+        "position": "Position",
+        "email": "Email",
+        "phone": "Phone",
+        "password": "Aarzi password",
+        "department": "Shobha"
+      },
+      "success": {
+        "created": "Staff member ban gaya.",
+        "updated": "Staff member update ho gaya.",
+        "deactivated": "Staff member ghair faal kar diya gaya."
+      }
+    }
+  },
+  "staff": {
+    "dashboard": {
+      "title": "Staff Dashboard",
+      "subtitleFallback": "Aap ka hospital workspace",
+      "loading": "Dashboard load ho raha hai…",
+      "noDepartment": "Koi shobha nahi",
+      "stats": {
+        "activeDepartments": "Faal shobajaat",
+        "activeDoctors": "Faal doctors",
+        "availableToday": "Aaj dastyab",
+        "todayAppointments": "Aaj ki appointments",
+        "todayQueue": "Aaj ki queue"
+      }
+    },
+    "appointments": {
+      "title": "Aaj ki Appointments",
+      "subtitle": "Mareezon ko check in karein aur un ki visit status manage karein.",
+      "loading": "Appointments load ho rahi hain…",
+      "emptyTitle": "Aaj koi appointment nahi",
+      "emptyMessage": "Aaj ke liye book ki gayi appointments yahan nazar aayengi.",
+      "unknownPatient": "Namaloom mareez",
+      "status": {
+        "BOOKED": "Book shuda",
+        "CONFIRMED": "Tasdeeq shuda",
+        "CHECKED_IN": "Check in",
+        "IN_PROGRESS": "Jari hai",
+        "COMPLETED": "Mukammal",
+        "CANCELLED": "Mansookh",
+        "NO_SHOW": "Hazir nahi hua"
+      },
+      "actions": {
+        "CONFIRMED": "Tasdeeq karein",
+        "CHECKED_IN": "Check in karein",
+        "CANCELLED": "Mansookh karein",
+        "NO_SHOW": "No-show mark karein",
+        "IN_PROGRESS": "Visit shuru karein",
+        "COMPLETED": "Mukammal karein"
+      }
+    },
+    "queue": {
+      "title": "Hospital Queue",
+      "subtitle": "Mareezon ko tarteeb se queue mein aage barhayein.",
+      "loading": "Queue load ho rahi hai…",
+      "emptyTitle": "Queue khali hai",
+      "emptyMessage": "Aaj check in hone wale mareez yahan nazar aayenge.",
+      "unknownPatient": "Namaloom mareez",
+      "status": {
+        "WAITING": "Intezar mein",
+        "CALLED": "Bulaya gaya",
+        "IN_PROGRESS": "Jari hai",
+        "COMPLETED": "Mukammal",
+        "SKIPPED": "Nazar andaz"
+      },
+      "actions": {
+        "CALLED": "Mareez ko bulayein",
+        "IN_PROGRESS": "Shuru karein",
+        "COMPLETED": "Mukammal karein"
       }
     }
   }

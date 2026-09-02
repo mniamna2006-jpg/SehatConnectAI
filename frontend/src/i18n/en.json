@@ -339,7 +339,9 @@
         "analytics": "Analytics",
         "departments": "Departments",
         "doctors": "Doctors",
-        "profile": "Hospital profile"
+        "profile": "Hospital profile",
+        "staff": "Staff",
+        "invitations": "Invitations"
       },
       "appointmentCountsTitle": "Appointment status",
       "queueTitle": "Today’s queue",
@@ -453,7 +455,8 @@
         "created": "Department created.",
         "updated": "Department updated.",
         "deactivated": "Department deactivated."
-      }
+      },
+      "inactive": "Inactive"
     },
     "doctors": {
       "title": "Doctors",
@@ -543,6 +546,128 @@
       },
       "success": {
         "created": "Schedule created."
+      }
+    },
+    "invitations": {
+      "title": "Staff Invitations",
+      "subtitle": "Invite new staff members to join this hospital.",
+      "loading": "Loading invitations…",
+      "emptyTitle": "No invitations yet",
+      "empty": "Invite a staff member to get started.",
+      "add": "Invite staff",
+      "create": "Send invitation",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke invitation?",
+      "revokeMessage": "The invitee will no longer be able to accept this invitation.",
+      "revokeConfirm": "Revoke",
+      "noDepartment": "No department",
+      "fields": {
+        "email": "Email",
+        "employeeId": "Employee ID",
+        "position": "Position",
+        "department": "Department"
+      },
+      "status": {
+        "PENDING": "Pending",
+        "ACCEPTED": "Accepted",
+        "EXPIRED": "Expired",
+        "REVOKED": "Revoked"
+      },
+      "success": {
+        "created": "Invitation sent.",
+        "revoked": "Invitation revoked."
+      }
+    },
+    "staffManagement": {
+      "title": "Staff",
+      "subtitle": "Manage the staff members at this hospital.",
+      "loading": "Loading staff…",
+      "emptyTitle": "No staff yet",
+      "empty": "Add the first staff member for this hospital.",
+      "add": "Add staff",
+      "create": "Create staff",
+      "save": "Save changes",
+      "edit": "Edit staff",
+      "deactivate": "Deactivate staff",
+      "deactivateTitle": "Deactivate staff member?",
+      "deactivateMessage": "This removes their access to the hospital workspace.",
+      "deactivateConfirm": "Deactivate",
+      "noChanges": "No staff changes to save.",
+      "inactive": "Inactive",
+      "noDepartment": "No department",
+      "fields": {
+        "fullName": "Full name",
+        "employeeId": "Employee ID",
+        "position": "Position",
+        "email": "Email",
+        "phone": "Phone",
+        "password": "Temporary password",
+        "department": "Department"
+      },
+      "success": {
+        "created": "Staff member created.",
+        "updated": "Staff member updated.",
+        "deactivated": "Staff member deactivated."
+      }
+    }
+  },
+  "staff": {
+    "dashboard": {
+      "title": "Staff Dashboard",
+      "subtitleFallback": "Your hospital workspace",
+      "loading": "Loading dashboard…",
+      "noDepartment": "No department",
+      "stats": {
+        "activeDepartments": "Active departments",
+        "activeDoctors": "Active doctors",
+        "availableToday": "Available today",
+        "todayAppointments": "Today's appointments",
+        "todayQueue": "Today's queue"
+      }
+    },
+    "appointments": {
+      "title": "Today's Appointments",
+      "subtitle": "Check patients in and manage their visit status.",
+      "loading": "Loading appointments…",
+      "emptyTitle": "No appointments today",
+      "emptyMessage": "Appointments booked for today will appear here.",
+      "unknownPatient": "Unknown patient",
+      "status": {
+        "BOOKED": "Booked",
+        "CONFIRMED": "Confirmed",
+        "CHECKED_IN": "Checked in",
+        "IN_PROGRESS": "In progress",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled",
+        "NO_SHOW": "No show"
+      },
+      "actions": {
+        "CONFIRMED": "Confirm",
+        "CHECKED_IN": "Check in",
+        "CANCELLED": "Cancel",
+        "NO_SHOW": "Mark no-show",
+        "IN_PROGRESS": "Start visit",
+        "COMPLETED": "Complete"
+      }
+    },
+    "queue": {
+      "title": "Hospital Queue",
+      "subtitle": "Move patients through the queue in order.",
+      "loading": "Loading queue…",
+      "emptyTitle": "Queue is empty",
+      "emptyMessage": "Patients checked in for today will appear here.",
+      "unknownPatient": "Unknown patient",
+      "status": {
+        "WAITING": "Waiting",
+        "CALLED": "Called",
+        "IN_PROGRESS": "In progress",
+        "COMPLETED": "Completed",
+        "SKIPPED": "Skipped"
+      },
+      "actions": {
+        "CALLED": "Call patient",
+        "IN_PROGRESS": "Start",
+        "COMPLETED": "Complete"
       }
     }
   }

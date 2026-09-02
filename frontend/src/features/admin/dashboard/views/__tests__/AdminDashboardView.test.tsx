@@ -77,8 +77,8 @@ test('links only to implemented admin screens', async () => {
   expect(screen.getByLabelText('/admin/analytics')).toBeOnTheScreen();
   expect(screen.getByLabelText('/admin/departments')).toBeOnTheScreen();
   expect(screen.getByLabelText('/admin/doctors')).toBeOnTheScreen();
-  expect(screen.queryByLabelText('/admin/staff')).not.toBeOnTheScreen();
-  expect(screen.queryByLabelText('/admin/invitations')).not.toBeOnTheScreen();
+  expect(screen.getByLabelText('/admin/staff')).toBeOnTheScreen();
+  expect(screen.getByLabelText('/admin/invitations')).toBeOnTheScreen();
 });
 
 test('renders today appointments with patient, doctor, department, and status', async () => {
