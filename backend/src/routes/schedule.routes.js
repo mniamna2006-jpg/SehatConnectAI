@@ -71,6 +71,37 @@ router.post(
         });
       }
 
+      const admin = await prisma.hospitalAdmin.findUnique({
+        where: { user_id: req.user.user_id },
+        select: { hospital_id: true },
+      });
+
+      if (!admin) {
+        return res.status(404).json({
+          success: false,
+          message: "Hospital admin profile not found",
+        });
+      }
+
+      const doctor = await prisma.doctor.findUnique({
+        where: { doctor_id },
+        select: { hospital_id: true },
+      });
+
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          message: "Doctor not found",
+        });
+      }
+
+      if (doctor.hospital_id !== admin.hospital_id) {
+        return res.status(403).json({
+          success: false,
+          message: "You do not have permission to manage this doctor's schedule",
+        });
+      }
+
       const schedule = await prisma.doctorSchedule.create({
         data: {
           doctor_id,
