@@ -111,8 +111,12 @@ router.get(
           where: { hospital_id, is_active: true },
         }),
 
-        // Total registered patients in the system
-        prisma.patient.count(),
+        // Patients with at least one appointment at this hospital
+        prisma.patient.count({
+          where: {
+            appointments: { some: { hospital_id } },
+          },
+        }),
 
         // Today's appointments (PKT calendar day)
         prisma.appointment.findMany({

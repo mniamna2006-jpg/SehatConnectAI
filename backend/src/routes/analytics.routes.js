@@ -28,7 +28,7 @@ const UUID_RE =
  *
  * Response sections:
  *   appointments  — total, per-status, today / this_week / this_month
- *   patients      — system-wide totals (patients are not hospital-scoped)
+ *   patients      — patients with appointments at the caller's hospital
  *   queue         — per-status counts + average wait minutes
  *   operations    — hospital / doctor / department counts + breakdowns
  */
