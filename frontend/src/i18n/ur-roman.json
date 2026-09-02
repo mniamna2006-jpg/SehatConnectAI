@@ -112,7 +112,21 @@
       "forgotPassword": "Password bhool gaye?",
       "submit": "Login Karein",
       "footerPrompt": "SehatConnect par naye hain?",
-      "footerAction": "Account Banayein"
+      "footerAction": "Account Banayein",
+      "hospitalAction": "Hospital Admin / Staff Login",
+      "placeholders": {
+        "password": "Apna password darj karein"
+      }
+    },
+    "password": {
+      "show": "Password dikhayein",
+      "hide": "Password chhupayein"
+    },
+    "errors": {
+      "invalidCredentials": "Email ya password ghalat hai.",
+      "network": "Server se rabta nahi ho saka. Dobara koshish karein.",
+      "server": "Server filhaal dastyab nahi. Dobara koshish karein.",
+      "unexpected": "Sign in nahi ho saka. Dobara koshish karein."
     },
     "register": {
       "title": "Apna account banayein",
@@ -317,7 +331,11 @@
         "email": "Work Email",
         "password": "Password"
       },
-      "submit": "Sign In"
+      "submit": "Sign In",
+      "patientAction": "Patient Login par wapas",
+      "placeholders": {
+        "password": "Apna password darj karein"
+      }
     }
   },
   "admin": {

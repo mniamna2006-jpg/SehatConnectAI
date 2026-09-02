@@ -40,6 +40,19 @@ test('keeps login email-only and exposes account recovery navigation', async () 
   expect(screen.queryByLabelText(/phone/i)).not.toBeOnTheScreen();
   expect(screen.getByLabelText('/register')).toBeOnTheScreen();
   expect(screen.getByLabelText('/forgot-password')).toBeOnTheScreen();
+  expect(screen.getByText('Hospital Admin / Staff Login')).toBeOnTheScreen();
+  expect(screen.getByLabelText('/hospital-login')).toBeOnTheScreen();
+});
+
+test('password is hidden by default and can be shown then hidden', async () => {
+  await render(<LoginView />);
+  expect(screen.getByLabelText('Password')).toHaveProp('secureTextEntry', true);
+
+  await fireEvent.press(screen.getByRole('button', { name: 'Show password' }));
+  expect(screen.getByLabelText('Password')).toHaveProp('secureTextEntry', false);
+
+  await fireEvent.press(screen.getByRole('button', { name: 'Hide password' }));
+  expect(screen.getByLabelText('Password')).toHaveProp('secureTextEntry', true);
 });
 
 test('submits through view-model contract', async () => {

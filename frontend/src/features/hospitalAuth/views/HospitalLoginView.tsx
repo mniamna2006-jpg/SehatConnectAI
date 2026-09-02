@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { StyleSheet, Text } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { AppButton } from '../../../shared/components/Buttons';
@@ -12,7 +13,11 @@ export function HospitalLoginView() {
   const { control, errors, onSubmit, isSubmitting, apiError } = useHospitalLoginViewModel();
 
   return (
-    <AuthScaffold title={t('hospitalAuth.login.title')} subtitle={t('hospitalAuth.login.subtitle')}>
+    <AuthScaffold
+      title={t('hospitalAuth.login.title')}
+      subtitle={t('hospitalAuth.login.subtitle')}
+      footer={<Link href="/login" style={styles.patientLink}>{t('hospitalAuth.login.patientAction')}</Link>}
+    >
       <Controller
         control={control}
         name="email"
@@ -39,9 +44,13 @@ export function HospitalLoginView() {
             testID="hospital-login-password"
             label={t('hospitalAuth.login.fields.password')}
             icon="lock-closed-outline"
-            placeholder="Enter your password"
+            placeholder={t('hospitalAuth.login.placeholders.password')}
             autoComplete="current-password"
             secureTextEntry
+            passwordToggleLabels={{
+              show: t('auth.password.show'),
+              hide: t('auth.password.hide'),
+            }}
             value={field.value ?? ''}
             onChangeText={field.onChange}
             error={errors.password?.message}
@@ -56,4 +65,12 @@ export function HospitalLoginView() {
 
 const styles = StyleSheet.create({
   error: { ...typography.metadata, color: colors.danger, textAlign: 'center' },
+  patientLink: {
+    ...typography.body,
+    color: colors.primary,
+    fontWeight: '700',
+    minHeight: 48,
+    paddingVertical: 13,
+    textAlign: 'center',
+  },
 });
