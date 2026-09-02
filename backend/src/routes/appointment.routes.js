@@ -127,6 +127,14 @@ router.post(
         where: {
           slot_id,
         },
+        include: {
+          doctor: {
+            include: {
+              department: true,
+              hospital: true,
+            },
+          },
+        },
       });
 
       if (!slot) {
@@ -150,6 +158,28 @@ router.post(
         return res.status(400).json({
           success: false,
           message: "Time slot does not match doctor or hospital",
+        });
+      }
+
+      if (
+        slot.doctor.department_id !== department_id ||
+        slot.doctor.department.hospital_id !== hospital_id
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Department does not match doctor or hospital",
+        });
+      }
+
+      if (
+        !slot.doctor.is_active ||
+        !slot.doctor.is_available ||
+        !slot.doctor.department.is_active ||
+        !slot.doctor.hospital.is_active
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Doctor, department, or hospital is inactive",
         });
       }
 
