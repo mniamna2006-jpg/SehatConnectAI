@@ -11,6 +11,20 @@ export interface StaffQueueEntry {
   doctor?: { name: string } | null;
 }
 
+/** Raw response shape of GET /api/queue/hospital — patient/doctor identity nest under appointment, not on the queue entry itself. */
+export interface RawStaffQueueEntry {
+  queue_id: string;
+  hospital_id: string;
+  doctor_id: string;
+  appointment_id: string;
+  token_number: number;
+  queue_status: QueueStatus;
+  appointment: {
+    patient?: { patient_id?: string; user: { user_id: string; full_name: string } } | null;
+    doctor?: { doctor_id: string; name: string } | null;
+  } | null;
+}
+
 /** Raw response shape of PATCH /api/queue/:queue_id/status — scalar Queue + scalar Appointment, not the joined StaffQueueEntry shape. */
 export interface StaffQueueStatusUpdate {
   queue: {

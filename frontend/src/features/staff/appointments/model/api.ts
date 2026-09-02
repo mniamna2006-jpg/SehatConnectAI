@@ -1,9 +1,12 @@
 import { apiRequest } from '../../../../core/api/client';
 import type { AppointmentStatus } from '../../../../shared/types/api';
-import type { StaffAppointmentStatusUpdate, StaffTodayAppointments } from './types';
+import { mapStaffTodayAppointments } from './mappers';
+import type { RawStaffTodayAppointments, StaffAppointmentStatusUpdate, StaffTodayAppointments } from './types';
 
 export function getStaffTodayAppointments(): Promise<StaffTodayAppointments> {
-  return apiRequest<StaffTodayAppointments>('/api/staff/appointments/today', { scope: 'hospital' });
+  return apiRequest<RawStaffTodayAppointments>('/api/staff/appointments/today', { scope: 'hospital' }).then(
+    mapStaffTodayAppointments
+  );
 }
 
 export function updateAppointmentStatus(
