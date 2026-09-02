@@ -17,6 +17,9 @@ const adminRoutes = require("./routes/admin.routes");
 const staffRoutes = require("./routes/staff.routes");
 const aiRoutes = require("./routes/ai.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
+const {
+  createAppointmentReminderJob,
+} = require("./jobs/appointment-reminder.job");
 
 const app = express();
 
@@ -47,7 +50,9 @@ app.use("/api/analytics", analyticsRoutes);
 
 
 const PORT = process.env.PORT || 5000;
+const appointmentReminderJob = createAppointmentReminderJob();
 
 app.listen(PORT, () => {
   console.log(`SehatConnectAI backend running on port ${PORT}`);
+  appointmentReminderJob.start();
 });
