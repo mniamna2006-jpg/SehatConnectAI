@@ -4,10 +4,22 @@ const {
   authenticateToken,
   authorizeRoles,
 } = require("../middleware/auth.middleware");
-const {
-  notifyPatientForAppointment,
-} = require("../services/notification.service");
 const { formatTime12h } = require("../utils/date.helpers");
+
+const QUEUE_NOTIFICATION_CONTENT = {
+  CALLED: (queue) => ({
+    title: "You Are Being Called",
+    message: `Your queue token ${queue.token_number} is being called. Please proceed to the consultation area.`,
+  }),
+  IN_PROGRESS: () => ({
+    title: "Consultation Started",
+    message: "Your consultation is now in progress.",
+  }),
+  COMPLETED: () => ({
+    title: "Consultation Completed",
+    message: "Your consultation has been completed.",
+  }),
+};
 
 /**
  * Add appointment_time_12h to a queue entry's nested appointment.
@@ -212,7 +224,15 @@ router.patch(
           hospital_id: staff.hospital_id,
         },
         include: {
-          appointment: true,
+          appointment: {
+            include: {
+              patient: {
+                select: {
+                  user_id: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -239,6 +259,10 @@ router.patch(
         });
       }
 
+      const patientUserId = queue.appointment.patient.user_id;
+      const { patient: _patient, ...appointmentWithoutPatient } =
+        queue.appointment;
+
       // Keep queue and appointment status synchronized
       const result = await prisma.$transaction(async (tx) => {
         const queueData = {
@@ -256,6 +280,7 @@ router.patch(
         const updatedQueue = await tx.queue.update({
           where: {
             queue_id,
+            queue_status: queue.queue_status,
           },
           data: queueData,
         });
@@ -268,7 +293,7 @@ router.patch(
           appointmentStatus = "COMPLETED";
         }
 
-        let updatedAppointment = queue.appointment;
+        let updatedAppointment = appointmentWithoutPatient;
 
         if (appointmentStatus) {
           updatedAppointment = await tx.appointment.update({
@@ -280,6 +305,18 @@ router.patch(
             },
           });
         }
+
+        const notification = QUEUE_NOTIFICATION_CONTENT[status](queue);
+
+        await tx.notification.create({
+          data: {
+            user_id: patientUserId,
+            type: "QUEUE_UPDATE",
+            title: notification.title,
+            message: notification.message,
+            related_appointment_id: queue.appointment_id,
+          },
+        });
 
         return {
           queue: updatedQueue,
@@ -301,6 +338,13 @@ router.patch(
       });
     } catch (error) {
       console.error("Update queue status error:", error);
+
+      if (error.code === "P2025") {
+        return res.status(409).json({
+          success: false,
+          message: "Queue status changed. Refresh and try again.",
+        });
+      }
 
       return res.status(500).json({
         success: false,
