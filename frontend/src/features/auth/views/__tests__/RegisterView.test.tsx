@@ -62,3 +62,19 @@ test('forwards language selection and submit actions', async () => {
   expect(mockChangeHandlers.get('preferred_language')).toHaveBeenCalledWith('URDU');
   expect(onSubmit).toHaveBeenCalledTimes(1);
 });
+
+test('password and confirmation visibility toggle independently', async () => {
+  await render(<RegisterView />);
+  const password = screen.getByLabelText('Password');
+  const confirmation = screen.getByLabelText('Confirm password');
+  expect(password).toHaveProp('secureTextEntry', true);
+  expect(confirmation).toHaveProp('secureTextEntry', true);
+
+  const showButtons = screen.getAllByRole('button', { name: 'Show password' });
+  await fireEvent.press(showButtons[0]);
+  expect(screen.getByLabelText('Password')).toHaveProp('secureTextEntry', false);
+  expect(screen.getByLabelText('Confirm password')).toHaveProp('secureTextEntry', true);
+
+  await fireEvent.press(showButtons[1]);
+  expect(screen.getByLabelText('Confirm password')).toHaveProp('secureTextEntry', false);
+});

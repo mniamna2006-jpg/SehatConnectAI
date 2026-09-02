@@ -31,7 +31,7 @@ export function RegisterView() {
   return (
     <AuthScaffold
       title={t('auth.register.title')}
-      subtitle="A few details help us personalize your care experience."
+      subtitle={t('auth.register.subtitle')}
       footer={
         <View style={styles.loginRow}>
           <Text style={styles.footerText}>{t('auth.register.footerPrompt')}</Text>
@@ -39,26 +39,26 @@ export function RegisterView() {
         </View>
       }
     >
-      <FormSection icon="person-outline" title="Account" />
+      <FormSection icon="person-outline" title={t('auth.register.sections.account')} />
       <Controller control={control} name="full_name" render={({ field }) => (
-        <FormField testID="register-full-name" label={t('auth.register.fields.fullName')} icon="person-outline" placeholder="Your full name" value={field.value ?? ''} onChangeText={field.onChange} error={errors.full_name?.message} />
+        <FormField testID="register-full-name" label={t('auth.register.fields.fullName')} icon="person-outline" placeholder={t('auth.register.placeholders.fullName')} value={field.value ?? ''} onChangeText={field.onChange} error={errors.full_name?.message} />
       )} />
       <Controller control={control} name="email" render={({ field }) => (
         <FormField testID="register-email" label={t('auth.register.fields.email')} icon="mail-outline" placeholder="you@example.com" autoCapitalize="none" autoComplete="email" keyboardType="email-address" value={field.value ?? ''} onChangeText={field.onChange} error={errors.email?.message} />
       )} />
       <Controller control={control} name="password" render={({ field }) => (
-        <FormField testID="register-password" label={t('auth.register.fields.password')} icon="lock-closed-outline" placeholder="Create a password" autoComplete="new-password" secureTextEntry value={field.value ?? ''} onChangeText={field.onChange} error={errors.password?.message} />
+        <FormField testID="register-password" label={t('auth.register.fields.password')} icon="lock-closed-outline" placeholder={t('auth.register.placeholders.password')} autoComplete="new-password" secureTextEntry passwordToggleLabels={{ show: t('auth.password.show'), hide: t('auth.password.hide') }} value={field.value ?? ''} onChangeText={field.onChange} error={errors.password?.message} />
       )} />
       <Controller control={control} name="confirmPassword" render={({ field }) => (
-        <FormField testID="register-confirm-password" label={t('auth.register.fields.confirmPassword')} icon="shield-checkmark-outline" placeholder="Enter it again" autoComplete="new-password" secureTextEntry value={field.value ?? ''} onChangeText={field.onChange} error={errors.confirmPassword?.message} />
+        <FormField testID="register-confirm-password" label={t('auth.register.fields.confirmPassword')} icon="shield-checkmark-outline" placeholder={t('auth.register.placeholders.confirmPassword')} autoComplete="new-password" secureTextEntry passwordToggleLabels={{ show: t('auth.password.show'), hide: t('auth.password.hide') }} value={field.value ?? ''} onChangeText={field.onChange} error={errors.confirmPassword?.message} />
       )} />
 
-      <FormSection icon="call-outline" title="Contact" />
+      <FormSection icon="call-outline" title={t('auth.register.sections.contact')} />
       <Controller control={control} name="phone" render={({ field }) => (
-        <FormField testID="register-phone" label={t('auth.register.fields.phone')} icon="call-outline" placeholder="Your phone number" autoComplete="tel" keyboardType="phone-pad" value={field.value ?? ''} onChangeText={field.onChange} error={errors.phone?.message} />
+        <FormField testID="register-phone" label={t('auth.register.fields.phone')} icon="call-outline" placeholder={t('auth.register.placeholders.phone')} autoComplete="tel" keyboardType="phone-pad" value={field.value ?? ''} onChangeText={field.onChange} error={errors.phone?.message} />
       )} />
 
-      <FormSection icon="language-outline" title="Language" />
+      <FormSection icon="language-outline" title={t('auth.register.sections.language')} />
       <Controller
         control={control}
         name="preferred_language"

@@ -112,7 +112,21 @@
       "forgotPassword": "Forgot password?",
       "submit": "Log In",
       "footerPrompt": "New to SehatConnect?",
-      "footerAction": "Create an account"
+      "footerAction": "Create an account",
+      "hospitalAction": "Hospital Admin / Staff Login",
+      "placeholders": {
+        "password": "Enter your password"
+      }
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "errors": {
+      "invalidCredentials": "Email or password is incorrect.",
+      "network": "Unable to connect to the server. Please try again.",
+      "server": "Server is temporarily unavailable. Please try again.",
+      "unexpected": "Unable to sign in. Please try again."
     },
     "register": {
       "title": "Create your account",
@@ -148,17 +162,9 @@
       }
     },
     "forgot": {
-      "title": "Reset your password",
-      "body": "Enter your email address and we'll send next steps if we find a match.",
-      "fields": {
-        "email": "Email"
-      },
-      "submit": "Send reset link",
-      "success": {
-        "title": "Check your email",
-        "message": "If an account exists, reset instructions will be sent.",
-        "action": "Back to log in"
-      }
+      "title": "Password recovery",
+      "message": "Password recovery is currently unavailable. Please contact support.",
+      "action": "Back to log in"
     }
   },
   "location": {
@@ -317,7 +323,11 @@
         "email": "Work email",
         "password": "Password"
       },
-      "submit": "Sign In"
+      "submit": "Sign In",
+      "patientAction": "Back to Patient Login",
+      "placeholders": {
+        "password": "Enter your password"
+      }
     }
   },
   "admin": {

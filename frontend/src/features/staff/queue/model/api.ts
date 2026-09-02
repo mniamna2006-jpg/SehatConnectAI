@@ -1,13 +1,16 @@
 import { apiRequest } from '../../../../core/api/client';
 import type { QueueStatus } from '../../../../shared/types/api';
-import type { StaffQueueEntry } from './types';
+import { mapQueueEntry } from './mappers';
+import type { RawStaffQueueEntry, StaffQueueEntry, StaffQueueStatusUpdate } from './types';
 
 export function getHospitalQueue(): Promise<StaffQueueEntry[]> {
-  return apiRequest<StaffQueueEntry[]>('/api/queue/hospital', { scope: 'hospital' });
+  return apiRequest<RawStaffQueueEntry[]>('/api/queue/hospital', { scope: 'hospital' }).then((raw) =>
+    raw.map(mapQueueEntry)
+  );
 }
 
-export function updateQueueStatus(queueId: string, status: QueueStatus): Promise<StaffQueueEntry> {
-  return apiRequest<StaffQueueEntry>(`/api/queue/${queueId}/status`, {
+export function updateQueueStatus(queueId: string, status: QueueStatus): Promise<StaffQueueStatusUpdate> {
+  return apiRequest<StaffQueueStatusUpdate>(`/api/queue/${queueId}/status`, {
     method: 'PATCH',
     body: { status },
     scope: 'hospital',

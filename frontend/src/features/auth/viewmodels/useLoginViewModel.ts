@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
+import { useTranslations } from '../../../providers/LocaleProvider';
 import { loginSchema } from '../model/schemas';
 import type { LoginInput } from '../model/types';
 import { useAuth } from '../../../providers/AuthProvider';
+import { getLoginErrorMessage } from '../../../shared/utils/loginError';
 
 export function useLoginViewModel() {
   const { login } = useAuth();
+  const t = useTranslations();
   const [apiError, setApiError] = useState<string | null>(null);
   const {
     control, handleSubmit, setValue, formState: { errors, isSubmitting },
@@ -20,7 +23,7 @@ export function useLoginViewModel() {
       router.replace('/home');
     } catch (err) {
       console.warn('[useLoginViewModel] login failed', err);
-      setApiError('Unable to sign in. Please check your details and try again.');
+      setApiError(getLoginErrorMessage(err, t));
     }
   });
 
