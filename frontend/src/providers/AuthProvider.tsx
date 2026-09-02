@@ -4,6 +4,7 @@ import { registerUnauthorizedHandler } from '../core/api/client';
 import { getToken, setToken, clearToken } from '../core/storage/secureStore';
 import { login as apiLogin, registerPatient as apiRegister, getMe } from '../features/auth/model/api';
 import type { CurrentUser, LoginInput, RegisterInput } from '../features/auth/model/types';
+import { isHospitalQueryKey } from '../shared/constants/queryKeys';
 
 interface AuthContextValue {
   user: CurrentUser | null;
@@ -24,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () =>
       registerUnauthorizedHandler(() => {
         void clearToken();
-        queryClient.clear();
+        queryClient.removeQueries({ predicate: ({ queryKey }) => !isHospitalQueryKey(queryKey) });
         setUser(null);
       }),
     [queryClient]
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(async () => {
     await clearToken();
-    queryClient.clear();
+    queryClient.removeQueries({ predicate: ({ queryKey }) => !isHospitalQueryKey(queryKey) });
     setUser(null);
   }, [queryClient]);
 
