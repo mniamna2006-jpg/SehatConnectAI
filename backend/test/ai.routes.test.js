@@ -31,6 +31,120 @@ function loadChatHandler({ analyzeSymptoms, prisma }) {
   return route.handlers[route.handlers.length - 1];
 }
 
+async function invokeChat(handler, body = {}) {
+  const response = createResponse();
+  const originalConsoleError = console.error;
+  console.error = () => {};
+
+  try {
+    await handler(
+      {
+        body: {
+          message: "Chest pain",
+          language: "ENGLISH",
+          ...body,
+        },
+        user: { user_id: "user-1" },
+      },
+      response
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+
+  return response;
+}
+
+function createAtomicPrisma({
+  existingConversation = null,
+  failAiMessage = false,
+} = {}) {
+  const state = {
+    conversations: [],
+    messages: [],
+    updates: [],
+    transactionCalls: 0,
+    writesOutsideTransaction: 0,
+  };
+
+  const writeConversation = async (query) => {
+    const conversation = {
+      conversation_id: "conversation-new",
+      ...query.data,
+    };
+    state.conversations.push(conversation);
+    return { conversation_id: conversation.conversation_id };
+  };
+  const writeMessage = async (query) => {
+    state.messages.push(query.data);
+    if (failAiMessage && query.data.sender === "AI") {
+      throw new Error("AI message persistence failed");
+    }
+    return query.data;
+  };
+  const updateConversation = async (query) => {
+    state.updates.push(query);
+    return { conversation_id: query.where.conversation_id };
+  };
+
+  const prisma = {
+    patient: {
+      findUnique: async () => ({ patient_id: "patient-1" }),
+    },
+    aIConversation: {
+      findFirst: async () => existingConversation,
+      create: async (query) => {
+        state.writesOutsideTransaction += 1;
+        return writeConversation(query);
+      },
+      update: async (query) => {
+        state.writesOutsideTransaction += 1;
+        return updateConversation(query);
+      },
+    },
+    aIMessage: {
+      create: async (query) => {
+        state.writesOutsideTransaction += 1;
+        return writeMessage(query);
+      },
+    },
+    department: {
+      findMany: async () => [],
+    },
+    doctor: {
+      findMany: async () => [],
+    },
+    async $transaction(callback) {
+      state.transactionCalls += 1;
+      const snapshot = {
+        conversations: state.conversations.length,
+        messages: state.messages.length,
+        updates: state.updates.length,
+      };
+      const transaction = {
+        aIConversation: {
+          create: writeConversation,
+          update: updateConversation,
+        },
+        aIMessage: {
+          create: writeMessage,
+        },
+      };
+
+      try {
+        return await callback(transaction);
+      } catch (error) {
+        state.conversations.length = snapshot.conversations;
+        state.messages.length = snapshot.messages;
+        state.updates.length = snapshot.updates;
+        throw error;
+      }
+    },
+  };
+
+  return { prisma, state };
+}
+
 test("invalid provider output returns generic 502 without raw content", async () => {
   const sentinel = "RAW_GEMINI_SECRET_SENTINEL";
   const prisma = {
@@ -72,4 +186,129 @@ test("invalid provider output returns generic 502 without raw content", async ()
     message: "AI assistant is currently unavailable",
   });
   assert.equal(JSON.stringify(response.body).includes(sentinel), false);
+});
+
+test("failed new chat creates no conversation or messages", async () => {
+  const { prisma, state } = createAtomicPrisma();
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => {
+      throw new AIProviderError("provider unavailable");
+    },
+    prisma,
+  });
+
+  const response = await invokeChat(handler);
+
+  assert.equal(response.statusCode, 502);
+  assert.equal(state.conversations.length, 0);
+  assert.equal(state.messages.length, 0);
+  assert.equal(state.transactionCalls, 0);
+});
+
+test("failed existing chat adds no USER message", async () => {
+  const { prisma, state } = createAtomicPrisma({
+    existingConversation: { conversation_id: "conversation-existing" },
+  });
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => {
+      throw new AIProviderError("provider unavailable");
+    },
+    prisma,
+  });
+
+  const response = await invokeChat(handler, {
+    conversation_id: "conversation-existing",
+  });
+
+  assert.equal(response.statusCode, 502);
+  assert.equal(state.messages.length, 0);
+  assert.equal(state.transactionCalls, 0);
+});
+
+test("malformed provider output changes no history", async () => {
+  const { prisma, state } = createAtomicPrisma();
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => {
+      throw new AIProviderError("AI provider returned invalid output");
+    },
+    prisma,
+  });
+
+  await invokeChat(handler);
+
+  assert.deepEqual(state.conversations, []);
+  assert.deepEqual(state.messages, []);
+  assert.deepEqual(state.updates, []);
+});
+
+test("AI message persistence failure rolls back USER message and conversation", async () => {
+  const { prisma, state } = createAtomicPrisma({ failAiMessage: true });
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => ({
+      recommended_department: "Cardiology",
+      message: "Seek care.",
+      is_emergency: true,
+    }),
+    prisma,
+  });
+
+  const response = await invokeChat(handler);
+
+  assert.equal(response.statusCode, 500);
+  assert.equal(state.transactionCalls, 1);
+  assert.deepEqual(state.conversations, []);
+  assert.deepEqual(state.messages, []);
+  assert.deepEqual(state.updates, []);
+});
+
+test("successful new chat atomically stores exactly one USER and AI pair", async () => {
+  const { prisma, state } = createAtomicPrisma();
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => ({
+      recommended_department: "General Medicine",
+      message: "Please consult a doctor.",
+      is_emergency: false,
+    }),
+    prisma,
+  });
+
+  const response = await invokeChat(handler);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.data.conversation_id, "conversation-new");
+  assert.equal(state.transactionCalls, 1);
+  assert.equal(state.writesOutsideTransaction, 0);
+  assert.deepEqual(
+    state.messages.map((message) => message.sender),
+    ["USER", "AI"]
+  );
+  assert.equal(state.conversations.length, 1);
+  assert.equal(state.updates.length, 1);
+});
+
+test("conversation ownership is checked before provider invocation", async () => {
+  const { prisma, state } = createAtomicPrisma({
+    existingConversation: null,
+  });
+  let providerCalls = 0;
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => {
+      providerCalls += 1;
+      return {
+        recommended_department: "General Medicine",
+        message: "Please consult a doctor.",
+        is_emergency: false,
+      };
+    },
+    prisma,
+  });
+
+  const response = await invokeChat(handler, {
+    conversation_id: "not-owned",
+  });
+
+  assert.equal(response.statusCode, 404);
+  assert.equal(providerCalls, 0);
+  assert.equal(state.transactionCalls, 0);
+  assert.deepEqual(state.messages, []);
 });
