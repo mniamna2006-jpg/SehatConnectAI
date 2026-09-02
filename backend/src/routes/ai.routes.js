@@ -26,6 +26,31 @@ function generateTitle(message) {
   return trimmed.substring(0, 50).trim() + "...";
 }
 
+function createRecommendationSnapshot(recommendedDepartment, doctors) {
+  return JSON.parse(
+    JSON.stringify({
+      recommended_department: recommendedDepartment,
+      doctors,
+    })
+  );
+}
+
+function normalizeRecommendationSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+    return { recommended_department: null, doctors: [] };
+  }
+
+  const department = snapshot.recommended_department;
+
+  return {
+    recommended_department:
+      department && typeof department === "object" && !Array.isArray(department)
+        ? department
+        : null,
+    doctors: Array.isArray(snapshot.doctors) ? snapshot.doctors : [],
+  };
+}
+
 // POST /api/ai/chat – Symptom-to-specialist recommendation
 router.post(
   "/chat",
@@ -182,6 +207,11 @@ router.post(
         city: doc.hospital.city,
       }));
 
+      const recommendationSnapshot = createRecommendationSnapshot(
+        recommendedDepartment,
+        doctorResults
+      );
+
       conversationId = await prisma.$transaction(async (transaction) => {
         let persistedConversationId = conversationId;
 
@@ -212,6 +242,7 @@ router.post(
             message: aiResult.message,
             language: lang,
             recommended_department: aiResult.recommended_department,
+            recommendation_snapshot: recommendationSnapshot,
             is_emergency: aiResult.is_emergency,
           },
         });
@@ -231,8 +262,8 @@ router.post(
           conversation_id: conversationId,
           message: aiResult.message,
           is_emergency: aiResult.is_emergency,
-          recommended_department: recommendedDepartment,
-          doctors: doctorResults,
+          recommended_department: recommendationSnapshot.recommended_department,
+          doctors: recommendationSnapshot.doctors,
         },
       });
     } catch (error) {
@@ -354,6 +385,7 @@ router.get(
               message: true,
               language: true,
               recommended_department: true,
+              recommendation_snapshot: true,
               is_emergency: true,
               created_at: true,
             },
@@ -375,7 +407,14 @@ router.get(
           title: conversation.title,
           created_at: conversation.created_at,
           updated_at: conversation.updated_at,
-          messages: conversation.messages,
+          messages: conversation.messages.map(
+            ({ recommendation_snapshot, ...message }) => ({
+              ...message,
+              recommendation: normalizeRecommendationSnapshot(
+                recommendation_snapshot
+              ),
+            })
+          ),
         },
       });
     } catch (error) {

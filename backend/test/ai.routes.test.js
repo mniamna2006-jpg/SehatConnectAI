@@ -46,6 +46,18 @@ function loadChatHandler(options) {
   return route.handlers[route.handlers.length - 1];
 }
 
+function loadHistoryDetailHandler(options) {
+  const harness = loadAiRoutes({
+    analyzeSymptoms: async () => {
+      throw new Error("History must not invoke the AI provider");
+    },
+    ...options,
+  });
+
+  const route = harness.findRoute("GET", "/history/:conversationId");
+  return route.handlers[route.handlers.length - 1];
+}
+
 async function invokeMiddlewareChain(handlers, request, response) {
   let index = 0;
 
@@ -84,9 +96,31 @@ async function invokeChat(handler, body = {}) {
   return response;
 }
 
+async function invokeHistoryDetail(handler, conversationId = "conversation-1") {
+  const response = createResponse();
+  const originalConsoleError = console.error;
+  console.error = () => {};
+
+  try {
+    await handler(
+      {
+        params: { conversationId },
+        user: { user_id: "user-1" },
+      },
+      response
+    );
+  } finally {
+    console.error = originalConsoleError;
+  }
+
+  return response;
+}
+
 function createAtomicPrisma({
   existingConversation = null,
   failAiMessage = false,
+  departments = [],
+  doctors = [],
 } = {}) {
   const state = {
     conversations: [],
@@ -138,10 +172,10 @@ function createAtomicPrisma({
       },
     },
     department: {
-      findMany: async () => [],
+      findMany: async () => departments,
     },
     doctor: {
-      findMany: async () => [],
+      findMany: async () => doctors,
     },
     async $transaction(callback) {
       state.transactionCalls += 1;
@@ -313,6 +347,239 @@ test("successful new chat atomically stores exactly one USER and AI pair", async
   );
   assert.equal(state.conversations.length, 1);
   assert.equal(state.updates.length, 1);
+});
+
+test("successful chat returns and atomically snapshots exact structured recommendations", async () => {
+  const recommendedDepartment = {
+    department_id: "department-1",
+    name: "Cardiology",
+    hospital_id: "hospital-1",
+    hospital_name: "City Hospital",
+    city: "Lahore",
+  };
+  const doctorRecommendation = {
+    doctor_id: "doctor-1",
+    name: "Dr Ayesha",
+    specialization: "Cardiology",
+    qualification: "FCPS",
+    consultation_fee: "2500.00",
+    department_id: "department-1",
+    department_name: "Cardiology",
+    hospital_id: "hospital-1",
+    hospital_name: "City Hospital",
+    city: "Lahore",
+  };
+  const { prisma, state } = createAtomicPrisma({
+    departments: [
+      {
+        department_id: "department-1",
+        name: "Cardiology",
+        hospital: {
+          hospital_id: "hospital-1",
+          name: "City Hospital",
+          city: "Lahore",
+        },
+      },
+    ],
+    doctors: [
+      {
+        doctor_id: "doctor-1",
+        name: "Dr Ayesha",
+        specialization: "Cardiology",
+        qualification: "FCPS",
+        consultation_fee: "2500.00",
+        department: {
+          department_id: "department-1",
+          name: "Cardiology",
+        },
+        hospital: {
+          hospital_id: "hospital-1",
+          name: "City Hospital",
+          city: "Lahore",
+        },
+      },
+    ],
+  });
+  const handler = loadChatHandler({
+    analyzeSymptoms: async () => ({
+      recommended_department: "Cardiology",
+      message: "Please consult a cardiologist.",
+      is_emergency: false,
+    }),
+    prisma,
+  });
+
+  const response = await invokeChat(handler);
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(response.body.data.recommended_department, recommendedDepartment);
+  assert.deepEqual(response.body.data.doctors, [doctorRecommendation]);
+  assert.deepEqual(state.messages[1].recommendation_snapshot, {
+    recommended_department: recommendedDepartment,
+    doctors: [doctorRecommendation],
+  });
+  assert.equal(state.transactionCalls, 1);
+  assert.equal(state.writesOutsideTransaction, 0);
+});
+
+test("history returns each AI recommendation snapshot without current database reconstruction", async () => {
+  const firstSnapshot = {
+    recommended_department: {
+      department_id: "department-1",
+      name: "Cardiology",
+      hospital_id: "hospital-1",
+      hospital_name: "City Hospital",
+      city: "Lahore",
+    },
+    doctors: [
+      {
+        doctor_id: "doctor-original",
+        name: "Dr Original",
+        specialization: "Cardiology",
+        qualification: "FCPS",
+        consultation_fee: "2500.00",
+        department_id: "department-1",
+        department_name: "Cardiology",
+        hospital_id: "hospital-1",
+        hospital_name: "City Hospital",
+        city: "Lahore",
+      },
+    ],
+  };
+  const secondSnapshot = {
+    recommended_department: {
+      department_id: "department-2",
+      name: "Neurology",
+      hospital_id: "hospital-2",
+      hospital_name: "Central Hospital",
+      city: "Karachi",
+    },
+    doctors: [],
+  };
+  let doctorLookupCalls = 0;
+  const prisma = {
+    patient: {
+      findUnique: async () => ({ patient_id: "patient-1" }),
+    },
+    aIConversation: {
+      findFirst: async () => ({
+        conversation_id: "conversation-1",
+        title: "Symptoms",
+        created_at: new Date("2026-09-01T10:00:00.000Z"),
+        updated_at: new Date("2026-09-01T10:05:00.000Z"),
+        messages: [
+          {
+            message_id: "message-1",
+            sender: "AI",
+            message: "See a cardiologist.",
+            language: "ENGLISH",
+            recommended_department: "Cardiology",
+            recommendation_snapshot: firstSnapshot,
+            is_emergency: false,
+            created_at: new Date("2026-09-01T10:01:00.000Z"),
+          },
+          {
+            message_id: "message-2",
+            sender: "AI",
+            message: "See a neurologist.",
+            language: "ENGLISH",
+            recommended_department: "Neurology",
+            recommendation_snapshot: secondSnapshot,
+            is_emergency: false,
+            created_at: new Date("2026-09-01T10:05:00.000Z"),
+          },
+        ],
+      }),
+    },
+    doctor: {
+      findMany: async () => {
+        doctorLookupCalls += 1;
+        return [{ doctor_id: "doctor-added-later" }];
+      },
+    },
+  };
+  const handler = loadHistoryDetailHandler({ prisma });
+
+  const response = await invokeHistoryDetail(handler);
+
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(
+    response.body.data.messages.map((message) => message.recommendation),
+    [firstSnapshot, secondSnapshot]
+  );
+  assert.deepEqual(
+    response.body.data.messages[0].recommendation.doctors,
+    firstSnapshot.doctors
+  );
+  assert.equal(
+    response.body.data.messages[0].recommendation.doctors.some(
+      (doctor) => doctor.doctor_id === "doctor-added-later"
+    ),
+    false
+  );
+  assert.equal(doctorLookupCalls, 0);
+});
+
+test("history gives old messages explicit safe recommendation defaults", async () => {
+  const prisma = {
+    patient: {
+      findUnique: async () => ({ patient_id: "patient-1" }),
+    },
+    aIConversation: {
+      findFirst: async () => ({
+        conversation_id: "conversation-1",
+        title: "Old conversation",
+        created_at: new Date("2026-08-31T10:00:00.000Z"),
+        updated_at: new Date("2026-08-31T10:00:00.000Z"),
+        messages: [
+          {
+            message_id: "message-old",
+            sender: "AI",
+            message: "See a cardiologist.",
+            language: "ENGLISH",
+            recommended_department: "Cardiology",
+            recommendation_snapshot: null,
+            is_emergency: false,
+            created_at: new Date("2026-08-31T10:00:00.000Z"),
+          },
+        ],
+      }),
+    },
+  };
+  const handler = loadHistoryDetailHandler({ prisma });
+
+  const response = await invokeHistoryDetail(handler);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.body.data.messages[0].recommended_department, "Cardiology");
+  assert.deepEqual(response.body.data.messages[0].recommendation, {
+    recommended_department: null,
+    doctors: [],
+  });
+});
+
+test("history detail enforces patient conversation ownership", async () => {
+  let ownershipQuery;
+  const prisma = {
+    patient: {
+      findUnique: async () => ({ patient_id: "patient-1" }),
+    },
+    aIConversation: {
+      findFirst: async (query) => {
+        ownershipQuery = query.where;
+        return null;
+      },
+    },
+  };
+  const handler = loadHistoryDetailHandler({ prisma });
+
+  const response = await invokeHistoryDetail(handler, "conversation-not-owned");
+
+  assert.equal(response.statusCode, 404);
+  assert.deepEqual(ownershipQuery, {
+    conversation_id: "conversation-not-owned",
+    patient_id: "patient-1",
+  });
 });
 
 test("conversation ownership is checked before provider invocation", async () => {

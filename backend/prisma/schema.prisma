@@ -357,6 +357,7 @@ model AIMessage {
   message                  String
   language                 PreferredLanguage?
   recommended_department   String?
+  recommendation_snapshot  Json?
   is_emergency             Boolean        @default(false)
   created_at               DateTime       @default(now())
   conversation             AIConversation @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
