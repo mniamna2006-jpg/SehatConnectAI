@@ -15,6 +15,8 @@ export const queryKeys = {
   myQueue: ['queue', 'my'] as const,
   notifications: ['notifications', 'my'] as const,
   unreadNotificationCount: ['notifications', 'unread-count'] as const,
+  aiHistory: ['ai', 'history'] as const,
+  aiConversation: (id: string) => ['ai', 'history', id] as const,
 
   hospitalMe: ['hospitalAuth', 'me'] as const,
 

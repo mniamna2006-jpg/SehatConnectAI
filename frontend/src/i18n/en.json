@@ -61,6 +61,10 @@
       "findDepartment": {
         "title": "Find Department",
         "description": "Browse departments and specialties"
+      },
+      "aiAssistant": {
+        "title": "AI Assistant",
+        "description": "Describe symptoms and get guidance"
       }
     },
     "appointmentDetails": {
@@ -689,5 +693,35 @@
     "emptyMessage": "You're all caught up. New updates will appear here.",
     "errorMessage": "We couldn't load your notifications.",
     "unread": "Unread"
+  },
+  "ai": {
+    "chat": {
+      "title": "AI Assistant",
+      "subtitle": "Describe how you feel",
+      "disclaimer": "Not a diagnosis. For emergencies, seek immediate care.",
+      "placeholder": "Describe your symptoms...",
+      "send": "Send",
+      "emergencyWarning": "This may be a medical emergency. Please seek immediate care or contact emergency services.",
+      "errorMessage": "We couldn't send that. Please try again.",
+      "emptyTitle": "Tell us what's going on",
+      "emptyMessage": "Describe your symptoms and we'll suggest the right department.",
+      "recommendedDepartment": "Recommended department",
+      "viewDoctors": "View doctors",
+      "recommendedDoctors": "Doctors in this department",
+      "consultationFee": "Consultation fee",
+      "historyAction": "History"
+    },
+    "history": {
+      "title": "AI History",
+      "subtitle": "Your past symptom checks",
+      "emptyTitle": "No conversations yet",
+      "emptyMessage": "Start a chat with the AI Assistant to see it here.",
+      "errorMessage": "We couldn't load your history.",
+      "deleteConfirmTitle": "Delete conversation?",
+      "deleteConfirmMessage": "This will permanently remove this conversation and its messages.",
+      "delete": "Delete",
+      "messages": "messages",
+      "resume": "Continue"
+    }
   }
 }
