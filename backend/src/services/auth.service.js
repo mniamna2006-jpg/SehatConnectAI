@@ -91,17 +91,17 @@ async function login({ email, phone, password }) {
     throw new Error("Invalid credentials");
   }
 
-  if (!user.is_active) {
-    throw new Error("User account is inactive");
-  }
-
   const passwordMatches = await bcrypt.compare(
     password,
     user.password_hash
   );
 
-  if (!passwordMatches) {
+  if (!passwordMatches || user.role !== "PATIENT") {
     throw new Error("Invalid credentials");
+  }
+
+  if (!user.is_active) {
+    throw new Error("User account is inactive");
   }
 
   await prisma.user.update({
