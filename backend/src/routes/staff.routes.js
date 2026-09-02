@@ -172,7 +172,11 @@ router.get(
         // Doctors available today (based on DoctorAvailability day_of_week)
         prisma.doctorAvailability.count({
           where: {
-            doctor: { hospital_id },
+            doctor: {
+              hospital_id,
+              is_active: true,
+              is_available: true,
+            },
             day_of_week: getPakistanDayOfWeek(),
             is_available: true,
           },

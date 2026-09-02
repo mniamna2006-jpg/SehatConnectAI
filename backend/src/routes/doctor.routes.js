@@ -10,6 +10,20 @@ const SCHEDULE_TIME_FIELDS = { start_time: true, end_time: true };
 
 const router = express.Router();
 
+const getPatientProfile = (userId) =>
+  prisma.patient.findUnique({
+    where: { user_id: userId },
+    select: { patient_id: true },
+  });
+
+const getDoctorAvailabilityTarget = (doctorId) =>
+  prisma.doctor.findUnique({
+    where: { doctor_id: doctorId },
+    include: {
+      hospital: { select: { is_active: true } },
+    },
+  });
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -53,6 +67,8 @@ router.get("/hospital/:hospitalId", async (req, res) => {
       where: {
         hospital_id: req.params.hospitalId,
         is_active: true,
+        hospital: { is_active: true },
+        department: { is_active: true },
       },
       orderBy: {
         name: "asc",
@@ -80,6 +96,8 @@ router.get("/department/:departmentId", async (req, res) => {
       where: {
         department_id: req.params.departmentId,
         is_active: true,
+        hospital: { is_active: true },
+        department: { is_active: true },
       },
       orderBy: {
         name: "asc",
@@ -109,6 +127,8 @@ router.get("/:doctor_id", async (req, res) => {
       where: {
         doctor_id,
         is_active: true,
+        hospital: { is_active: true },
+        department: { is_active: true },
       },
       include: {
         hospital: true,
@@ -154,6 +174,275 @@ router.get("/:doctor_id", async (req, res) => {
 // ---------------------------------------------------------------------------
 // Admin doctor management (ADMIN only)
 // ---------------------------------------------------------------------------
+
+// Set temporary doctor availability - ADMIN only
+router.patch(
+  "/:doctor_id/availability",
+  authenticateToken,
+  authorizeRoles("ADMIN"),
+  async (req, res) => {
+    try {
+      const { doctor_id } = req.params;
+      const { is_available } = req.body;
+
+      if (typeof is_available !== "boolean") {
+        return res.status(400).json({
+          success: false,
+          message: "is_available must be a boolean",
+        });
+      }
+
+      const doctor = await getDoctorAvailabilityTarget(doctor_id);
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          message: "Doctor not found",
+        });
+      }
+
+      const admin = await verifyAdminHospital(
+        req.user.user_id,
+        doctor.hospital_id,
+        res
+      );
+      if (!admin) return;
+
+      if (!doctor.is_active) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot change availability for an inactive doctor",
+        });
+      }
+
+      if (!doctor.hospital?.is_active) {
+        return res.status(403).json({
+          success: false,
+          message: "Hospital is inactive",
+        });
+      }
+
+      const result = await prisma.$transaction(async (tx) => {
+        const changed = await tx.doctor.updateMany({
+          where: {
+            doctor_id,
+            hospital_id: doctor.hospital_id,
+            is_active: true,
+            is_available: { not: is_available },
+          },
+          data: { is_available },
+        });
+
+        let notificationsCreated = 0;
+        if (changed.count === 1 && is_available) {
+          const subscriptions =
+            await tx.doctorAvailabilitySubscription.findMany({
+              where: {
+                doctor_id,
+                patient: { user: { is_active: true } },
+              },
+              select: {
+                patient: { select: { user_id: true } },
+              },
+            });
+
+          if (subscriptions.length > 0) {
+            const created = await tx.notification.createMany({
+              data: subscriptions.map(({ patient }) => ({
+                user_id: patient.user_id,
+                type: "DOCTOR_AVAILABILITY",
+                title: "Doctor Available",
+                message: `${doctor.name} is now available.`,
+              })),
+            });
+            notificationsCreated = created.count;
+          }
+        }
+
+        const updatedDoctor = await tx.doctor.findUnique({
+          where: { doctor_id },
+        });
+
+        return {
+          doctor: updatedDoctor,
+          changed: changed.count === 1,
+          notifications_created: notificationsCreated,
+        };
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: result.changed
+          ? "Doctor availability updated successfully"
+          : "Doctor availability is unchanged",
+        data: {
+          ...result.doctor,
+          notifications_created: result.notifications_created,
+        },
+      });
+    } catch (error) {
+      console.error("Update doctor availability error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to update doctor availability",
+      });
+    }
+  }
+);
+
+// Get current patient's availability alert subscription state
+router.get(
+  "/:doctor_id/availability-subscription",
+  authenticateToken,
+  authorizeRoles("PATIENT"),
+  async (req, res) => {
+    try {
+      const { doctor_id } = req.params;
+      const [patient, doctor] = await Promise.all([
+        getPatientProfile(req.user.user_id),
+        getDoctorAvailabilityTarget(doctor_id),
+      ]);
+
+      if (!patient) {
+        return res.status(404).json({
+          success: false,
+          message: "Patient profile not found",
+        });
+      }
+
+      if (!doctor || !doctor.is_active || !doctor.hospital?.is_active) {
+        return res.status(404).json({
+          success: false,
+          message: "Doctor not found",
+        });
+      }
+
+      const subscription =
+        await prisma.doctorAvailabilitySubscription.findUnique({
+          where: {
+            patient_id_doctor_id: {
+              patient_id: patient.patient_id,
+              doctor_id,
+            },
+          },
+          select: { subscription_id: true },
+        });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          doctor_id,
+          subscribed: Boolean(subscription),
+          is_available: doctor.is_available,
+        },
+      });
+    } catch (error) {
+      console.error("Get doctor availability subscription error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch availability subscription",
+      });
+    }
+  }
+);
+
+// Subscribe current patient to future availability alerts
+router.post(
+  "/:doctor_id/availability-subscription",
+  authenticateToken,
+  authorizeRoles("PATIENT"),
+  async (req, res) => {
+    try {
+      const { doctor_id } = req.params;
+      const [patient, doctor] = await Promise.all([
+        getPatientProfile(req.user.user_id),
+        getDoctorAvailabilityTarget(doctor_id),
+      ]);
+
+      if (!patient) {
+        return res.status(404).json({
+          success: false,
+          message: "Patient profile not found",
+        });
+      }
+
+      if (!doctor || !doctor.is_active || !doctor.hospital?.is_active) {
+        return res.status(404).json({
+          success: false,
+          message: "Doctor not found",
+        });
+      }
+
+      await prisma.doctorAvailabilitySubscription.upsert({
+        where: {
+          patient_id_doctor_id: {
+            patient_id: patient.patient_id,
+            doctor_id,
+          },
+        },
+        update: {},
+        create: {
+          patient_id: patient.patient_id,
+          doctor_id,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Availability alert subscription active",
+        data: {
+          doctor_id,
+          subscribed: true,
+          is_available: doctor.is_available,
+        },
+      });
+    } catch (error) {
+      console.error("Subscribe to doctor availability error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to subscribe to availability alerts",
+      });
+    }
+  }
+);
+
+// Unsubscribe current patient from availability alerts
+router.delete(
+  "/:doctor_id/availability-subscription",
+  authenticateToken,
+  authorizeRoles("PATIENT"),
+  async (req, res) => {
+    try {
+      const { doctor_id } = req.params;
+      const patient = await getPatientProfile(req.user.user_id);
+
+      if (!patient) {
+        return res.status(404).json({
+          success: false,
+          message: "Patient profile not found",
+        });
+      }
+
+      await prisma.doctorAvailabilitySubscription.deleteMany({
+        where: {
+          patient_id: patient.patient_id,
+          doctor_id,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Availability alert subscription removed",
+        data: { doctor_id, subscribed: false },
+      });
+    } catch (error) {
+      console.error("Unsubscribe from doctor availability error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to unsubscribe from availability alerts",
+      });
+    }
+  }
+);
 
 // Create doctor - ADMIN only (with hospital ownership check)
 router.post(
@@ -510,7 +799,7 @@ router.patch(
 
       const doctor = await prisma.doctor.update({
         where: { doctor_id },
-        data: { is_active: false },
+        data: { is_active: false, is_available: false },
       });
 
       return res.status(200).json({
