@@ -48,6 +48,7 @@ test('shows unavailable status without hiding doctor', async () => {
 
   expect(screen.getByText('Ayesha Khan')).toBeOnTheScreen();
   expect(screen.getByText('Unavailable')).toBeOnTheScreen();
+  expect(screen.queryByRole('button', { name: 'Book Appointment' })).not.toBeOnTheScreen();
 });
 
 test('uses initials when photo is absent, and never pairs a missing-schedule label with an active Book action', async () => {

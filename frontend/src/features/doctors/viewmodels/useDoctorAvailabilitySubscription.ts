@@ -6,15 +6,16 @@ import {
   unsubscribeFromDoctorAvailability,
 } from '../model/api';
 
-// Doctor list/detail endpoints never return `is_available` (see DATA_CONTRACTS.md) —
-// this per-doctor endpoint is the only source of truth, so it must always be queried.
-export function useDoctorAvailabilitySubscription(doctorId: string) {
+// Doctor list/detail endpoints already return `is_available` (see FRONTEND_API_CONTRACTS.md);
+// the subscription endpoint only needs to be queried once a doctor is confirmed unavailable,
+// since that's the only case where a "notify me" alert can be managed.
+export function useDoctorAvailabilitySubscription(doctorId: string, isAvailable: boolean) {
   const queryClient = useQueryClient();
   const queryKey = queryKeys.doctorAvailabilitySubscription(doctorId);
   const subscriptionQuery = useQuery({
     queryKey,
     queryFn: () => getDoctorAvailabilitySubscription(doctorId),
-    enabled: doctorId.length > 0,
+    enabled: doctorId.length > 0 && !isAvailable,
   });
 
   const mutation = useMutation({

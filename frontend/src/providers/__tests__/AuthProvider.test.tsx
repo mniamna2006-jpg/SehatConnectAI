@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from '../AuthProvider';
-import { apiRequest } from '../../core/api/client';
+import { apiRequest, ApiError } from '../../core/api/client';
 import * as api from '../../features/auth/model/api';
 import * as secureStore from '../../core/storage/secureStore';
 import { createTestQueryClient } from '../../core/query/testUtils';
@@ -62,6 +62,57 @@ test('logout clears the token and the user', async () => {
 
   expect(secureStore.clearToken).toHaveBeenCalled();
   expect(result.current.user).toBeNull();
+});
+
+test('network failure on session bootstrap keeps the token and offers retry', async () => {
+  (secureStore.getToken as jest.Mock).mockResolvedValue('existing-token');
+  (api.getMe as jest.Mock).mockRejectedValue(new ApiError(0, 'Network request failed'));
+
+  const { result } = await renderHook(() => useAuth(), { wrapper });
+
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+  expect(result.current.user).toBeNull();
+  expect(result.current.sessionError).toBe('network');
+  expect(secureStore.clearToken).not.toHaveBeenCalled();
+});
+
+test('5xx failure on session bootstrap keeps the token and offers retry', async () => {
+  (secureStore.getToken as jest.Mock).mockResolvedValue('existing-token');
+  (api.getMe as jest.Mock).mockRejectedValue(new ApiError(503, 'Service unavailable'));
+
+  const { result } = await renderHook(() => useAuth(), { wrapper });
+
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+  expect(result.current.sessionError).toBe('network');
+  expect(secureStore.clearToken).not.toHaveBeenCalled();
+});
+
+test('401 on session bootstrap clears the token, no retry offered', async () => {
+  (secureStore.getToken as jest.Mock).mockResolvedValue('stale-token');
+  (api.getMe as jest.Mock).mockRejectedValue(new ApiError(401, 'Token expired'));
+
+  const { result } = await renderHook(() => useAuth(), { wrapper });
+
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+  expect(result.current.sessionError).toBeNull();
+  expect(secureStore.clearToken).toHaveBeenCalled();
+});
+
+test('retrySession re-attempts getMe using the retained token', async () => {
+  (secureStore.getToken as jest.Mock).mockResolvedValue('existing-token');
+  (api.getMe as jest.Mock)
+    .mockRejectedValueOnce(new ApiError(0, 'Network request failed'))
+    .mockResolvedValueOnce({ user_id: '9', full_name: 'C', role: 'PATIENT', preferred_language: 'ENGLISH' });
+
+  const { result } = await renderHook(() => useAuth(), { wrapper });
+  await waitFor(() => expect(result.current.sessionError).toBe('network'));
+
+  await act(async () => {
+    await result.current.retrySession();
+  });
+
+  expect(result.current.sessionError).toBeNull();
+  expect(result.current.user?.user_id).toBe('9');
 });
 
 test('a 401 clears the token, user, and private query cache', async () => {

@@ -6,13 +6,16 @@ import { useDoctorAvailabilitySubscription } from '../viewmodels/useDoctorAvaila
 
 interface DoctorAvailabilityAlertProps {
   doctorId: string;
+  /** From the already-fetched doctor record — the source of truth for the CTA and the alert's gate. */
+  isAvailable: boolean;
 }
 
 export function DoctorAvailabilityAlert({
   doctorId,
+  isAvailable,
 }: DoctorAvailabilityAlertProps) {
   const t = useTranslations();
-  const viewModel = useDoctorAvailabilitySubscription(doctorId);
+  const viewModel = useDoctorAvailabilitySubscription(doctorId, isAvailable);
 
   if (!viewModel.canManageAlert) return null;
 

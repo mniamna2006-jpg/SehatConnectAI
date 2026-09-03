@@ -137,7 +137,8 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                   name={item.name}
                   specialization={item.specialization}
                   hospital={hospital.name}
-                  availabilityAction={<DoctorAvailabilityAlert doctorId={item.doctor_id} />}
+                  isAvailable={item.is_available}
+                  availabilityAction={<DoctorAvailabilityAlert doctorId={item.doctor_id} isAvailable={item.is_available} />}
                   bookingHref={`/appointments?doctorId=${item.doctor_id}`}
                   testID={`doctor-link-${item.doctor_id}`}
                 />

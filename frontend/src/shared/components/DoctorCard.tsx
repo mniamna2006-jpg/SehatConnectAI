@@ -76,12 +76,14 @@ export function DoctorCard({
         </View>
       ) : null}
       {availabilityAction}
-      <View style={styles.footer}>
-        {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <View style={styles.footerSpacer} />}
-        <Link href={bookingHref} asChild>
-          <AppButton label={t('common.bookAppointment')} style={styles.bookButton} />
-        </Link>
-      </View>
+      {isAvailable === false ? null : (
+        <View style={styles.footer}>
+          {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <View style={styles.footerSpacer} />}
+          <Link href={bookingHref} asChild>
+            <AppButton label={t('common.bookAppointment')} style={styles.bookButton} />
+          </Link>
+        </View>
+      )}
     </View>
   );
 }

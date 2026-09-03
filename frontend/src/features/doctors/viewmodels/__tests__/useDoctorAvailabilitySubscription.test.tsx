@@ -18,36 +18,31 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test('always queries the doctor-owned availability endpoint, since list/detail responses never carry is_available', async () => {
+test('skips the subscription query when the doctor is already known available, avoiding an unnecessary request', async () => {
+  const { result } = await renderHook(
+    () => useDoctorAvailabilitySubscription('d1', true),
+    { wrapper }
+  );
+
+  expect(result.current.isLoading).toBe(false);
+  expect(result.current.canManageAlert).toBe(false);
+  expect(getDoctorAvailabilitySubscription).not.toHaveBeenCalled();
+});
+
+test('queries the subscription endpoint only once the doctor is known unavailable', async () => {
   (getDoctorAvailabilitySubscription as jest.Mock).mockResolvedValue({
     doctor_id: 'd1',
     subscribed: false,
-    is_available: true,
+    is_available: false,
   });
 
   const { result } = await renderHook(
-    () => useDoctorAvailabilitySubscription('d1'),
+    () => useDoctorAvailabilitySubscription('d1', false),
     { wrapper }
   );
 
   await waitFor(() => expect(getDoctorAvailabilitySubscription).toHaveBeenCalledWith('d1'));
-  expect(result.current.canManageAlert).toBe(false);
-});
-
-test('exposes no manageable alert once the doctor is confirmed available', async () => {
-  (getDoctorAvailabilitySubscription as jest.Mock).mockResolvedValue({
-    doctor_id: 'd1',
-    subscribed: false,
-    is_available: true,
-  });
-
-  const { result } = await renderHook(
-    () => useDoctorAvailabilitySubscription('d1'),
-    { wrapper }
-  );
-
-  await waitFor(() => expect(result.current.isLoading).toBe(false));
-  expect(result.current.canManageAlert).toBe(false);
+  expect(result.current.canManageAlert).toBe(true);
 });
 
 test('exposes a manageable alert once the doctor is confirmed unavailable', async () => {
@@ -58,7 +53,7 @@ test('exposes a manageable alert once the doctor is confirmed unavailable', asyn
   });
 
   const { result } = await renderHook(
-    () => useDoctorAvailabilitySubscription('d1'),
+    () => useDoctorAvailabilitySubscription('d1', false),
     { wrapper }
   );
 
@@ -75,7 +70,7 @@ test('subscribes and refreshes server-owned state', async () => {
     .mockResolvedValueOnce({ doctor_id: 'd1', subscribed: false, is_available: false })
     .mockResolvedValue({ doctor_id: 'd1', subscribed: true, is_available: false });
   const { result } = await renderHook(
-    () => useDoctorAvailabilitySubscription('d1'),
+    () => useDoctorAvailabilitySubscription('d1', false),
     { wrapper }
   );
   await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -94,7 +89,7 @@ test('unsubscribes and refreshes server-owned state', async () => {
     doctor_id: 'd1', subscribed: false,
   });
   const { result } = await renderHook(
-    () => useDoctorAvailabilitySubscription('d1'),
+    () => useDoctorAvailabilitySubscription('d1', false),
     { wrapper }
   );
   await waitFor(() => expect(result.current.subscribed).toBe(true));
@@ -111,7 +106,7 @@ test('surfaces mutation failure without inventing local subscription state', asy
   });
   (subscribeToDoctorAvailability as jest.Mock).mockRejectedValue(new Error('offline'));
   const { result } = await renderHook(
-    () => useDoctorAvailabilitySubscription('d1'),
+    () => useDoctorAvailabilitySubscription('d1', false),
     { wrapper }
   );
   await waitFor(() => expect(result.current.isLoading).toBe(false));

@@ -23,7 +23,8 @@ function DoctorResult({ doctor }: { doctor: DoctorDetail }) {
       name={doctor.name}
       specialization={doctor.specialization}
       hospital={doctor.hospital.name}
-      availabilityAction={<DoctorAvailabilityAlert doctorId={doctor.doctor_id} />}
+      isAvailable={doctor.is_available}
+      availabilityAction={<DoctorAvailabilityAlert doctorId={doctor.doctor_id} isAvailable={doctor.is_available} />}
       bookingHref={bookingHref}
       schedules={doctor.schedules.map((schedule) => ({
         id: schedule.schedule_id,
