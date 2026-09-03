@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslations } from '../../providers/LocaleProvider';
@@ -21,7 +22,9 @@ export function DoctorCard({
   name,
   specialization,
   hospital,
+  isAvailable,
   schedules = [],
+  availabilityAction,
   bookingHref,
   testID,
 }: {
@@ -29,7 +32,9 @@ export function DoctorCard({
   name: string;
   specialization?: string;
   hospital?: string;
+  isAvailable?: boolean;
   schedules?: ScheduleSummary[];
+  availabilityAction?: ReactNode;
   bookingHref: string;
   testID?: string;
 }) {
@@ -48,6 +53,14 @@ export function DoctorCard({
               <Text style={styles.metaText}>{hospital}</Text>
             </View>
           ) : null}
+          {typeof isAvailable === 'boolean' ? (
+            <View style={styles.statusRow}>
+              <View style={[styles.statusDot, isAvailable ? styles.availableDot : styles.unavailableDot]} />
+              <Text style={[styles.statusText, isAvailable ? styles.availableText : styles.unavailableText]}>
+                {t(isAvailable ? 'doctors.availability.available' : 'doctors.availability.unavailable')}
+              </Text>
+            </View>
+          ) : null}
         </View>
       </View>
       {firstSchedule ? (
@@ -62,6 +75,7 @@ export function DoctorCard({
           </View>
         </View>
       ) : null}
+      {availabilityAction}
       <View style={styles.footer}>
         {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <Text style={styles.unavailable}>{t('doctors.scheduleUnavailable')}</Text>}
         <Link href={bookingHref} asChild>
@@ -80,6 +94,13 @@ const styles = StyleSheet.create({
   specialty: { ...typography.body, color: colors.primary, fontWeight: '600' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
   metaText: { ...typography.metadata, color: colors.muted, flex: 1 },
+  statusRow: { minHeight: 24, flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  statusDot: { width: 8, height: 8, borderRadius: 4 },
+  availableDot: { backgroundColor: colors.success },
+  unavailableDot: { backgroundColor: colors.faint },
+  statusText: { ...typography.metadata, fontWeight: '700' },
+  availableText: { color: colors.success },
+  unavailableText: { color: colors.muted },
   availability: { backgroundColor: colors.tealSoft, borderRadius: radius.md, padding: 12, gap: 7 },
   availabilityItem: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   availabilityText: { ...typography.metadata, color: colors.inkSoft },

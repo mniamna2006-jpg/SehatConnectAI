@@ -20,13 +20,18 @@ export interface Hospital {
   email?: string;
   address?: string;
   city?: string;
-  latitude?: number;
-  longitude?: number;
-  distance_km?: number;
+  latitude?: number | string;
+  longitude?: number | string;
+  distance_km?: number | string;
 }
 
 export interface HospitalDetail extends Hospital {
   working_hours: WorkingHours[];
   departments: { department_id: string; name: string }[];
-  doctors: { doctor_id: string; name: string; specialization?: string }[];
+  doctors: {
+    doctor_id: string;
+    name: string;
+    specialization?: string;
+    is_available: boolean;
+  }[];
 }

@@ -6,6 +6,7 @@ export const queryKeys = {
   doctorsByHospital: (hospitalId: string) => ['doctors', 'hospital', hospitalId] as const,
   doctorsByDepartment: (departmentId: string) => ['doctors', 'department', departmentId] as const,
   doctor: (id: string) => ['doctors', id] as const,
+  doctorAvailabilitySubscription: (id: string) => ['doctors', id, 'availability-subscription'] as const,
   findDoctors: (query: string) => ['doctors', 'find', query] as const,
   departmentsByHospital: (hospitalId: string) => ['departments', 'hospital', hospitalId] as const,
   findDepartments: (query: string) => ['departments', 'find', query] as const,
@@ -15,6 +16,8 @@ export const queryKeys = {
   myQueue: ['queue', 'my'] as const,
   notifications: ['notifications', 'my'] as const,
   unreadNotificationCount: ['notifications', 'unread-count'] as const,
+  aiHistory: ['ai', 'history'] as const,
+  aiConversation: (id: string) => ['ai', 'history', id] as const,
 
   hospitalMe: ['hospitalAuth', 'me'] as const,
 

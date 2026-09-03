@@ -1,5 +1,10 @@
 import { apiRequest } from '../../../../core/api/client';
-import type { AdminDoctor, DoctorCreateInput, DoctorUpdateInput } from './types';
+import type {
+  AdminDoctor,
+  AdminDoctorAvailabilityResult,
+  DoctorCreateInput,
+  DoctorUpdateInput,
+} from './types';
 
 export function getDoctors(hospitalId: string): Promise<AdminDoctor[]> {
   return apiRequest<AdminDoctor[]>(`/api/doctors/hospital/${hospitalId}`, { scope: 'hospital' });
@@ -24,6 +29,17 @@ export function updateDoctor(doctorId: string, input: DoctorUpdateInput): Promis
 export function deactivateDoctor(doctorId: string): Promise<AdminDoctor> {
   return apiRequest<AdminDoctor>(`/api/doctors/${doctorId}/deactivate`, {
     method: 'PATCH',
+    scope: 'hospital',
+  });
+}
+
+export function updateDoctorAvailability(
+  doctorId: string,
+  isAvailable: boolean
+): Promise<AdminDoctorAvailabilityResult> {
+  return apiRequest<AdminDoctorAvailabilityResult>(`/api/doctors/${doctorId}/availability`, {
+    method: 'PATCH',
+    body: { is_available: isAvailable },
     scope: 'hospital',
   });
 }

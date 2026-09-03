@@ -27,6 +27,7 @@ test('shows each doctor hospital, available schedule, and booking action', async
         name: 'Dr. Ali',
         specialization: 'Cardiology',
         is_active: true,
+        is_available: true,
         hospital: { hospital_id: 'h1', name: 'City Hospital' },
         department: { department_id: 'dep1', name: 'Cardiology' },
         schedules: [
@@ -61,6 +62,7 @@ test('shows each doctor hospital, available schedule, and booking action', async
   await render(<FindDoctorView />);
 
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
+  expect(screen.getByText('Available')).toBeOnTheScreen();
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
   expect(screen.getByText('MONDAY')).toBeOnTheScreen();
   expect(screen.getByText('Available Timings')).toBeOnTheScreen();

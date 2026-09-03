@@ -11,7 +11,7 @@ import { colors, radius, shadow, typography } from '../../../shared/theme';
 import { useHomeViewModel } from '../viewmodels/useHomeViewModel';
 
 interface CareAction {
-  href: '/find-hospital' | '/find-doctor' | '/find-department';
+  href: '/find-hospital' | '/find-doctor' | '/find-department' | '/ai-chat';
   title: string;
   description: string;
   icon: AppIconName;
@@ -33,6 +33,7 @@ export function HomeView() {
     { href: '/find-hospital', title: t('home.actions.findHospital.title'), description: t('home.actions.findHospital.description'), icon: 'business-outline', tone: 'teal' },
     { href: '/find-doctor', title: t('home.actions.findDoctor.title'), description: t('home.actions.findDoctor.description'), icon: 'medkit-outline', tone: 'blue' },
     { href: '/find-department', title: t('home.actions.findDepartment.title'), description: t('home.actions.findDepartment.description'), icon: 'grid-outline', tone: 'blue' },
+    { href: '/ai-chat', title: t('home.actions.aiAssistant.title'), description: t('home.actions.aiAssistant.description'), icon: 'chatbubbles-outline', tone: 'teal' },
   ];
 
   return (

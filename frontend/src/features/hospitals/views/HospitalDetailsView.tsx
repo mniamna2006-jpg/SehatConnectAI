@@ -16,6 +16,7 @@ import { colors, radius, typography } from '../../../shared/theme';
 import { displayTime12h } from '../../../shared/utils/time';
 import { openHospitalNavigation } from '../../../core/navigation/openHospitalNavigation';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
+import { DoctorAvailabilityAlert } from '../../doctors/views/DoctorAvailabilityAlert';
 
 interface HospitalDetailsViewProps { hospitalId: string }
 
@@ -130,7 +131,19 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
             <SectionHeader title={t('hospitals.doctorsTitle')} detail={`${hospital.doctors.length} available`} />
             <View testID="hospital-doctors-list" style={styles.doctorList}>
               {hospital.doctors.map((item) => (
-                <DoctorCard key={item.doctor_id} id={item.doctor_id} name={item.name} specialization={item.specialization} hospital={hospital.name} bookingHref={`/appointments?doctorId=${item.doctor_id}`} testID={`doctor-link-${item.doctor_id}`} />
+                <DoctorCard
+                  key={item.doctor_id}
+                  id={item.doctor_id}
+                  name={item.name}
+                  specialization={item.specialization}
+                  hospital={hospital.name}
+                  isAvailable={item.is_available}
+                  availabilityAction={item.is_available ? undefined : (
+                    <DoctorAvailabilityAlert doctorId={item.doctor_id} isAvailable={item.is_available} />
+                  )}
+                  bookingHref={`/appointments?doctorId=${item.doctor_id}`}
+                  testID={`doctor-link-${item.doctor_id}`}
+                />
               ))}
             </View>
           </View>

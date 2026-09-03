@@ -47,3 +47,13 @@ test('returns only changed fields and clears optional strings with null', () => 
     logo_url: null,
   });
 });
+
+test('does not submit unchanged decimal coordinates returned as JSON strings', () => {
+  const stringCoordinateHospital = {
+    ...hospital,
+    latitude: '24.8607' as unknown as number,
+    longitude: '67.0011' as unknown as number,
+  };
+
+  expect(buildHospitalProfilePatch(stringCoordinateHospital, unchangedForm)).toEqual({});
+});

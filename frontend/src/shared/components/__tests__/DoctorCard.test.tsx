@@ -19,6 +19,7 @@ test('renders clinician identity, one hospital, 12-hour schedule, and booking ac
       name="Ayesha Khan"
       specialization="Neurology"
       hospital="City Hospital"
+      isAvailable
       schedules={[{ id: 's1', day: 'Monday', start: '09:00', end: '13:00' }]}
       bookingHref="/appointments?doctorId=d1"
     />
@@ -27,11 +28,26 @@ test('renders clinician identity, one hospital, 12-hour schedule, and booking ac
   expect(screen.getByText('Ayesha Khan')).toBeOnTheScreen();
   expect(screen.getByText('Neurology')).toBeOnTheScreen();
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
+  expect(screen.getByText('Available')).toBeOnTheScreen();
   expect(screen.getByText('Monday')).toBeOnTheScreen();
   expect(screen.getByText('9:00 AM - 1:00 PM')).toBeOnTheScreen();
   expect(screen.getByRole('button', { name: 'Book Appointment' })).toBeOnTheScreen();
   expect(screen.getByLabelText('/appointments?doctorId=d1')).toBeOnTheScreen();
   expect(screen.queryByText(/rating|review|fee/i)).not.toBeOnTheScreen();
+});
+
+test('shows unavailable status without hiding doctor', async () => {
+  await render(
+    <DoctorCard
+      id="d2"
+      name="Ayesha Khan"
+      isAvailable={false}
+      bookingHref="/appointments?doctorId=d2"
+    />
+  );
+
+  expect(screen.getByText('Ayesha Khan')).toBeOnTheScreen();
+  expect(screen.getByText('Unavailable')).toBeOnTheScreen();
 });
 
 test('uses initials and safe schedule fallback when photo and schedule are absent', async () => {

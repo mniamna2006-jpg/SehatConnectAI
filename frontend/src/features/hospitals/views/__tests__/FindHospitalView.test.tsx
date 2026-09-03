@@ -52,3 +52,22 @@ test('renders hospital identity, optional metadata, fallback logo, and details a
   expect(screen.getByLabelText('City Hospital logo')).toBeOnTheScreen();
   expect(screen.getByLabelText('/hospital/h1')).toBeOnTheScreen();
 });
+
+test('formats decimal distance values returned as JSON strings', async () => {
+  (useFindHospitalViewModel as jest.Mock).mockReturnValue({
+    hospitals: [{
+      hospital_id: 'h1',
+      name: 'City Hospital',
+      facility_type: 'HOSPITAL',
+      distance_km: '2.45' as unknown as number,
+    }],
+    isLoading: false,
+    isError: false,
+    refetch: jest.fn(),
+    selector,
+  });
+
+  await render(<FindHospitalView />);
+
+  expect(screen.getByText('2.5 km away')).toBeOnTheScreen();
+});

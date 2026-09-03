@@ -12,6 +12,7 @@ import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, typography } from '../../../shared/theme';
 import type { DoctorDetail } from '../model/types';
 import { useFindDoctorViewModel } from '../viewmodels/useFindDoctorViewModel';
+import { DoctorAvailabilityAlert } from './DoctorAvailabilityAlert';
 
 function DoctorResult({ doctor }: { doctor: DoctorDetail }) {
   const bookingHref = `/appointments?doctorId=${doctor.doctor_id}&hospitalId=${doctor.hospital_id}&departmentId=${doctor.department_id}`;
@@ -22,6 +23,10 @@ function DoctorResult({ doctor }: { doctor: DoctorDetail }) {
       name={doctor.name}
       specialization={doctor.specialization}
       hospital={doctor.hospital.name}
+      isAvailable={doctor.is_available}
+      availabilityAction={doctor.is_available ? undefined : (
+        <DoctorAvailabilityAlert doctorId={doctor.doctor_id} isAvailable={doctor.is_available} />
+      )}
       bookingHref={bookingHref}
       schedules={doctor.schedules.map((schedule) => ({
         id: schedule.schedule_id,

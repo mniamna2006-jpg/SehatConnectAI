@@ -31,4 +31,5 @@ test('presents patient identity and the four frozen care actions', async () => {
   expect(screen.getByLabelText('/find-doctor')).toBeOnTheScreen();
   expect(screen.getByLabelText('/find-department')).toBeOnTheScreen();
   expect(screen.getByLabelText('/appointments')).toBeOnTheScreen();
+  expect(screen.getByLabelText('/ai-chat')).toBeOnTheScreen();
 });

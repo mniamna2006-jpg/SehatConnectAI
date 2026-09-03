@@ -61,6 +61,10 @@
       "findDepartment": {
         "title": "Department Talaash Karein",
         "description": "Departments aur mahaarat dekhein"
+      },
+      "aiAssistant": {
+        "title": "AI Assistant",
+        "description": "Alamaat batayein aur rehnumai hasil karein"
       }
     },
     "appointmentDetails": {
@@ -211,7 +215,16 @@
     "startTitle": "Talaash shuru karein",
     "startMessage": "Dastyab doctors dekhne ke liye naam ya mahaarat darj karein.",
     "availableTimings": "Dastyab Auqaat",
-    "scheduleUnavailable": "Schedule dastyab nahi"
+    "scheduleUnavailable": "Schedule dastyab nahi",
+    "availability": {
+      "available": "Dastyab",
+      "unavailable": "Dastyab nahi",
+      "notifyWhenAvailable": "Dastyab honay par mujhay ittila dein",
+      "alertOn": "Dastyabi ka alert on hai",
+      "turnOffAlert": "Dastyabi ka alert band karein",
+      "updating": "Update ho raha hai...",
+      "updateError": "Dastyabi update nahi ho saki"
+    }
   },
   "departments": {
     "findTitle": "Shoba Talash Karein",
@@ -504,7 +517,8 @@
       "success": {
         "created": "Doctor shamil ho gaya.",
         "updated": "Doctor update ho gaya.",
-        "deactivated": "Doctor deactivate ho gaya."
+        "deactivated": "Doctor deactivate ho gaya.",
+        "availabilityUpdated": "Doctor ki dastyabi update ho gayi."
       }
     },
     "schedules": {
@@ -689,5 +703,35 @@
     "emptyMessage": "Aap bilkul up to date hain. Nai updates yahan nazar aayen gi.",
     "errorMessage": "Hum aap ki notifications load nahi kar sakay.",
     "unread": "Ghair parha hua"
+  },
+  "ai": {
+    "chat": {
+      "title": "AI Assistant",
+      "subtitle": "Batayein aap kaisa mehsoos kar rahay hain",
+      "disclaimer": "Yeh tashkhees nahi hai. Emergency mein foran tibbi imdad hasil karein.",
+      "placeholder": "Apni alamaat bayan karein...",
+      "send": "Bhejein",
+      "emergencyWarning": "Yeh aik tibbi emergency ho sakti hai. Foran tibbi imdad hasil karein ya emergency services se rabta karein.",
+      "errorMessage": "Hum yeh paigham bhej nahi sakay. Dobara koshish karein.",
+      "emptyTitle": "Hamein bataein kya masla hai",
+      "emptyMessage": "Apni alamaat bayan karein, hum sahi department tajweez karein gay.",
+      "recommendedDepartment": "Tajweez karda department",
+      "viewDoctors": "Doctors dekhein",
+      "recommendedDoctors": "Is department kay doctors",
+      "consultationFee": "Consultation fee",
+      "historyAction": "History"
+    },
+    "history": {
+      "title": "AI History",
+      "subtitle": "Aap ki sabiqa alamaat ki janch",
+      "emptyTitle": "Abhi tak koi guftagu nahi",
+      "emptyMessage": "AI Assistant kay sath baat cheet shuru karein taakay yahan nazar aaye.",
+      "errorMessage": "Hum aap ki history load nahi kar sakay.",
+      "deleteConfirmTitle": "Guftagu delete karein?",
+      "deleteConfirmMessage": "Yeh guftagu aur iskay paigham hamesha kay liye delete ho jayen gay.",
+      "delete": "Delete karein",
+      "messages": "paigham",
+      "resume": "Jari rakhein"
+    }
   }
 }
