@@ -15,15 +15,16 @@ import { colors, radius, typography } from '../../../shared/theme';
 import type { Hospital } from '../model/types';
 import { useFindHospitalViewModel } from '../viewmodels/useFindHospitalViewModel';
 
-function HospitalLogo({ hospital }: { hospital: Hospital }) {
-  if (hospital.logo_url) return <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" transition={150} accessibilityLabel={`${hospital.name} logo`} />;
-  return <View accessibilityLabel={`${hospital.name} logo`} accessibilityRole="image" style={styles.logoFallback}><AppIcon name="business" color={colors.teal} size={24} /></View>;
+function HospitalLogo({ hospital, t }: { hospital: Hospital; t: (key: string) => string }) {
+  const label = `${hospital.name} ${t('hospitals.logo')}`;
+  if (hospital.logo_url) return <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" transition={150} accessibilityLabel={label} />;
+  return <View accessibilityLabel={label} accessibilityRole="image" style={styles.logoFallback}><AppIcon name="business" color={colors.teal} size={24} /></View>;
 }
 
-function formatDistance(distance: Hospital['distance_km']) {
+function formatDistance(distance: Hospital['distance_km'], t: (key: string) => string) {
   if (distance === undefined) return null;
   const value = Number(distance);
-  return Number.isFinite(value) ? `${value.toFixed(1)} km away` : null;
+  return Number.isFinite(value) ? `${value.toFixed(1)} ${t('hospitals.distanceAway')}` : null;
 }
 
 export function FindHospitalView() {
@@ -42,17 +43,17 @@ export function FindHospitalView() {
           <View style={styles.header}>
             <PageHeader title={t('hospitals.findTitle')} subtitle={t('hospitals.findContext')} />
             <LocationPicker selector={selector} />
-            {hospitals.length > 0 ? <SectionHeader title="Hospitals near you" detail={`${hospitals.length} found`} /> : null}
+            {hospitals.length > 0 ? <SectionHeader title={t('hospitals.resultsTitle')} detail={`${hospitals.length} ${t('common.found')}`} /> : null}
           </View>
         }
         renderItem={({ item }: { item: Hospital }) => {
-          const distance = formatDistance(item.distance_km);
+          const distance = formatDistance(item.distance_km, t);
           return <Link href={`/hospital/${item.hospital_id}`} asChild>
             <PressableSurface accessibilityRole="button" testID={`hospital-row-${item.hospital_id}`} style={styles.row}>
-              <HospitalLogo hospital={item} />
+              <HospitalLogo hospital={item} t={t} />
               <View style={styles.copy}>
                 <Text testID={`hospital-name-${item.hospital_id}`} style={styles.name}>{item.name}</Text>
-                <View style={styles.metaRow}><AppIcon name="location-outline" color={colors.muted} size={15} /><Text testID={`hospital-city-${item.hospital_id}`} style={styles.meta}>{item.address || item.city || 'Location available in details'}</Text></View>
+                <View style={styles.metaRow}><AppIcon name="location-outline" color={colors.muted} size={15} /><Text testID={`hospital-city-${item.hospital_id}`} style={styles.meta}>{item.address || item.city || t('hospitals.fallbackLocation')}</Text></View>
                 {item.phone ? <View style={styles.metaRow}><AppIcon name="call-outline" color={colors.muted} size={15} /><Text style={styles.meta}>{item.phone}</Text></View> : null}
                 {distance ? <Text testID={`hospital-distance-${item.hospital_id}`} style={styles.distance}>{distance}</Text> : null}
               </View>
@@ -60,7 +61,7 @@ export function FindHospitalView() {
             </PressableSurface>
           </Link>;
         }}
-        ListEmptyComponent={isLoading ? <LoadingState label="Finding hospitals…" /> : isError ? <ErrorState onRetry={() => void refetch()} /> : <EmptyState title="No hospitals found" message="Try another city or use your current location." icon="business-outline" />}
+        ListEmptyComponent={isLoading ? <LoadingState label={t('hospitals.loading')} /> : isError ? <ErrorState onRetry={() => void refetch()} /> : <EmptyState title={t('hospitals.emptyTitle')} message={t('hospitals.emptyMessage')} icon="business-outline" />}
       />
     </Screen>
   );

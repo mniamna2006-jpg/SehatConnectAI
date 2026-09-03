@@ -18,17 +18,17 @@ interface CareAction {
   tone: 'blue' | 'teal';
 }
 
-function greetingForNow(): string {
+function greetingKeyForNow(): 'home.morning' | 'home.afternoon' | 'home.evening' {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning,';
-  if (hour < 17) return 'Good afternoon,';
-  return 'Good evening,';
+  if (hour < 12) return 'home.morning';
+  if (hour < 17) return 'home.afternoon';
+  return 'home.evening';
 }
 
 export function HomeView() {
   const t = useTranslations();
   const { user } = useHomeViewModel();
-  const patientName = user?.full_name || 'Patient';
+  const patientName = user?.full_name || t('common.patient');
   const careActions: CareAction[] = [
     { href: '/find-hospital', title: t('home.actions.findHospital.title'), description: t('home.actions.findHospital.description'), icon: 'business-outline', tone: 'teal' },
     { href: '/find-doctor', title: t('home.actions.findDoctor.title'), description: t('home.actions.findDoctor.description'), icon: 'medkit-outline', tone: 'blue' },
@@ -44,7 +44,7 @@ export function HomeView() {
           <View style={styles.topActions}>
             <NotificationBell />
             <Link href="/profile" asChild>
-              <Pressable accessibilityLabel="Open profile" style={({ pressed }) => pressed && styles.pressed}>
+              <Pressable accessibilityLabel={t('home.openProfile')} style={({ pressed }) => pressed && styles.pressed}>
                 <Avatar name={patientName} size={48} />
               </Pressable>
             </Link>
@@ -52,7 +52,7 @@ export function HomeView() {
         </View>
 
         <View style={styles.greeting}>
-          <Text style={styles.eyebrow}>{greetingForNow()}</Text>
+          <Text style={styles.eyebrow}>{t(greetingKeyForNow())}</Text>
           <Text accessibilityRole="header" style={styles.patientName}>{patientName}</Text>
           <Text style={styles.prompt}>{t('home.prompt')}</Text>
         </View>
@@ -60,15 +60,15 @@ export function HomeView() {
         <View style={styles.discoveryHero}>
           <View style={styles.heroCopy}>
             <View style={styles.heroIcon}><AppIcon name="heart-outline" color={colors.surface} size={23} /></View>
-            <Text style={styles.heroTitle}>Care starts with the right place</Text>
-            <Text style={styles.heroBody}>Discover hospitals, departments and doctors without the guesswork.</Text>
+            <Text style={styles.heroTitle}>{t('home.heroTitle')}</Text>
+            <Text style={styles.heroBody}>{t('home.heroBody')}</Text>
           </View>
           <View style={styles.heroRings} />
         </View>
 
         <View>
-          <Text style={styles.sectionTitle}>Explore care</Text>
-          <Text style={styles.sectionSubtitle}>Choose a service to get started</Text>
+          <Text style={styles.sectionTitle}>{t('home.exploreTitle')}</Text>
+          <Text style={styles.sectionSubtitle}>{t('home.exploreSubtitle')}</Text>
         </View>
 
         <View style={styles.actionGrid}>

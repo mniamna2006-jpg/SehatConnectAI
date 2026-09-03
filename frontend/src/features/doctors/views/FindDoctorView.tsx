@@ -56,20 +56,20 @@ export function FindDoctorView() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.header}>
-            <PageHeader title={t('doctors.findTitle')} subtitle="Connect with the right clinician for your care" />
+            <PageHeader title={t('doctors.findTitle')} subtitle={t('doctors.subtitle')} />
             <LocationPicker selector={selector} />
             <View style={styles.searchGroup}>
-              <Text style={styles.searchLabel}>Search by name or specialty</Text>
+              <Text style={styles.searchLabel}>{t('doctors.searchPrompt')}</Text>
               <SearchBar accessibilityLabel={t('doctors.searchLabel')} placeholder={t('doctors.searchPlaceholder')} value={query} onChangeText={setQuery} />
             </View>
-            {doctors.length > 0 ? <SectionHeader title="Doctors" detail={`${doctors.length} found`} /> : null}
+            {doctors.length > 0 ? <SectionHeader title={t('doctors.resultsTitle')} detail={`${doctors.length} ${t('common.found')}`} /> : null}
           </View>
         }
         ListEmptyComponent={
-          isLoading ? <LoadingState label="Finding doctors…" />
+          isLoading ? <LoadingState label={t('doctors.loading')} />
             : isError ? <ErrorState onRetry={() => void refetch()} />
-              : hasQuery ? <EmptyState title="No doctors found" message="Try another name, specialty or location." icon="medkit-outline" />
-                : <EmptyState title="Start your search" message="Enter a doctor name or specialty to see available clinicians." icon="search-outline" />
+              : hasQuery ? <EmptyState title={t('doctors.emptyTitle')} message={t('doctors.emptyMessage')} icon="medkit-outline" />
+                : <EmptyState title={t('doctors.startTitle')} message={t('doctors.startMessage')} icon="search-outline" />
         }
       />
     </Screen>

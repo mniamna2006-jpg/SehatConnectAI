@@ -15,11 +15,11 @@ import { formatHumanDate } from '../../../shared/utils/formatters';
 import type { PreferredLanguage } from '../../../shared/types/api';
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel';
 
-function InfoRow({ icon, label, value, testID }: { icon: AppIconName; label: string; value?: string; testID: string }) {
+function InfoRow({ icon, label, value, fallback, testID }: { icon: AppIconName; label: string; value?: string; fallback: string; testID: string }) {
   return (
     <View style={styles.infoRow}>
       <View style={styles.infoIcon}><AppIcon name={icon} color={colors.primary} size={19} /></View>
-      <View style={styles.infoCopy}><Text style={styles.infoLabel}>{label}</Text><Text testID={testID} style={styles.infoValue}>{value || 'Not provided'}</Text></View>
+      <View style={styles.infoCopy}><Text style={styles.infoLabel}>{label}</Text><Text testID={testID} style={styles.infoValue}>{value || fallback}</Text></View>
     </View>
   );
 }
@@ -32,35 +32,35 @@ export function ProfileView() {
     { id: 'URDU', label: t('auth.register.languageOptions.urdu') },
     { id: 'ROMAN_URDU', label: t('auth.register.languageOptions.romanUrdu') },
   ];
-  if (vm.isLoading) return <Screen><LoadingState label="Loading your profile…" /></Screen>;
+  if (vm.isLoading) return <Screen><LoadingState label={t('profile.loading')} /></Screen>;
   if (vm.isError) return <Screen><ErrorState onRetry={() => void vm.refetch()} /></Screen>;
 
   if (!vm.isEditing) {
     return (
       <Screen>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-          <PageHeader title={t('profile.title')} subtitle="Your personal and contact information" />
+          <PageHeader title={t('profile.title')} subtitle={t('profile.subtitle')} />
           <View style={styles.profileHero}>
             <Avatar name={vm.profile?.full_name} size={78} tone="teal" />
-            <Text testID="profile-full-name" style={styles.profileName}>{vm.profile?.full_name || 'Patient'}</Text>
-            <Text testID="profile-email" style={styles.profileEmail}>{vm.profile?.email || 'Email not provided'}</Text>
+            <Text testID="profile-full-name" style={styles.profileName}>{vm.profile?.full_name || t('common.patient')}</Text>
+            <Text testID="profile-email" style={styles.profileEmail}>{vm.profile?.email || t('profile.emailNotProvided')}</Text>
             <View style={styles.languageBadge}><AppIcon name="language-outline" color={colors.teal} size={16} /><Text testID="profile-preferred-language" style={styles.languageText}>{languageOptions.find((option) => option.id === vm.profile?.preferred_language)?.label ?? vm.profile?.preferred_language}</Text></View>
           </View>
 
           <View style={styles.section}>
-            <SectionHeader title="Personal details" />
+            <SectionHeader title={t('profile.sections.personalDetails')} />
             <View style={styles.infoPanel}>
-              <InfoRow icon="calendar-outline" label={t('profile.fields.dateOfBirth')} value={formatHumanDate(vm.profile?.date_of_birth)} testID="profile-date-of-birth" />
-              <InfoRow icon="person-outline" label={t('profile.fields.gender')} value={vm.profile?.gender} testID="profile-gender" />
+              <InfoRow icon="calendar-outline" label={t('profile.fields.dateOfBirth')} value={formatHumanDate(vm.profile?.date_of_birth)} fallback={t('common.notProvided')} testID="profile-date-of-birth" />
+              <InfoRow icon="person-outline" label={t('profile.fields.gender')} value={vm.profile?.gender} fallback={t('common.notProvided')} testID="profile-gender" />
             </View>
           </View>
           <View style={styles.section}>
-            <SectionHeader title="Contact and address" />
+            <SectionHeader title={t('profile.sections.contactAddress')} />
             <View style={styles.infoPanel}>
-              <InfoRow icon="call-outline" label={t('profile.fields.phone')} value={vm.profile?.phone} testID="profile-phone" />
-              <InfoRow icon="home-outline" label={t('profile.fields.address')} value={vm.profile?.address} testID="profile-address" />
-              <InfoRow icon="location-outline" label={t('profile.fields.city')} value={vm.profile?.city} testID="profile-city" />
-              <InfoRow icon="shield-outline" label={t('profile.fields.emergencyContact')} value={vm.profile?.emergency_contact} testID="profile-emergency-contact" />
+              <InfoRow icon="call-outline" label={t('profile.fields.phone')} value={vm.profile?.phone} fallback={t('common.notProvided')} testID="profile-phone" />
+              <InfoRow icon="home-outline" label={t('profile.fields.address')} value={vm.profile?.address} fallback={t('common.notProvided')} testID="profile-address" />
+              <InfoRow icon="location-outline" label={t('profile.fields.city')} value={vm.profile?.city} fallback={t('common.notProvided')} testID="profile-city" />
+              <InfoRow icon="shield-outline" label={t('profile.fields.emergencyContact')} value={vm.profile?.emergency_contact} fallback={t('common.notProvided')} testID="profile-emergency-contact" />
             </View>
           </View>
           <AppButton testID="profile-edit" label={t('profile.makeChanges')} icon="create-outline" onPress={vm.onEdit} />
@@ -73,19 +73,19 @@ export function ProfileView() {
   return (
     <Screen>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <PageHeader title={t('profile.editTitle')} subtitle="Keep your details accurate and up to date" />
-        <View style={styles.formSection}><SectionHeader title="Personal details" />
-          <Controller control={vm.control} name="full_name" render={({ field }) => <FormField testID="profile-input-full-name" label="Full name" icon="person-outline" placeholder="Full name" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.full_name?.message} />} />
-          <Controller control={vm.control} name="date_of_birth" render={({ field }) => <FormField testID="profile-input-date-of-birth" label="Date of birth" icon="calendar-outline" placeholder="YYYY-MM-DD" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.date_of_birth?.message} />} />
-          <Controller control={vm.control} name="gender" render={({ field }) => <FormField testID="profile-input-gender" label="Gender" icon="person-outline" placeholder="Gender" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.gender?.message} />} />
+        <PageHeader title={t('profile.editTitle')} subtitle={t('profile.editSubtitle')} />
+        <View style={styles.formSection}><SectionHeader title={t('profile.sections.personalDetails')} />
+          <Controller control={vm.control} name="full_name" render={({ field }) => <FormField testID="profile-input-full-name" label={t('profile.fields.fullName')} icon="person-outline" placeholder={t('profile.fields.fullName')} value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.full_name?.message} />} />
+          <Controller control={vm.control} name="date_of_birth" render={({ field }) => <FormField testID="profile-input-date-of-birth" label={t('profile.fields.dateOfBirth')} icon="calendar-outline" placeholder="YYYY-MM-DD" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.date_of_birth?.message} />} />
+          <Controller control={vm.control} name="gender" render={({ field }) => <FormField testID="profile-input-gender" label={t('profile.fields.gender')} icon="person-outline" placeholder={t('profile.fields.gender')} value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.gender?.message} />} />
         </View>
-        <View style={styles.formSection}><SectionHeader title="Contact and address" />
-          <Controller control={vm.control} name="phone" render={({ field }) => <FormField testID="profile-input-phone" label="Phone" icon="call-outline" placeholder="Phone" keyboardType="phone-pad" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.phone?.message} />} />
-          <Controller control={vm.control} name="address" render={({ field }) => <FormField testID="profile-input-address" label="Address" icon="home-outline" placeholder="Address" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.address?.message} />} />
-          <Controller control={vm.control} name="city" render={({ field }) => <FormField testID="profile-input-city" label="City" icon="location-outline" placeholder="City" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.city?.message} />} />
-          <Controller control={vm.control} name="emergency_contact" render={({ field }) => <FormField testID="profile-input-emergency-contact" label="Emergency contact" icon="shield-outline" placeholder="Emergency contact" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.emergency_contact?.message} />} />
+        <View style={styles.formSection}><SectionHeader title={t('profile.sections.contactAddress')} />
+          <Controller control={vm.control} name="phone" render={({ field }) => <FormField testID="profile-input-phone" label={t('profile.fields.phone')} icon="call-outline" placeholder={t('profile.fields.phone')} keyboardType="phone-pad" value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.phone?.message} />} />
+          <Controller control={vm.control} name="address" render={({ field }) => <FormField testID="profile-input-address" label={t('profile.fields.address')} icon="home-outline" placeholder={t('profile.fields.address')} value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.address?.message} />} />
+          <Controller control={vm.control} name="city" render={({ field }) => <FormField testID="profile-input-city" label={t('profile.fields.city')} icon="location-outline" placeholder={t('profile.fields.city')} value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.city?.message} />} />
+          <Controller control={vm.control} name="emergency_contact" render={({ field }) => <FormField testID="profile-input-emergency-contact" label={t('profile.fields.emergencyContact')} icon="shield-outline" placeholder={t('profile.fields.emergencyContact')} value={field.value ?? ''} onChangeText={field.onChange} error={vm.errors.emergency_contact?.message} />} />
         </View>
-        <View style={styles.formSection}><SectionHeader title="Language" />
+        <View style={styles.formSection}><SectionHeader title={t('profile.sections.language')} />
           <Controller control={vm.control} name="preferred_language" render={({ field }) => (
             <View accessibilityRole="radiogroup" style={styles.languageOptions}>
               {languageOptions.map((option) => {

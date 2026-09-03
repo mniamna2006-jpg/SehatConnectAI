@@ -24,9 +24,9 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
   const t = useTranslations();
   const { hospital, isLoading, isError, refetch } = useHospitalDetailsViewModel(hospitalId);
   const [isNavigating, setIsNavigating] = useState(false);
-  if (isLoading) return <Screen><LoadingState label="Loading hospital profile…" /></Screen>;
+  if (isLoading) return <Screen><LoadingState label={t('hospitals.loadingProfile')} /></Screen>;
   if (isError) return <Screen><ErrorState onRetry={() => void refetch()} /></Screen>;
-  if (!hospital) return <Screen><EmptyState title="Hospital not found" message="This hospital profile is not available." icon="business-outline" /></Screen>;
+  if (!hospital) return <Screen><EmptyState title={t('hospitals.unavailableTitle')} message={t('hospitals.unavailableMessage')} icon="business-outline" /></Screen>;
 
   async function handleGetDirections() {
     if (!hospital) return;
@@ -47,13 +47,13 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <PageHeader title="Hospital Profile" />
+        <PageHeader title={t('hospitals.profileTitle')} />
         <View style={styles.hero}>
-          {hospital.cover_image_url ? <Image source={{ uri: hospital.cover_image_url }} style={StyleSheet.absoluteFill} contentFit="cover" transition={180} accessibilityLabel={`${hospital.name} building`} /> : null}
+          {hospital.cover_image_url ? <Image source={{ uri: hospital.cover_image_url }} style={StyleSheet.absoluteFill} contentFit="cover" transition={180} accessibilityLabel={`${hospital.name} ${t('hospitals.building')}`} /> : null}
           <View style={styles.scrim} />
           <View style={styles.heroTop}>
-            {hospital.logo_url ? <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" accessibilityLabel={`${hospital.name} logo`} /> : <View style={styles.logoFallback}><AppIcon name="business" color={colors.primary} size={29} /></View>}
-            {hospital.working_hours.some((item) => item.is_open) ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText}>Working hours available</Text></View> : null}
+            {hospital.logo_url ? <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" accessibilityLabel={`${hospital.name} ${t('hospitals.logo')}`} /> : <View style={styles.logoFallback}><AppIcon name="business" color={colors.primary} size={29} /></View>}
+            {hospital.working_hours.some((item) => item.is_open) ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText}>{t('hospitals.hoursAvailable')}</Text></View> : null}
           </View>
           <View>
             <Text accessibilityRole="header" testID="hospital-name" style={styles.heroName}>{hospital.name}</Text>
@@ -78,14 +78,14 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           </View>
         </View>
 
-        {hospital.description ? <View style={styles.about}><SectionHeader title="About" /><Text style={styles.aboutText}>{hospital.description}</Text></View> : null}
+        {hospital.description ? <View style={styles.about}><SectionHeader title={t('hospitals.about')} /><Text style={styles.aboutText}>{hospital.description}</Text></View> : null}
 
         {(hospital.phone || hospital.email) ? (
           <View style={styles.section}>
-            <SectionHeader title="Contact information" />
+            <SectionHeader title={t('hospitals.contactInformation')} />
             <View style={styles.contactPanel}>
-              {hospital.phone ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="call-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>Phone</Text><Text style={styles.contactValue}>{hospital.phone}</Text></View></View> : null}
-              {hospital.email ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="mail-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>Email</Text><Text style={styles.contactValue}>{hospital.email}</Text></View></View> : null}
+              {hospital.phone ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="call-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>{t('hospitals.phone')}</Text><Text style={styles.contactValue}>{hospital.phone}</Text></View></View> : null}
+              {hospital.email ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="mail-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>{t('hospitals.email')}</Text><Text style={styles.contactValue}>{hospital.email}</Text></View></View> : null}
             </View>
           </View>
         ) : null}
@@ -100,7 +100,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                   {item.is_open ? (
                     <>
                       <Text style={styles.time}>{displayTime12h(item.opening_time_12h, item.opening_time)}</Text>
-                      <Text style={styles.timeMuted}>to {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
+                      <Text style={styles.timeMuted}>{t('common.to')} {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
                     </>
                   ) : <Text style={styles.time}>{t('common.closed')}</Text>}
                 </View>
@@ -111,7 +111,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
 
         {hospital.departments.length > 0 ? (
           <View testID="hospital-departments-section" style={styles.section}>
-            <SectionHeader title={t('hospitals.departmentsTitle')} detail={`${hospital.departments.length} available`} />
+            <SectionHeader title={t('hospitals.departmentsTitle')} detail={`${hospital.departments.length} ${t('common.available')}`} />
             <View testID="hospital-departments-list" style={styles.departmentGrid}>
               {hospital.departments.map((item) => (
                 <Link key={item.department_id} href={`/find-department?hospitalId=${hospitalId}&departmentId=${item.department_id}`} asChild>
@@ -128,7 +128,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
 
         {hospital.doctors.length > 0 ? (
           <View testID="hospital-doctors-section" style={styles.section}>
-            <SectionHeader title={t('hospitals.doctorsTitle')} detail={`${hospital.doctors.length} available`} />
+            <SectionHeader title={t('hospitals.doctorsTitle')} detail={`${hospital.doctors.length} ${t('common.available')}`} />
             <View testID="hospital-doctors-list" style={styles.doctorList}>
               {hospital.doctors.map((item) => (
                 <DoctorCard

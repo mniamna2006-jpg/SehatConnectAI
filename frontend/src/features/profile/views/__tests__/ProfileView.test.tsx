@@ -65,7 +65,7 @@ test('supports edit, preferred language, save, and cancel while email stays read
 
   await fireEvent.press(screen.getByRole('button', { name: 'Edit profile' }));
 
-  expect(screen.getByLabelText('Full name')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Full Name')).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'English', selected: true })).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'اردو' })).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'Roman Urdu' })).toBeOnTheScreen();

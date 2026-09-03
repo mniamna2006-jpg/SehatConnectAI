@@ -212,7 +212,9 @@
     "about": "About",
     "contactInformation": "Contact information",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "logo": "logo",
+    "building": "building"
   },
   "doctors": {
     "findTitle": "Find Doctor",

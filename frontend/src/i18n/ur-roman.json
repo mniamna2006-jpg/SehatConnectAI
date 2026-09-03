@@ -212,7 +212,9 @@
     "about": "Taaruf",
     "contactInformation": "Rabta ki maloomat",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "logo": "logo",
+    "building": "building"
   },
   "doctors": {
     "findTitle": "Doctor Talash Karein",

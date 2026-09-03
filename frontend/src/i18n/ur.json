@@ -212,7 +212,9 @@
     "about": "تعارف",
     "contactInformation": "رابطے کی معلومات",
     "phone": "فون",
-    "email": "ای میل"
+    "email": "ای میل",
+    "logo": "لوگو",
+    "building": "عمارت"
   },
   "doctors": {
     "findTitle": "ڈاکٹر تلاش کریں",
