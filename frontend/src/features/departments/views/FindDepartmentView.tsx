@@ -62,7 +62,7 @@ export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentV
                 style={[styles.tile, selected && styles.tileSelected]}
               >
                 <View style={[styles.tileIcon, selected && styles.tileIconSelected]}><AppIcon name={DEPARTMENT_ICONS[index % DEPARTMENT_ICONS.length]} color={selected ? colors.surface : colors.primary} size={25} /></View>
-                <Text style={styles.tileTitle}>{item.name}</Text>
+                <Text style={styles.tileTitle} numberOfLines={2}>{item.name}</Text>
                 {item.description ? <Text numberOfLines={2} style={styles.tileDescription}>{item.description}</Text> : <Text style={styles.tileDescription}>View available doctors</Text>}
                 <View style={styles.tileArrow}><AppIcon name="arrow-forward" color={colors.primary} size={18} /></View>
               </PressableSurface>

@@ -76,9 +76,7 @@ test('a 401 clears the token, user, and private query cache', async () => {
     await result.current.login({ email: 'b@b.com', password: 'secret1' });
   });
   testQueryClient.setQueryDefaults(['private'], { gcTime: Infinity });
-  testQueryClient.setQueryDefaults(['admin', 'dashboard'], { gcTime: Infinity });
   testQueryClient.setQueryData(['private'], 'secret');
-  testQueryClient.setQueryData(['admin', 'dashboard'], 'hospital-secret');
   global.fetch = jest.fn().mockResolvedValue({
     ok: false,
     status: 401,
@@ -92,5 +90,4 @@ test('a 401 clears the token, user, and private query cache', async () => {
   expect(secureStore.clearToken).toHaveBeenCalled();
   expect(result.current.user).toBeNull();
   expect(testQueryClient.getQueryData(['private'])).toBeUndefined();
-  expect(testQueryClient.getQueryData(['admin', 'dashboard'])).toBe('hospital-secret');
 });

@@ -2,10 +2,12 @@ import type { ReactNode } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import { useHospitalDetailsViewModel } from '../../viewmodels/useHospitalDetailsViewModel';
+import { useDoctorAvailabilitySubscription } from '../../../doctors/viewmodels/useDoctorAvailabilitySubscription';
 import { openHospitalNavigation } from '../../../../core/navigation/openHospitalNavigation';
 import { HospitalDetailsView } from '../HospitalDetailsView';
 
 jest.mock('../../viewmodels/useHospitalDetailsViewModel');
+jest.mock('../../../doctors/viewmodels/useDoctorAvailabilitySubscription');
 jest.mock('../../../../core/navigation/openHospitalNavigation');
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => {
@@ -21,6 +23,16 @@ jest.mock('expo-router', () => {
 beforeEach(() => jest.clearAllMocks());
 
 test('renders supported hospital profile, departments, doctors, and 12-hour timing', async () => {
+  (useDoctorAvailabilitySubscription as jest.Mock).mockReturnValue({
+    subscribed: false,
+    isLoading: false,
+    isError: false,
+    isUpdating: false,
+    hasMutationError: false,
+    canManageAlert: false,
+    toggleAlert: jest.fn(),
+    refetch: jest.fn(),
+  });
   (useHospitalDetailsViewModel as jest.Mock).mockReturnValue({
     hospital: {
       hospital_id: 'h1',
@@ -38,7 +50,7 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
         is_open: true,
       }],
       departments: [{ department_id: 'dep1', name: 'Cardiology' }],
-      doctors: [{ doctor_id: 'd1', name: 'Dr. Ali', specialization: 'Cardiology', is_available: true }],
+      doctors: [{ doctor_id: 'd1', name: 'Dr. Ali', specialization: 'Cardiology' }],
     },
     isLoading: false,
     isError: false,
@@ -55,7 +67,6 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
   expect(screen.getByText('to 5:00 PM')).toBeOnTheScreen();
   expect(screen.getAllByText('Cardiology')).not.toHaveLength(0);
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
-  expect(screen.getByText('Available')).toBeOnTheScreen();
   expect(screen.queryByText(/rating|review|statistic/i)).not.toBeOnTheScreen();
 
   await fireEvent.press(screen.getByRole('button', { name: 'Go back' }));

@@ -42,5 +42,8 @@ export interface QueueEntry {
   appointment?: {
     appointment_time: string;
     appointment_time_12h?: string;
+    doctor?: { name: string };
+    hospital?: { name: string };
+    department?: { name: string };
   };
 }

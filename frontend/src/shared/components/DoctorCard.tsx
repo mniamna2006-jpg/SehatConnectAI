@@ -77,7 +77,7 @@ export function DoctorCard({
       ) : null}
       {availabilityAction}
       <View style={styles.footer}>
-        {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <Text style={styles.unavailable}>{t('doctors.scheduleUnavailable')}</Text>}
+        {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <View style={styles.footerSpacer} />}
         <Link href={bookingHref} asChild>
           <AppButton label={t('common.bookAppointment')} style={styles.bookButton} />
         </Link>
@@ -106,6 +106,6 @@ const styles = StyleSheet.create({
   availabilityText: { ...typography.metadata, color: colors.inkSoft },
   footer: { minHeight: 44, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   availableLabel: { ...typography.metadata, color: colors.muted },
-  unavailable: { ...typography.metadata, color: colors.muted, flex: 1 },
+  footerSpacer: { flex: 1 },
   bookButton: { minHeight: 44, minWidth: 142, borderRadius: radius.md },
 });

@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react-native';
+import { useDoctorAvailabilitySubscription } from '../../../doctors/viewmodels/useDoctorAvailabilitySubscription';
 import { useDepartmentDoctorsViewModel } from '../../viewmodels/useDepartmentDoctorsViewModel';
 import { DepartmentDoctorsView } from '../DepartmentDoctorsView';
 
 jest.mock('../../viewmodels/useDepartmentDoctorsViewModel');
+jest.mock('../../../doctors/viewmodels/useDoctorAvailabilitySubscription');
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
 jest.mock('expo-router', () => {
   const mockReact = require('react');
@@ -14,7 +16,17 @@ jest.mock('expo-router', () => {
   };
 });
 
-test('shows persisted availability in department doctor results', async () => {
+test('shows department doctor results', async () => {
+  (useDoctorAvailabilitySubscription as jest.Mock).mockReturnValue({
+    subscribed: false,
+    isLoading: false,
+    isError: false,
+    isUpdating: false,
+    hasMutationError: false,
+    canManageAlert: false,
+    toggleAlert: jest.fn(),
+    refetch: jest.fn(),
+  });
   (useDepartmentDoctorsViewModel as jest.Mock).mockReturnValue({
     doctors: [{
       doctor_id: 'd1',
@@ -23,7 +35,6 @@ test('shows persisted availability in department doctor results', async () => {
       name: 'Dr. Ali',
       specialization: 'Cardiology',
       is_active: true,
-      is_available: true,
     }],
     isLoading: false,
     isError: false,
@@ -33,5 +44,6 @@ test('shows persisted availability in department doctor results', async () => {
   await render(<DepartmentDoctorsView departmentId="dep1" />);
 
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
-  expect(screen.getByText('Available')).toBeOnTheScreen();
+  expect(screen.getByText('Cardiology')).toBeOnTheScreen();
+  expect(screen.queryByText('Specialist care team')).not.toBeOnTheScreen();
 });

@@ -1,4 +1,4 @@
-import { formatDateLabel, formatDateTimeLabel } from '../formatters';
+import { formatDateLabel, formatDateTimeLabel, formatHumanDate } from '../formatters';
 
 describe('formatDateLabel', () => {
   test('formats a backend ISO timestamp as its appointment calendar date', () => {
@@ -7,6 +7,20 @@ describe('formatDateLabel', () => {
 
   test('formats a date-only value without a timezone shift', () => {
     expect(formatDateLabel('2026-08-31')).toBe('Aug 31, 2026');
+  });
+});
+
+describe('formatHumanDate', () => {
+  test('formats a stored date of birth as a readable day-month-year label', () => {
+    expect(formatHumanDate('1995-08-14')).toBe('14 Aug 1995');
+  });
+
+  test('falls back to the raw value when it cannot be parsed', () => {
+    expect(formatHumanDate('not-a-date')).toBe('not-a-date');
+  });
+
+  test('returns empty string for an absent value', () => {
+    expect(formatHumanDate(undefined)).toBe('');
   });
 });
 

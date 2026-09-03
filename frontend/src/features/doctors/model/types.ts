@@ -21,7 +21,6 @@ export interface Doctor {
   qualification?: string | null;
   consultation_fee?: number | string | null;
   is_active: boolean;
-  is_available: boolean;
 }
 
 export interface DoctorAvailabilitySubscription {

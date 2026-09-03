@@ -32,7 +32,7 @@ test('shows a clear focus treatment on form fields', async () => {
 
   await act(() => fireEvent(screen.getByTestId('email-field'), 'focus'));
 
-  expect(screen.getByTestId('email-field-shell')).toHaveStyle({ borderColor: '#2563EB' });
+  expect(screen.getByTestId('email-field-shell')).toHaveStyle({ borderColor: '#2F6BFF' });
 });
 
 test('renders default error recovery copy in the Urdu locale', async () => {

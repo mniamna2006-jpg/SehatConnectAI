@@ -1,9 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
+import { useDoctorAvailabilitySubscription } from '../../viewmodels/useDoctorAvailabilitySubscription';
 import { useFindDoctorViewModel } from '../../viewmodels/useFindDoctorViewModel';
 import { FindDoctorView } from '../FindDoctorView';
 
 jest.mock('../../viewmodels/useFindDoctorViewModel');
+jest.mock('../../viewmodels/useDoctorAvailabilitySubscription');
 jest.mock('expo-router', () => {
   const mockReact = require('react');
   const { View: MockView } = require('react-native');
@@ -18,6 +20,16 @@ jest.mock('expo-router', () => {
 });
 
 test('shows each doctor hospital, available schedule, and booking action', async () => {
+  (useDoctorAvailabilitySubscription as jest.Mock).mockReturnValue({
+    subscribed: false,
+    isLoading: false,
+    isError: false,
+    isUpdating: false,
+    hasMutationError: false,
+    canManageAlert: false,
+    toggleAlert: jest.fn(),
+    refetch: jest.fn(),
+  });
   (useFindDoctorViewModel as jest.Mock).mockReturnValue({
     doctors: [
       {
@@ -27,7 +39,6 @@ test('shows each doctor hospital, available schedule, and booking action', async
         name: 'Dr. Ali',
         specialization: 'Cardiology',
         is_active: true,
-        is_available: true,
         hospital: { hospital_id: 'h1', name: 'City Hospital' },
         department: { department_id: 'dep1', name: 'Cardiology' },
         schedules: [
@@ -62,7 +73,6 @@ test('shows each doctor hospital, available schedule, and booking action', async
   await render(<FindDoctorView />);
 
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
-  expect(screen.getByText('Available')).toBeOnTheScreen();
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
   expect(screen.getByText('MONDAY')).toBeOnTheScreen();
   expect(screen.getByText('Available Timings')).toBeOnTheScreen();

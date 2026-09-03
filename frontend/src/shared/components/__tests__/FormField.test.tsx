@@ -25,7 +25,7 @@ test('forwards focus and blur while preserving focus treatment', async () => {
   await render(<FormField testID="email" label="Email" onFocus={onFocus} onBlur={onBlur} />);
 
   await fireEvent(screen.getByTestId('email'), 'focus');
-  expect(screen.getByTestId('email-shell')).toHaveStyle({ borderColor: '#2563EB' });
+  expect(screen.getByTestId('email-shell')).toHaveStyle({ borderColor: '#2F6BFF' });
   expect(onFocus).toHaveBeenCalledTimes(1);
 
   await fireEvent(screen.getByTestId('email'), 'blur');

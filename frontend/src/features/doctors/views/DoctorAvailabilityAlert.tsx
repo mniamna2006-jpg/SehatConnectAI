@@ -6,15 +6,13 @@ import { useDoctorAvailabilitySubscription } from '../viewmodels/useDoctorAvaila
 
 interface DoctorAvailabilityAlertProps {
   doctorId: string;
-  isAvailable: boolean;
 }
 
 export function DoctorAvailabilityAlert({
   doctorId,
-  isAvailable,
 }: DoctorAvailabilityAlertProps) {
   const t = useTranslations();
-  const viewModel = useDoctorAvailabilitySubscription(doctorId, isAvailable);
+  const viewModel = useDoctorAvailabilitySubscription(doctorId);
 
   if (!viewModel.canManageAlert) return null;
 

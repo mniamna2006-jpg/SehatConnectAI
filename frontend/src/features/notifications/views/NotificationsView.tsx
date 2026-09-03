@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   markAllText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
   pressed: { opacity: 0.75 },
   card: { minHeight: 48, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 15, flexDirection: 'row', gap: 13, borderWidth: 1, borderColor: colors.line },
-  cardUnread: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
+  cardUnread: { backgroundColor: colors.primarySoft },
   iconBox: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, gap: 3 },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },

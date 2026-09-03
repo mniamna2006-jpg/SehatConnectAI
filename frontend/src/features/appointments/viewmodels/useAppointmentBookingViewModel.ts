@@ -148,8 +148,9 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   const onSubmit = handleSubmit(async (values) => {
     setBookingError(null);
     setBookingSuccess(null);
+    const reason = values.reason?.trim();
     try {
-      await mutation.mutateAsync(values);
+      await mutation.mutateAsync({ ...values, reason: reason ? reason : undefined });
     } catch (error) {
       setBookingError(
         error instanceof ApiError && error.status === 400

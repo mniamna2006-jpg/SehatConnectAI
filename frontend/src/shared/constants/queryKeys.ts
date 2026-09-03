@@ -18,25 +18,4 @@ export const queryKeys = {
   unreadNotificationCount: ['notifications', 'unread-count'] as const,
   aiHistory: ['ai', 'history'] as const,
   aiConversation: (id: string) => ['ai', 'history', id] as const,
-
-  hospitalMe: ['hospitalAuth', 'me'] as const,
-
-  adminDashboard: ['admin', 'dashboard'] as const,
-  adminHospitalProfile: (hospitalId: string) => ['admin', 'hospital', hospitalId] as const,
-  adminDepartments: (hospitalId: string) => ['admin', 'departments', hospitalId] as const,
-  adminDoctors: (hospitalId: string) => ['admin', 'doctors', hospitalId] as const,
-  adminDoctorSchedules: (doctorId: string) => ['admin', 'schedules', doctorId] as const,
-  adminStaff: (hospitalId: string) => ['admin', 'staff', hospitalId] as const,
-  adminInvitations: (hospitalId: string) => ['admin', 'invitations', hospitalId] as const,
-  adminAnalytics: ['admin', 'analytics'] as const,
-
-  staffDashboard: ['staff', 'dashboard'] as const,
-  staffTodayAppointments: ['staff', 'appointments', 'today'] as const,
-  staffQueue: ['staff', 'queue'] as const,
 };
-
-const hospitalQueryRoots = new Set<unknown>(['hospitalAuth', 'admin', 'staff']);
-
-export function isHospitalQueryKey(queryKey: readonly unknown[]): boolean {
-  return hospitalQueryRoots.has(queryKey[0]);
-}

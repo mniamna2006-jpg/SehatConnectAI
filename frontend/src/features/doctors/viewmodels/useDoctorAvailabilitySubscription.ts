@@ -6,17 +6,15 @@ import {
   unsubscribeFromDoctorAvailability,
 } from '../model/api';
 
-export function useDoctorAvailabilitySubscription(
-  doctorId: string,
-  isAvailable: boolean
-) {
+// Doctor list/detail endpoints never return `is_available` (see DATA_CONTRACTS.md) —
+// this per-doctor endpoint is the only source of truth, so it must always be queried.
+export function useDoctorAvailabilitySubscription(doctorId: string) {
   const queryClient = useQueryClient();
-  const canManageAlert = !isAvailable;
   const queryKey = queryKeys.doctorAvailabilitySubscription(doctorId);
   const subscriptionQuery = useQuery({
     queryKey,
     queryFn: () => getDoctorAvailabilitySubscription(doctorId),
-    enabled: doctorId.length > 0 && canManageAlert,
+    enabled: doctorId.length > 0,
   });
 
   const mutation = useMutation({
@@ -28,6 +26,7 @@ export function useDoctorAvailabilitySubscription(
     },
   });
 
+  const canManageAlert = subscriptionQuery.data?.is_available === false;
   const subscribed = subscriptionQuery.data?.subscribed ?? false;
   const toggleAlert = () => {
     if (!canManageAlert || subscriptionQuery.data === undefined || mutation.isPending) return;
