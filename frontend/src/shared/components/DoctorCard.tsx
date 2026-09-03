@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   mainRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   copy: { flex: 1, gap: 2 },
   name: { ...typography.entityTitle, color: colors.ink },
-  specialty: { ...typography.body, color: colors.primary, fontWeight: '600' },
+  specialty: { ...typography.body, color: colors.primaryPressed, fontWeight: '600' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
   metaText: { ...typography.metadata, color: colors.muted, flex: 1 },
   statusRow: { minHeight: 24, flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },

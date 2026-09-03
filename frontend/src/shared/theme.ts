@@ -4,20 +4,27 @@ export const colors = {
   surfaceMuted: '#EEF1F5',
   ink: '#0E1B2A',
   inkSoft: '#11345A',
-  muted: '#6E7888',
-  faint: '#9AA3B2',
+  // Recalculated for WCAG AA (4.5:1 normal text) against surface/canvas/surfaceMuted — was #6E7888 at 3.94:1 on surfaceMuted.
+  muted: '#5B6472',
+  // Decorative/placeholder only (never body text) — recalculated for 3:1 non-text contrast, was #9AA3B2 at 2.5:1.
+  faint: '#7C8797',
   line: '#E7EAF0',
   primary: '#2F6BFF',
   primaryPressed: '#2554CC',
   primarySoft: '#EDF4FF',
   secondary: '#149F91',
   teal: '#149F91',
+  // Text-only variant of teal (icons/backgrounds keep the brighter `teal`) — #149F91 as text is 3.28:1, fails AA.
+  tealText: '#0B6F65',
   tealSoft: '#EAF8F5',
-  danger: '#D85B63',
+  // Recalculated for 4.5:1 on surface/canvas/dangerSoft — was #D85B63 at 3.75:1.
+  danger: '#BE3A43',
   dangerSoft: '#FBECED',
-  warning: '#B7791F',
+  // Recalculated for 4.5:1 on surface/canvas/warningSoft — was #B7791F at 3.64:1.
+  warning: '#8F5C12',
   warningSoft: '#FFF7E8',
-  success: '#198A68',
+  // Recalculated for 4.5:1 on surface/canvas/successSoft — was #198A68 at 4.31:1.
+  success: '#0F7A5A',
   successSoft: '#E7F5EF',
 } as const;
 

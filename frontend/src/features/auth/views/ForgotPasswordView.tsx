@@ -25,5 +25,5 @@ export function ForgotPasswordView() {
 const styles = StyleSheet.create({
   supportIcon: { width: 64, height: 64, borderRadius: radius.lg, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
   message: { ...typography.body, color: colors.inkSoft, backgroundColor: colors.primarySoft, borderRadius: radius.md, padding: 18 },
-  backLink: { ...typography.body, color: colors.primary, fontWeight: '700' },
+  backLink: { ...typography.body, color: colors.primaryPressed, fontWeight: '700' },
 });

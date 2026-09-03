@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   headerWrap: { gap: 8 },
   separator: { height: 12 },
   markAll: { minHeight: 48, justifyContent: 'center', paddingHorizontal: 4 },
-  markAllText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
+  markAllText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700' },
   pressed: { opacity: 0.75 },
   card: { minHeight: 48, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 15, flexDirection: 'row', gap: 13, borderWidth: 1, borderColor: colors.line },
   cardUnread: { backgroundColor: colors.primarySoft },

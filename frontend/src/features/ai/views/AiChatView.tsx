@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   recommendationTitle: { ...typography.entityTitle, color: colors.ink },
   recommendationMeta: { ...typography.metadata, color: colors.muted },
   recommendationAction: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6, minHeight: 32 },
-  recommendationActionText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
+  recommendationActionText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700' },
   doctorList: { maxWidth: '90%', gap: 8 },
   doctorCard: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: 12, gap: 2 },
   doctorName: { ...typography.entityTitle, color: colors.ink, fontSize: 15 },

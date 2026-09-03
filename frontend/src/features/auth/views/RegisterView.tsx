@@ -98,10 +98,10 @@ const styles = StyleSheet.create({
   languageOption: { minHeight: 50, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   languageOptionSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
   languageLabel: { ...typography.body, color: colors.inkSoft, fontWeight: '600' },
-  languageLabelSelected: { color: colors.primary, fontWeight: '700' },
+  languageLabelSelected: { color: colors.primaryPressed, fontWeight: '700' },
   error: { ...typography.metadata, color: colors.danger },
   pressed: { opacity: 0.78 },
   loginRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 5 },
   footerText: { ...typography.body, color: colors.muted },
-  link: { ...typography.body, color: colors.primary, fontWeight: '700' },
+  link: { ...typography.body, color: colors.primaryPressed, fontWeight: '700' },
 });

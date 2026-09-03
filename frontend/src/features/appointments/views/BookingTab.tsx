@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   entityIcon: { width: 40, height: 40, borderRadius: 13, backgroundColor: colors.tealSoft, alignItems: 'center', justifyContent: 'center' },
   entityIconSelected: { backgroundColor: colors.primary },
   entityName: { ...typography.body, color: colors.ink, fontWeight: '700', flex: 1 },
-  entityNameSelected: { color: colors.primary },
+  entityNameSelected: { color: colors.primaryPressed },
   inlineEmpty: { ...typography.body, color: colors.muted, paddingVertical: 8 },
   departmentGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   departmentOption: { width: '48%', minHeight: 90, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, padding: 13, gap: 10 },

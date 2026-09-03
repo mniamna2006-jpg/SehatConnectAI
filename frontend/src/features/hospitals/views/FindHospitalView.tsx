@@ -78,5 +78,5 @@ const styles = StyleSheet.create({
   name: { ...typography.entityTitle, color: colors.ink },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   meta: { ...typography.metadata, color: colors.muted, flex: 1 },
-  distance: { ...typography.metadata, color: colors.teal, fontWeight: '700' },
+  distance: { ...typography.metadata, color: colors.tealText, fontWeight: '700' },
 });
