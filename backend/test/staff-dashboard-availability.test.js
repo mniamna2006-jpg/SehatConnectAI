@@ -39,6 +39,11 @@ test("staff available-today count excludes inactive and temporarily unavailable 
     department: { count: async () => 0 },
   };
   const harness = createExpressMock();
+  const authorizeRoles = (...roles) => {
+    const middleware = (_req, _res, next) => next();
+    middleware.allowedRoles = roles;
+    return middleware;
+  };
   loadFreshWithMocks(routePath, {
     express: harness.express,
     bcryptjs: { hash: async () => "hash" },
@@ -46,7 +51,7 @@ test("staff available-today count excludes inactive and temporarily unavailable 
     "../config/prisma": prisma,
     "../middleware/auth.middleware": {
       authenticateToken: (_req, _res, next) => next(),
-      authorizeRoles: () => (_req, _res, next) => next(),
+      authorizeRoles,
     },
     "../utils/date.helpers": {
       getPakistanDate: () => new Date("2026-09-03T00:00:00.000Z"),
@@ -57,7 +62,13 @@ test("staff available-today count excludes inactive and temporarily unavailable 
   });
   const response = createResponse();
 
-  await harness.findRoute("GET", "/dashboard").handlers.at(-1)(
+  const dashboardRoute = harness.findRoute("GET", "/dashboard");
+  const todayRoute = harness.findRoute("GET", "/appointments/today");
+
+  assert.deepEqual(dashboardRoute.handlers[1].allowedRoles, ["STAFF"]);
+  assert.deepEqual(todayRoute.handlers[1].allowedRoles, ["STAFF"]);
+
+  await dashboardRoute.handlers.at(-1)(
     { user: { user_id: "staff-user-1", role: "STAFF" } },
     response
   );

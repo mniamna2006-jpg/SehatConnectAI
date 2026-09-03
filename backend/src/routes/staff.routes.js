@@ -43,7 +43,7 @@ const router = express.Router();
 router.get(
   "/dashboard",
   authenticateToken,
-  authorizeRoles("STAFF", "ADMIN"),
+  authorizeRoles("STAFF"),
   async (req, res) => {
     try {
       // Resolve the staff member's hospital from the authenticated user
@@ -264,7 +264,7 @@ router.get(
 router.get(
   "/appointments/today",
   authenticateToken,
-  authorizeRoles("STAFF", "ADMIN"),
+  authorizeRoles("STAFF"),
   async (req, res) => {
     try {
       // Resolve the staff member's hospital from the authenticated user
