@@ -16,6 +16,7 @@
     "emptyTitle": "Nothing here yet",
     "goBack": "Go back",
     "notProvided": "Not provided",
+    "detailsUnavailable": "Details unavailable",
     "found": "found",
     "available": "available",
     "selected": "Selected",
@@ -346,6 +347,7 @@
     "emptyTitle": "No notifications",
     "emptyMessage": "You're all caught up. New updates will appear here.",
     "errorMessage": "We couldn't load your notifications.",
+    "mutationError": "We couldn't update that. Please try again.",
     "unread": "Unread"
   },
   "ai": {
@@ -371,6 +373,7 @@
       "emptyTitle": "No conversations yet",
       "emptyMessage": "Start a chat with the AI Assistant to see it here.",
       "errorMessage": "We couldn't load your history.",
+      "deleteError": "We couldn't delete that conversation. Please try again.",
       "deleteConfirmTitle": "Delete conversation?",
       "deleteConfirmMessage": "This will permanently remove this conversation and its messages.",
       "delete": "Delete",

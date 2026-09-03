@@ -123,6 +123,17 @@ test('pressing mark all as read calls onMarkAllRead', async () => {
   expect(vm.onMarkAllRead).toHaveBeenCalled();
 });
 
+test('shows a visible error when a mark-read mutation failed, instead of failing silently', async () => {
+  (useNotificationsViewModel as jest.Mock).mockReturnValue({
+    ...baseVm,
+    notifications: [notification()],
+    hasMutationError: true,
+  });
+  await render(<NotificationsView />);
+
+  expect(screen.getByText("We couldn't update that. Please try again.")).toBeOnTheScreen();
+});
+
 test('distinguishes unread from read notifications for accessibility', async () => {
   (useNotificationsViewModel as jest.Mock).mockReturnValue({
     ...baseVm,

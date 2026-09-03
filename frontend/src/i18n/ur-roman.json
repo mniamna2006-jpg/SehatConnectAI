@@ -16,6 +16,7 @@
     "emptyTitle": "Abhi yahan kuch nahi",
     "goBack": "Wapas jayein",
     "notProvided": "Maloomat mojood nahi",
+    "detailsUnavailable": "Tafseelat dastyab nahi",
     "found": "milay",
     "available": "dastyab",
     "selected": "Muntakhib",
@@ -346,6 +347,7 @@
     "emptyTitle": "Koi notification nahi",
     "emptyMessage": "Aap bilkul up to date hain. Nai updates yahan nazar aayen gi.",
     "errorMessage": "Hum aap ki notifications load nahi kar sakay.",
+    "mutationError": "Hum yeh update nahi kar sakay. Dobara koshish karein.",
     "unread": "Ghair parha hua"
   },
   "ai": {
@@ -371,6 +373,7 @@
       "emptyTitle": "Abhi tak koi guftagu nahi",
       "emptyMessage": "AI Assistant kay sath baat cheet shuru karein taakay yahan nazar aaye.",
       "errorMessage": "Hum aap ki history load nahi kar sakay.",
+      "deleteError": "Hum yeh guftagu delete nahi kar sakay. Dobara koshish karein.",
       "deleteConfirmTitle": "Guftagu delete karein?",
       "deleteConfirmMessage": "Yeh guftagu aur iskay paigham hamesha kay liye delete ho jayen gay.",
       "delete": "Delete karein",
