@@ -40,8 +40,8 @@ export function QueueTab() {
             <View style={styles.statusBadge}><View style={styles.statusDot} /><Text style={styles.statusText}>{item.queue_status.replaceAll('_', ' ')}</Text></View>
           </View>
           <View style={styles.detailsPanel}>
-            <DetailRow icon="medkit-outline" label="Doctor reference" value={item.doctor_id} />
-            <DetailRow icon="business-outline" label="Hospital reference" value={item.hospital_id} />
+            {item.appointment?.doctor?.name ? <DetailRow icon="medkit-outline" label="Doctor" value={item.appointment.doctor.name} /> : null}
+            {item.appointment?.hospital?.name ? <DetailRow icon="business-outline" label="Hospital" value={item.appointment.hospital.name} /> : null}
             {item.appointment ? <DetailRow icon="time-outline" label="Appointment time" value={displayTime12h(item.appointment.appointment_time_12h, item.appointment.appointment_time)} /> : null}
             {item.estimated_wait_time !== undefined ? <DetailRow icon="hourglass-outline" label="Estimated wait" value={`${item.estimated_wait_time} minutes`} /> : null}
           </View>
