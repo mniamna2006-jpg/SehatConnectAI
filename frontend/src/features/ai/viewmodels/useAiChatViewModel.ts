@@ -15,7 +15,7 @@ export interface ChatMessage {
 
 export function useAiChatViewModel(initialConversationId?: string) {
   const queryClient = useQueryClient();
-  const { locale } = useLocale();
+  const { locale, t } = useLocale();
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -69,7 +69,7 @@ export function useAiChatViewModel(initialConversationId?: string) {
     try {
       await mutation.mutateAsync(trimmed);
     } catch {
-      setSendError("We couldn't send that. Please try again.");
+      setSendError(t('ai.chat.errorMessage'));
     }
   };
 

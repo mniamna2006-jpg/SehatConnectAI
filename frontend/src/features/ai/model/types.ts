@@ -14,8 +14,8 @@ export interface RecommendedDoctor {
   doctor_id: string;
   name: string;
   specialization: string;
-  qualification: string;
-  consultation_fee: number;
+  qualification: string | null;
+  consultation_fee: number | string | null;
   department_id: string;
   department_name: string;
   hospital_id: string;

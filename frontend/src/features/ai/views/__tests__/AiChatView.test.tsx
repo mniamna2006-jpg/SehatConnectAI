@@ -99,6 +99,39 @@ test('renders recommended doctors as informational cards without navigation', as
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
 });
 
+test('handles nullable doctor recommendation fields without fake fee copy', async () => {
+  (useAiChatViewModel as jest.Mock).mockReturnValue({
+    ...baseVm,
+    messages: [
+      {
+        id: '1',
+        sender: 'AI',
+        text: 'See Cardiology.',
+        is_emergency: false,
+        recommendation: {
+          recommended_department: null,
+          doctors: [{
+            doctor_id: 'doc1',
+            name: 'Dr. Ali',
+            specialization: 'Cardiologist',
+            qualification: null,
+            consultation_fee: null,
+            department_id: 'd1',
+            department_name: 'Cardiology',
+            hospital_id: 'h1',
+            hospital_name: 'City Hospital',
+            city: 'Lahore',
+          }],
+        },
+      },
+    ],
+  });
+  await render(<AiChatView />);
+
+  expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
+  expect(screen.queryByText(/Consultation fee/)).not.toBeOnTheScreen();
+});
+
 test('sending calls onSend and disables the button while empty', async () => {
   const vm = { ...baseVm, input: 'hello' };
   (useAiChatViewModel as jest.Mock).mockReturnValue(vm);

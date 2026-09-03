@@ -20,9 +20,9 @@ export interface Hospital {
   email?: string;
   address?: string;
   city?: string;
-  latitude?: number;
-  longitude?: number;
-  distance_km?: number;
+  latitude?: number | string;
+  longitude?: number | string;
+  distance_km?: number | string;
 }
 
 export interface HospitalDetail extends Hospital {

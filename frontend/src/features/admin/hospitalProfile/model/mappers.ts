@@ -30,8 +30,8 @@ export function buildHospitalProfilePatch(
   const city = values.city.trim();
   if (city !== hospital.city) patch.city = city;
 
-  if (values.latitude !== hospital.latitude) patch.latitude = values.latitude;
-  if (values.longitude !== hospital.longitude) patch.longitude = values.longitude;
+  if (values.latitude !== Number(hospital.latitude)) patch.latitude = values.latitude;
+  if (values.longitude !== Number(hospital.longitude)) patch.longitude = values.longitude;
 
   return patch;
 }

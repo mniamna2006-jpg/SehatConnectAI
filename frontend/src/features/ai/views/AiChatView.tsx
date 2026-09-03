@@ -84,7 +84,9 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
                     <View key={doctor.doctor_id} style={styles.doctorCard}>
                       <Text style={styles.doctorName}>{doctor.name}</Text>
                       <Text style={styles.doctorMeta}>{doctor.specialization} · {doctor.hospital_name}</Text>
-                      <Text style={styles.doctorFee}>{t('ai.chat.consultationFee')}: {doctor.consultation_fee}</Text>
+                      {doctor.consultation_fee !== null ? (
+                        <Text style={styles.doctorFee}>{t('ai.chat.consultationFee')}: {doctor.consultation_fee}</Text>
+                      ) : null}
                     </View>
                   ))}
                 </View>

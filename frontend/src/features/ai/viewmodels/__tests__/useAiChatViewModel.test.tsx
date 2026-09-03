@@ -7,7 +7,11 @@ import { useAiChatViewModel } from '../useAiChatViewModel';
 
 jest.mock('../../model/api');
 jest.mock('../../../../providers/LocaleProvider', () => ({
-  useLocale: () => ({ locale: 'ENGLISH', isRTL: false }),
+  useLocale: () => ({
+    locale: 'ENGLISH',
+    isRTL: false,
+    t: (key: string) => (key === 'ai.chat.errorMessage' ? 'Localized AI send error' : key),
+  }),
 }));
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -89,7 +93,7 @@ test('keeps the typed input and reports an error when sending fails', async () =
   });
 
   expect(result.current.input).toBe('I have chest pain');
-  expect(result.current.sendError).toBeTruthy();
+  expect(result.current.sendError).toBe('Localized AI send error');
   expect(result.current.messages).toHaveLength(0);
 });
 

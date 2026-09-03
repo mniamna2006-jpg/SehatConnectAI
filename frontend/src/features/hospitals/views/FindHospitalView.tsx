@@ -20,6 +20,12 @@ function HospitalLogo({ hospital }: { hospital: Hospital }) {
   return <View accessibilityLabel={`${hospital.name} logo`} accessibilityRole="image" style={styles.logoFallback}><AppIcon name="business" color={colors.teal} size={24} /></View>;
 }
 
+function formatDistance(distance: Hospital['distance_km']) {
+  if (distance === undefined) return null;
+  const value = Number(distance);
+  return Number.isFinite(value) ? `${value.toFixed(1)} km away` : null;
+}
+
 export function FindHospitalView() {
   const t = useTranslations();
   const { hospitals, isLoading, isError, refetch, selector } = useFindHospitalViewModel();
@@ -39,20 +45,21 @@ export function FindHospitalView() {
             {hospitals.length > 0 ? <SectionHeader title="Hospitals near you" detail={`${hospitals.length} found`} /> : null}
           </View>
         }
-        renderItem={({ item }: { item: Hospital }) => (
-          <Link href={`/hospital/${item.hospital_id}`} asChild>
+        renderItem={({ item }: { item: Hospital }) => {
+          const distance = formatDistance(item.distance_km);
+          return <Link href={`/hospital/${item.hospital_id}`} asChild>
             <PressableSurface accessibilityRole="button" testID={`hospital-row-${item.hospital_id}`} style={styles.row}>
               <HospitalLogo hospital={item} />
               <View style={styles.copy}>
                 <Text testID={`hospital-name-${item.hospital_id}`} style={styles.name}>{item.name}</Text>
                 <View style={styles.metaRow}><AppIcon name="location-outline" color={colors.muted} size={15} /><Text testID={`hospital-city-${item.hospital_id}`} style={styles.meta}>{item.address || item.city || 'Location available in details'}</Text></View>
                 {item.phone ? <View style={styles.metaRow}><AppIcon name="call-outline" color={colors.muted} size={15} /><Text style={styles.meta}>{item.phone}</Text></View> : null}
-                {item.distance_km !== undefined ? <Text testID={`hospital-distance-${item.hospital_id}`} style={styles.distance}>{item.distance_km.toFixed(1)} km away</Text> : null}
+                {distance ? <Text testID={`hospital-distance-${item.hospital_id}`} style={styles.distance}>{distance}</Text> : null}
               </View>
               <AppIcon name="chevron-forward" color={colors.faint} size={20} />
             </PressableSurface>
-          </Link>
-        )}
+          </Link>;
+        }}
         ListEmptyComponent={isLoading ? <LoadingState label="Finding hospitals…" /> : isError ? <ErrorState onRetry={() => void refetch()} /> : <EmptyState title="No hospitals found" message="Try another city or use your current location." icon="business-outline" />}
       />
     </Screen>
