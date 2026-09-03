@@ -123,6 +123,32 @@ test('onSubmit maps a 400 response to the slot-taken message', async () => {
   });
 });
 
+test('onSubmit normalizes a whitespace-only reason to undefined instead of sending blank text', async () => {
+  (api.createAppointment as jest.Mock).mockResolvedValue({ booking_reference: 'REF1' });
+  const { result } = await renderHook(
+    () =>
+      useAppointmentBookingViewModel({
+        doctorId: 'd1',
+        hospitalId: 'h1',
+        departmentId: 'dep1',
+      }),
+    { wrapper }
+  );
+
+  await act(() => {
+    result.current.setValue('slot_id', 's1');
+    result.current.setValue('reason', '   ');
+  });
+  await act(async () => {
+    await result.current.onSubmit();
+  });
+
+  await waitFor(() => expect(api.createAppointment).toHaveBeenCalled());
+  expect(api.createAppointment).toHaveBeenCalledWith(
+    expect.objectContaining({ reason: undefined })
+  );
+});
+
 test('exposes hospital, department, and doctor query failures with retry actions', async () => {
   (getHospitals as jest.Mock).mockRejectedValue(new Error('hospital outage'));
   (getDepartmentsByHospital as jest.Mock).mockRejectedValue(new Error('department outage'));
