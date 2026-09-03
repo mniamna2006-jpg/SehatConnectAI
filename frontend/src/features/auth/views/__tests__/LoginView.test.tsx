@@ -40,8 +40,8 @@ test('keeps login email-only and exposes account recovery navigation', async () 
   expect(screen.queryByLabelText(/phone/i)).not.toBeOnTheScreen();
   expect(screen.getByLabelText('/register')).toBeOnTheScreen();
   expect(screen.getByLabelText('/forgot-password')).toBeOnTheScreen();
-  expect(screen.getByText('Hospital Admin / Staff Login')).toBeOnTheScreen();
-  expect(screen.getByLabelText('/hospital-login')).toBeOnTheScreen();
+  expect(screen.queryByText('Hospital Admin / Staff Login')).not.toBeOnTheScreen();
+  expect(screen.queryByLabelText('/hospital-login')).not.toBeOnTheScreen();
 });
 
 test('password is hidden by default and can be shown then hidden', async () => {

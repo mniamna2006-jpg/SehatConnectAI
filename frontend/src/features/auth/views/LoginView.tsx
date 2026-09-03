@@ -23,7 +23,6 @@ export function LoginView() {
             <Link href="/register" style={styles.link}>{t('auth.login.footerAction')}</Link>
           </View>
           <Link href="/forgot-password" style={styles.quietLink}>{t('auth.login.forgotPassword')}</Link>
-          <Link href="/hospital-login" style={styles.hospitalLink}>{t('auth.login.hospitalAction')}</Link>
         </>
       }
     >
@@ -77,13 +76,5 @@ const styles = StyleSheet.create({
   footerText: { ...typography.body, color: colors.muted },
   link: { ...typography.body, color: colors.primary, fontWeight: '700' },
   quietLink: { ...typography.body, color: colors.inkSoft, fontWeight: '600' },
-  hospitalLink: {
-    ...typography.body,
-    color: colors.primary,
-    fontWeight: '700',
-    minHeight: 48,
-    paddingVertical: 13,
-    textAlign: 'center',
-  },
   error: { ...typography.metadata, color: colors.danger, textAlign: 'center' },
 });

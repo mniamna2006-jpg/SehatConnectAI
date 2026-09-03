@@ -1,10 +1,5 @@
 /// <reference types="node" />
-import {
-  apiRequest,
-  ApiError,
-  registerHospitalUnauthorizedHandler,
-  registerUnauthorizedHandler,
-} from '../client';
+import { apiRequest, ApiError, registerUnauthorizedHandler } from '../client';
 import * as secureStore from '../../storage/secureStore';
 
 jest.mock('../../storage/secureStore');
@@ -30,7 +25,6 @@ describe('apiRequest', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (secureStore.getToken as jest.Mock).mockResolvedValue('tok-123');
-    (secureStore.getHospitalToken as jest.Mock).mockResolvedValue('hospital-tok-456');
     global.fetch = jest.fn();
   });
 
@@ -39,17 +33,6 @@ describe('apiRequest', () => {
     await apiRequest('/api/patient/profile');
     const [, init] = (global.fetch as jest.Mock).mock.calls[0];
     expect(init.headers.Authorization).toBe('Bearer tok-123');
-  });
-
-  test('hospital-scoped requests attach only the hospital token', async () => {
-    (global.fetch as jest.Mock).mockReturnValue(okResponse({ ok: 1 }));
-
-    await apiRequest('/api/admin/dashboard', { scope: 'hospital' });
-
-    const [, init] = (global.fetch as jest.Mock).mock.calls[0];
-    expect(init.headers.Authorization).toBe('Bearer hospital-tok-456');
-    expect(secureStore.getHospitalToken).toHaveBeenCalledTimes(1);
-    expect(secureStore.getToken).not.toHaveBeenCalled();
   });
 
   test('omits Authorization header when auth is false', async () => {
@@ -98,23 +81,6 @@ describe('apiRequest', () => {
 
     await expect(apiRequest('/api/auth/login', { auth: false })).rejects.toThrow();
     expect(handler).not.toHaveBeenCalled();
-  });
-
-  test('a hospital 401 calls only the hospital unauthorized handler', async () => {
-    const patientHandler = jest.fn();
-    const hospitalHandler = jest.fn();
-    const unregisterPatient = registerUnauthorizedHandler(patientHandler);
-    const unregisterHospital = registerHospitalUnauthorizedHandler(hospitalHandler);
-    (global.fetch as jest.Mock).mockReturnValue(failResponse(401, 'Token expired'));
-
-    await expect(
-      apiRequest('/api/admin/dashboard', { scope: 'hospital' })
-    ).rejects.toThrow('Token expired');
-
-    expect(hospitalHandler).toHaveBeenCalledTimes(1);
-    expect(patientHandler).not.toHaveBeenCalled();
-    unregisterHospital();
-    unregisterPatient();
   });
 
   test('throws a typed ApiError (not a raw SyntaxError) on an empty response body', async () => {
