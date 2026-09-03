@@ -132,6 +132,17 @@
       "server": "Server is temporarily unavailable. Please try again.",
       "unexpected": "Unable to sign in. Please try again."
     },
+    "validation": {
+      "email": "Enter a valid email address.",
+      "password": "Password must be at least 6 characters.",
+      "fullName": "Enter your full name (at least 2 characters).",
+      "phone": "Enter a valid phone number (at least 7 digits).",
+      "contactRequired": "Enter an email or phone number.",
+      "passwordsMismatch": "Passwords do not match.",
+      "language": "Choose a preferred language.",
+      "registerFailed": "Unable to create your account. Please try again.",
+      "profileSaveFailed": "Unable to save your changes. Please try again."
+    },
     "register": {
       "title": "Create your account",
       "subtitle": "A few details help us personalize your care experience.",

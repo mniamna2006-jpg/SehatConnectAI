@@ -8,7 +8,10 @@ import { useAuth } from '../../../../providers/AuthProvider';
 import * as api from '../../model/api';
 
 jest.mock('../../model/api');
-jest.mock('../../../../providers/LocaleProvider');
+jest.mock('../../../../providers/LocaleProvider', () => ({
+  useOptionalLocale: jest.fn(),
+  useTranslations: () => (key: string) => key,
+}));
 jest.mock('../../../../providers/AuthProvider', () => ({ useAuth: jest.fn(() => ({ logout: jest.fn() })) }));
 jest.mock('expo-router', () => ({ router: { replace: jest.fn() } }));
 

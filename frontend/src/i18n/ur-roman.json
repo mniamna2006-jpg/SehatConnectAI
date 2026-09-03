@@ -132,6 +132,17 @@
       "server": "Server filhaal dastyab nahi. Dobara koshish karein.",
       "unexpected": "Sign in nahi ho saka. Dobara koshish karein."
     },
+    "validation": {
+      "email": "Sahi email address darj karein.",
+      "password": "Password kam az kam 6 characters ka hona chahiye.",
+      "fullName": "Apna pura naam darj karein (kam az kam 2 harf).",
+      "phone": "Sahi phone number darj karein (kam az kam 7 digits).",
+      "contactRequired": "Email ya phone number darj karein.",
+      "passwordsMismatch": "Passwords match nahi karte.",
+      "language": "Apni pasandeeda zaban muntakhib karein.",
+      "registerFailed": "Account nahi ban saka. Dobara koshish karein.",
+      "profileSaveFailed": "Tabdeeliyan save nahi ho sakin. Dobara koshish karein."
+    },
     "register": {
       "title": "Apna account banayein",
       "subtitle": "Kuch maloomat se hum aap ki dekh bhal behtar bana saktay hain.",
