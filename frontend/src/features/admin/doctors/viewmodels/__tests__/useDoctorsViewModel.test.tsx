@@ -5,7 +5,13 @@ import { router } from 'expo-router';
 import { TestQueryProvider } from '../../../../../core/query/testUtils';
 import { useHospitalAuth } from '../../../../../providers/HospitalAuthProvider';
 import { getDepartments } from '../../../departments/model/api';
-import { createDoctor, deactivateDoctor, getDoctors, updateDoctor } from '../../model/api';
+import {
+  createDoctor,
+  deactivateDoctor,
+  getDoctors,
+  updateDoctor,
+  updateDoctorAvailability,
+} from '../../model/api';
 import { useDoctorsViewModel } from '../useDoctorsViewModel';
 
 jest.mock('../../../../../providers/HospitalAuthProvider');
@@ -36,6 +42,7 @@ const doctor = {
   bio: null,
   consultation_fee: '2500.00',
   is_active: true,
+  is_available: true,
 };
 
 beforeEach(() => {
@@ -148,4 +155,61 @@ test('opens schedules for the selected real doctor ID', async () => {
     pathname: '/admin/doctors/[doctorId]/schedules',
     params: { doctorId: 'doctor-1', doctorName: 'Dr. Amina Shah' },
   });
+});
+
+test.each([
+  { initial: true, next: false },
+  { initial: false, next: true },
+])('updates temporary availability from $initial to $next', async ({ initial, next }) => {
+  const currentDoctor = { ...doctor, is_available: initial };
+  (getDoctors as jest.Mock).mockResolvedValue([currentDoctor]);
+  (updateDoctorAvailability as jest.Mock).mockResolvedValue({
+    ...currentDoctor,
+    is_available: next,
+    notifications_created: next ? 1 : 0,
+  });
+  const { result } = await renderHook(() => useDoctorsViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.doctors).toHaveLength(1));
+
+  await act(() => result.current.setAvailability(currentDoctor, next));
+
+  await waitFor(() => expect(updateDoctorAvailability).toHaveBeenCalledWith('doctor-1', next));
+  await waitFor(() => expect(result.current.successMessage).toBe('Doctor availability updated.'));
+});
+
+test('blocks duplicate availability taps while update is pending', async () => {
+  let resolveUpdate: ((value: typeof doctor & { notifications_created: number }) => void) | undefined;
+  (updateDoctorAvailability as jest.Mock).mockImplementation(
+    () => new Promise((resolve) => { resolveUpdate = resolve; })
+  );
+  const { result } = await renderHook(() => useDoctorsViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.doctors).toHaveLength(1));
+
+  await act(() => result.current.setAvailability(doctor, false));
+  await waitFor(() => expect(result.current.updatingDoctorId).toBe('doctor-1'));
+  await act(() => result.current.setAvailability(doctor, false));
+
+  expect(updateDoctorAvailability).toHaveBeenCalledTimes(1);
+  await act(() => resolveUpdate?.({ ...doctor, is_available: false, notifications_created: 0 }));
+});
+
+test('refetches server state and shows localized error after availability failure', async () => {
+  (updateDoctorAvailability as jest.Mock).mockRejectedValue(new Error('private backend detail'));
+  const { result } = await renderHook(() => useDoctorsViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.doctors).toHaveLength(1));
+
+  await act(() => result.current.setAvailability(doctor, false));
+
+  await waitFor(() => expect(result.current.apiError).toBe('Unable to update availability'));
+  await waitFor(() => expect(getDoctors).toHaveBeenCalledTimes(2));
+});
+
+test('does not update temporary availability for a deactivated doctor', async () => {
+  const inactiveDoctor = { ...doctor, is_active: false, is_available: false };
+  const { result } = await renderHook(() => useDoctorsViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+  await act(() => result.current.setAvailability(inactiveDoctor, true));
+
+  expect(updateDoctorAvailability).not.toHaveBeenCalled();
 });

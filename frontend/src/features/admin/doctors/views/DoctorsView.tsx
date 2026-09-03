@@ -1,5 +1,5 @@
 import { Controller } from 'react-hook-form';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useTranslations } from '../../../../providers/LocaleProvider';
 import { AppButton, IconButton } from '../../../../shared/components/Buttons';
 import { EmptyState } from '../../../../shared/components/EmptyState';
@@ -176,12 +176,37 @@ function DoctorRow({
   viewModel: ReturnType<typeof useDoctorsViewModel>;
 }) {
   const t = useTranslations();
+  const isAvailable = doctor.is_active && doctor.is_available;
+  const isUpdating = viewModel.updatingDoctorId === doctor.doctor_id;
+  const availabilityLabel = t(
+    isAvailable ? 'doctors.availability.available' : 'doctors.availability.unavailable'
+  );
   return (
     <View style={styles.row} testID={`doctor-row-${doctor.doctor_id}`}>
       <View style={styles.rowInfo}>
         <Text style={styles.rowTitle}>{doctor.name}</Text>
         <Text style={styles.rowMeta}>{doctor.specialization} · {doctor.department_name}</Text>
         <Text style={styles.rowMeta}>{t('admin.doctors.fields.licenseNumber')}: {doctor.license_number}</Text>
+      </View>
+      <View style={styles.availabilityRow}>
+        <View style={styles.availabilityCopy}>
+          <Text style={[styles.availabilityLabel, isAvailable ? styles.available : styles.unavailable]}>
+            {availabilityLabel}
+          </Text>
+          {isUpdating ? (
+            <Text style={styles.updating}>{t('doctors.availability.updating')}</Text>
+          ) : null}
+        </View>
+        <Switch
+          accessibilityLabel={`${doctor.name}: ${availabilityLabel}`}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: isAvailable, disabled: !doctor.is_active || isUpdating }}
+          disabled={!doctor.is_active || isUpdating}
+          onValueChange={(value) => viewModel.setAvailability(doctor, value)}
+          trackColor={{ false: colors.line, true: colors.secondary }}
+          thumbColor={colors.surface}
+          value={isAvailable}
+        />
       </View>
       <View style={styles.rowActions}>
         <IconButton
@@ -228,5 +253,11 @@ const styles = StyleSheet.create({
   rowInfo: { flex: 1, gap: 3 },
   rowTitle: { ...typography.entityTitle, color: colors.ink },
   rowMeta: { ...typography.metadata, color: colors.muted },
+  availabilityRow: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  availabilityCopy: { flex: 1, gap: 2 },
+  availabilityLabel: { ...typography.metadata, fontWeight: '700' },
+  available: { color: colors.success },
+  unavailable: { color: colors.muted },
+  updating: { ...typography.metadata, color: colors.muted },
   rowActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 4 },
 });

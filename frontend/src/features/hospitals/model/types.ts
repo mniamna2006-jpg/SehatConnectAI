@@ -28,5 +28,10 @@ export interface Hospital {
 export interface HospitalDetail extends Hospital {
   working_hours: WorkingHours[];
   departments: { department_id: string; name: string }[];
-  doctors: { doctor_id: string; name: string; specialization?: string }[];
+  doctors: {
+    doctor_id: string;
+    name: string;
+    specialization?: string;
+    is_available: boolean;
+  }[];
 }

@@ -8,7 +8,13 @@ import { useHospitalAuth } from '../../../../providers/HospitalAuthProvider';
 import { useTranslations } from '../../../../providers/LocaleProvider';
 import { queryKeys } from '../../../../shared/constants/queryKeys';
 import { getDepartments } from '../../departments/model/api';
-import { createDoctor, deactivateDoctor, getDoctors, updateDoctor } from '../model/api';
+import {
+  createDoctor,
+  deactivateDoctor,
+  getDoctors,
+  updateDoctor,
+  updateDoctorAvailability,
+} from '../model/api';
 import { buildDoctorCreateInput, buildDoctorUpdate } from '../model/mappers';
 import { doctorSchema } from '../model/schemas';
 import type { DoctorFormValues } from '../model/schemas';
@@ -134,6 +140,35 @@ export function useDoctorsViewModel() {
     },
   });
 
+  const availabilityMutation = useMutation({
+    mutationFn: ({ doctor, isAvailable }: { doctor: AdminDoctor; isAvailable: boolean }) =>
+      updateDoctorAvailability(doctor.doctor_id, isAvailable),
+    onSuccess: () => {
+      setApiError(null);
+      setSuccessMessage(t('admin.doctors.success.availabilityUpdated'));
+    },
+    onError: () => {
+      const message = t('doctors.availability.updateError');
+      setApiError(message);
+      Alert.alert(t('common.errorTitle'), message);
+    },
+    onSettled: async (_data, _error, variables) => {
+      await Promise.all([
+        invalidateDoctors(),
+        queryClient.invalidateQueries({ queryKey: ['doctors'] }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.hospital(hospitalId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.doctorsByDepartment(variables.doctor.department_id) }),
+      ]);
+    },
+  });
+
+  const setAvailability = (doctor: AdminDoctor, isAvailable: boolean) => {
+    if (!doctor.is_active || availabilityMutation.isPending) return;
+    setApiError(null);
+    setSuccessMessage(null);
+    availabilityMutation.mutate({ doctor, isAvailable });
+  };
+
   const confirmDeactivate = (doctor: AdminDoctor) => {
     setApiError(null);
     setSuccessMessage(null);
@@ -183,7 +218,11 @@ export function useDoctorsViewModel() {
     closeForm,
     onSubmit,
     confirmDeactivate,
+    setAvailability,
     openSchedules,
+    updatingDoctorId: availabilityMutation.isPending
+      ? availabilityMutation.variables.doctor.doctor_id
+      : undefined,
     deactivatingId: deactivateMutation.isPending ? deactivateMutation.variables : undefined,
   };
 }

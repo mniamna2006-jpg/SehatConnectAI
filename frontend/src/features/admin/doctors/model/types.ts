@@ -9,6 +9,11 @@ export interface AdminDoctor {
   bio: string | null;
   consultation_fee: number | string | null;
   is_active: boolean;
+  is_available: boolean;
+}
+
+export interface AdminDoctorAvailabilityResult extends AdminDoctor {
+  notifications_created: number;
 }
 
 export interface DoctorCreateInput {

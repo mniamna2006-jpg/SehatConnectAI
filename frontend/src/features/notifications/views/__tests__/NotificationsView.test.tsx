@@ -78,6 +78,23 @@ test('renders an unrecognized notification type generically without crashing', a
   expect(screen.getByText('Queue update')).toBeOnTheScreen();
 });
 
+test('renders doctor availability notification safely without unsupported navigation', async () => {
+  const doctorAvailability = notification({
+    type: 'DOCTOR_AVAILABILITY',
+    title: 'Doctor Available',
+    message: 'Dr. Amina Shah is now available.',
+    related_appointment_id: null,
+  });
+  const vm = { ...baseVm, notifications: [doctorAvailability] };
+  (useNotificationsViewModel as jest.Mock).mockReturnValue(vm);
+  await render(<NotificationsView />);
+
+  expect(screen.getByText('Doctor Available')).toBeOnTheScreen();
+  expect(screen.getByText('Dr. Amina Shah is now available.')).toBeOnTheScreen();
+  await fireEvent.press(screen.getByText('Doctor Available'));
+  expect(vm.onPress).toHaveBeenCalledWith(doctorAvailability);
+});
+
 test('handles missing optional appointment reference safely', async () => {
   (useNotificationsViewModel as jest.Mock).mockReturnValue({
     ...baseVm,

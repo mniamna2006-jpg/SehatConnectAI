@@ -11,6 +11,7 @@ const doctor = {
   bio: null,
   consultation_fee: '2500.00',
   is_active: true,
+  is_available: true,
 };
 
 test('builds a doctor create payload with one hospital and one department', () => {

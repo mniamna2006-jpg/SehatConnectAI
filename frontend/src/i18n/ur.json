@@ -215,7 +215,16 @@
     "startTitle": "تلاش شروع کریں",
     "startMessage": "دستیاب ڈاکٹر دیکھنے کے لیے نام یا مہارت درج کریں۔",
     "availableTimings": "دستیاب اوقات",
-    "scheduleUnavailable": "شیڈول دستیاب نہیں"
+    "scheduleUnavailable": "شیڈول دستیاب نہیں",
+    "availability": {
+      "available": "دستیاب",
+      "unavailable": "دستیاب نہیں",
+      "notifyWhenAvailable": "دستیاب ہونے پر مجھے اطلاع دیں",
+      "alertOn": "دستیابی کی اطلاع فعال ہے",
+      "turnOffAlert": "دستیابی کی اطلاع بند کریں",
+      "updating": "اپ ڈیٹ ہو رہا ہے...",
+      "updateError": "دستیابی اپ ڈیٹ نہیں ہو سکی"
+    }
   },
   "departments": {
     "findTitle": "شعبہ تلاش کریں",
@@ -508,7 +517,8 @@
       "success": {
         "created": "ڈاکٹر شامل کر دیا گیا۔",
         "updated": "ڈاکٹر اپ ڈیٹ ہو گیا۔",
-        "deactivated": "ڈاکٹر غیر فعال کر دیا گیا۔"
+        "deactivated": "ڈاکٹر غیر فعال کر دیا گیا۔",
+        "availabilityUpdated": "ڈاکٹر کی دستیابی اپ ڈیٹ ہو گئی۔"
       }
     },
     "schedules": {

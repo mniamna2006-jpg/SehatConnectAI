@@ -21,6 +21,13 @@ export interface Doctor {
   qualification?: string;
   consultation_fee?: number;
   is_active: boolean;
+  is_available: boolean;
+}
+
+export interface DoctorAvailabilitySubscription {
+  doctor_id: string;
+  subscribed: boolean;
+  is_available?: boolean;
 }
 
 export interface DoctorDetail extends Doctor {

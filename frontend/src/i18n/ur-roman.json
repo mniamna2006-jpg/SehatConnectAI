@@ -215,7 +215,16 @@
     "startTitle": "Talaash shuru karein",
     "startMessage": "Dastyab doctors dekhne ke liye naam ya mahaarat darj karein.",
     "availableTimings": "Dastyab Auqaat",
-    "scheduleUnavailable": "Schedule dastyab nahi"
+    "scheduleUnavailable": "Schedule dastyab nahi",
+    "availability": {
+      "available": "Dastyab",
+      "unavailable": "Dastyab nahi",
+      "notifyWhenAvailable": "Dastyab honay par mujhay ittila dein",
+      "alertOn": "Dastyabi ka alert on hai",
+      "turnOffAlert": "Dastyabi ka alert band karein",
+      "updating": "Update ho raha hai...",
+      "updateError": "Dastyabi update nahi ho saki"
+    }
   },
   "departments": {
     "findTitle": "Shoba Talash Karein",
@@ -508,7 +517,8 @@
       "success": {
         "created": "Doctor shamil ho gaya.",
         "updated": "Doctor update ho gaya.",
-        "deactivated": "Doctor deactivate ho gaya."
+        "deactivated": "Doctor deactivate ho gaya.",
+        "availabilityUpdated": "Doctor ki dastyabi update ho gayi."
       }
     },
     "schedules": {

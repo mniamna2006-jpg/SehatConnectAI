@@ -38,7 +38,7 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
         is_open: true,
       }],
       departments: [{ department_id: 'dep1', name: 'Cardiology' }],
-      doctors: [{ doctor_id: 'd1', name: 'Dr. Ali', specialization: 'Cardiology' }],
+      doctors: [{ doctor_id: 'd1', name: 'Dr. Ali', specialization: 'Cardiology', is_available: true }],
     },
     isLoading: false,
     isError: false,
@@ -55,6 +55,7 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
   expect(screen.getByText('to 5:00 PM')).toBeOnTheScreen();
   expect(screen.getAllByText('Cardiology')).not.toHaveLength(0);
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
+  expect(screen.getByText('Available')).toBeOnTheScreen();
   expect(screen.queryByText(/rating|review|statistic/i)).not.toBeOnTheScreen();
 
   await fireEvent.press(screen.getByRole('button', { name: 'Go back' }));

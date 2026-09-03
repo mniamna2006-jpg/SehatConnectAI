@@ -1,5 +1,11 @@
 import { apiRequest } from '../../../../../core/api/client';
-import { createDoctor, deactivateDoctor, getDoctors, updateDoctor } from '../api';
+import {
+  createDoctor,
+  deactivateDoctor,
+  getDoctors,
+  updateDoctor,
+  updateDoctorAvailability,
+} from '../api';
 
 jest.mock('../../../../../core/api/client');
 
@@ -37,5 +43,23 @@ test('uses source-backed create, update, and deactivate doctor contracts', async
   });
   expect(apiRequest).toHaveBeenNthCalledWith(3, '/api/doctors/doctor-1/deactivate', {
     method: 'PATCH', scope: 'hospital',
+  });
+});
+
+test.each([true, false])('updates doctor availability to %s with hospital auth', async (isAvailable) => {
+  (apiRequest as jest.Mock).mockResolvedValue({
+    ...input,
+    doctor_id: 'doctor-1',
+    is_active: true,
+    is_available: isAvailable,
+    notifications_created: 0,
+  });
+
+  await updateDoctorAvailability('doctor-1', isAvailable);
+
+  expect(apiRequest).toHaveBeenCalledWith('/api/doctors/doctor-1/availability', {
+    method: 'PATCH',
+    body: { is_available: isAvailable },
+    scope: 'hospital',
   });
 });

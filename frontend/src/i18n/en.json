@@ -215,7 +215,16 @@
     "startTitle": "Start your search",
     "startMessage": "Enter a doctor name or specialty to see available clinicians.",
     "availableTimings": "Available Timings",
-    "scheduleUnavailable": "Schedule not available"
+    "scheduleUnavailable": "Schedule not available",
+    "availability": {
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "notifyWhenAvailable": "Notify me when available",
+      "alertOn": "Availability alert on",
+      "turnOffAlert": "Turn off availability alert",
+      "updating": "Updating...",
+      "updateError": "Unable to update availability"
+    }
   },
   "departments": {
     "findTitle": "Find Department",
@@ -508,7 +517,8 @@
       "success": {
         "created": "Doctor created.",
         "updated": "Doctor updated.",
-        "deactivated": "Doctor deactivated."
+        "deactivated": "Doctor deactivated.",
+        "availabilityUpdated": "Doctor availability updated."
       }
     },
     "schedules": {
