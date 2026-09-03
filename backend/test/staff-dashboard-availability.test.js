@@ -31,9 +31,12 @@ test("staff available-today count excludes inactive and temporarily unavailable 
     queue: { groupBy: async () => [] },
     doctor: { count: async () => 0 },
     doctorAvailability: {
-      count: async ({ where }) => {
+      count: async () => {
+        throw new Error("row count duplicates doctors");
+      },
+      findMany: async ({ where }) => {
         availabilityWhere = where;
-        return 0;
+        return [{ doctor_id: "doctor-1" }];
       },
     },
     department: { count: async () => 0 },
@@ -74,6 +77,7 @@ test("staff available-today count excludes inactive and temporarily unavailable 
   );
 
   assert.equal(response.statusCode, 200);
+  assert.equal(response.body.data.doctors.available_today, 1);
   assert.deepEqual(availabilityWhere.doctor, {
     hospital_id: "hospital-1",
     is_active: true,

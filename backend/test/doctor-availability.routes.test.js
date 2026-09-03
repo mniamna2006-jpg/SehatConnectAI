@@ -12,6 +12,7 @@ function createPrisma({
   adminHospitalId = "hospital-1",
   doctorActive = true,
   hospitalActive = true,
+  departmentActive = true,
   available = false,
   notificationFailure = false,
 } = {}) {
@@ -24,15 +25,18 @@ function createPrisma({
       is_active: doctorActive,
       is_available: available,
       hospital: { is_active: hospitalActive },
+      department: { is_active: departmentActive },
     },
     subscriptions: [],
     notifications: [],
     doctorReadQueries: [],
+    availabilityUpdateWhere: null,
   };
 
   const tx = {
     doctor: {
       updateMany: async ({ where, data }) => {
+        state.availabilityUpdateWhere = where;
         if (
           state.doctor.doctor_id !== where.doctor_id ||
           state.doctor.hospital_id !== where.hospital_id ||
@@ -165,6 +169,12 @@ test("same-hospital admin can change persistent doctor availability", async () =
   assert.equal(response.statusCode, 200);
   assert.equal(response.body.data.is_available, true);
   assert.equal(state.doctor.is_available, true);
+  assert.deepEqual(state.availabilityUpdateWhere.hospital, {
+    is_active: true,
+  });
+  assert.deepEqual(state.availabilityUpdateWhere.department, {
+    is_active: true,
+  });
 });
 
 test("public doctor reads exclude inactive hospital and department records", async () => {
@@ -277,6 +287,20 @@ test("inactive doctor cannot be toggled available", async () => {
 
   assert.equal(response.statusCode, 400);
   assert.equal(state.doctor.is_available, false);
+});
+
+test("doctor in inactive department cannot be toggled available", async () => {
+  const { prisma, state } = createPrisma({ departmentActive: false });
+  const route = loadRoutes(prisma).findRoute(
+    "PATCH",
+    "/:doctor_id/availability"
+  );
+
+  const response = await invoke(route, { body: { is_available: true } });
+
+  assert.equal(response.statusCode, 400);
+  assert.equal(state.doctor.is_available, false);
+  assert.equal(state.notifications.length, 0);
 });
 
 test("availability alert failure rolls back doctor state", async () => {

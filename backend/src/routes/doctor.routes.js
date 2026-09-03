@@ -21,6 +21,7 @@ const getDoctorAvailabilityTarget = (doctorId) =>
     where: { doctor_id: doctorId },
     include: {
       hospital: { select: { is_active: true } },
+      department: { select: { is_active: true } },
     },
   });
 
@@ -207,10 +208,11 @@ router.patch(
       );
       if (!admin) return;
 
-      if (!doctor.is_active) {
+      if (!doctor.is_active || !doctor.department?.is_active) {
         return res.status(400).json({
           success: false,
-          message: "Cannot change availability for an inactive doctor",
+          message:
+            "Cannot change availability for an inactive doctor or department",
         });
       }
 
@@ -228,6 +230,8 @@ router.patch(
             hospital_id: doctor.hospital_id,
             is_active: true,
             is_available: { not: is_available },
+            hospital: { is_active: true },
+            department: { is_active: true },
           },
           data: { is_available },
         });
@@ -267,7 +271,7 @@ router.patch(
           changed: changed.count === 1,
           notifications_created: notificationsCreated,
         };
-      });
+      }, { isolationLevel: "Serializable" });
 
       return res.status(200).json({
         success: true,
@@ -309,7 +313,12 @@ router.get(
         });
       }
 
-      if (!doctor || !doctor.is_active || !doctor.hospital?.is_active) {
+      if (
+        !doctor ||
+        !doctor.is_active ||
+        !doctor.department?.is_active ||
+        !doctor.hospital?.is_active
+      ) {
         return res.status(404).json({
           success: false,
           message: "Doctor not found",
@@ -365,7 +374,12 @@ router.post(
         });
       }
 
-      if (!doctor || !doctor.is_active || !doctor.hospital?.is_active) {
+      if (
+        !doctor ||
+        !doctor.is_active ||
+        !doctor.department?.is_active ||
+        !doctor.hospital?.is_active
+      ) {
         return res.status(404).json({
           success: false,
           message: "Doctor not found",

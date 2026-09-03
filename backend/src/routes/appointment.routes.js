@@ -193,10 +193,49 @@ router.post(
           .toUpperCase();
 
       const appointment = await prisma.$transaction(async (tx) => {
+        const currentSlot = await tx.timeSlot.findUnique({
+          where: { slot_id },
+          include: {
+            doctor: {
+              include: {
+                department: true,
+                hospital: true,
+              },
+            },
+          },
+        });
+
+        if (
+          !currentSlot ||
+          currentSlot.status !== "AVAILABLE" ||
+          currentSlot.doctor_id !== doctor_id ||
+          currentSlot.hospital_id !== hospital_id ||
+          currentSlot.doctor.department_id !== department_id ||
+          currentSlot.doctor.department.hospital_id !== hospital_id ||
+          !currentSlot.doctor.is_active ||
+          !currentSlot.doctor.is_available ||
+          !currentSlot.doctor.department.is_active ||
+          !currentSlot.doctor.hospital.is_active
+        ) {
+          throw new Error("This time slot is no longer available");
+        }
+
         const updatedSlot = await tx.timeSlot.updateMany({
           where: {
             slot_id,
             status: "AVAILABLE",
+            doctor_id,
+            hospital_id,
+            doctor: {
+              department_id,
+              is_active: true,
+              is_available: true,
+              department: {
+                hospital_id,
+                is_active: true,
+              },
+              hospital: { is_active: true },
+            },
           },
           data: {
             status: "BOOKED",
@@ -214,14 +253,14 @@ router.post(
             hospital_id,
             department_id,
             slot_id,
-            appointment_date: slot.date,
-            appointment_time: slot.start_time,
+            appointment_date: currentSlot.date,
+            appointment_time: currentSlot.start_time,
             status: "BOOKED",
             booking_reference: bookingReference,
             reason: reason || null,
           },
         });
-      });
+      }, { isolationLevel: "Serializable" });
 await notifyPatientForAppointment({
   appointment_id: appointment.appointment_id,
   type: "BOOKING_CONFIRMATION",
