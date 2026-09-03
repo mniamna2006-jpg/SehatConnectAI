@@ -41,10 +41,7 @@ export function DepartmentDoctorsView({ departmentId }: { departmentId: string }
             testID={`department-doctor-${item.doctor_id}`}
             name={item.name}
             specialization={item.specialization}
-            isAvailable={item.is_available}
-            availabilityAction={item.is_available ? undefined : (
-              <DoctorAvailabilityAlert doctorId={item.doctor_id} isAvailable={item.is_available} />
-            )}
+            availabilityAction={<DoctorAvailabilityAlert doctorId={item.doctor_id} />}
             bookingHref={`/appointments?doctorId=${item.doctor_id}&hospitalId=${item.hospital_id}&departmentId=${item.department_id}`}
           />
         )}

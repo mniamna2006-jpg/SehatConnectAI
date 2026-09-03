@@ -24,7 +24,7 @@ beforeEach(() => jest.clearAllMocks());
 test('offers subscription for an unavailable doctor', async () => {
   const toggleAlert = jest.fn();
   mockViewModel({ toggleAlert });
-  await render(<DoctorAvailabilityAlert doctorId="d1" isAvailable={false} />);
+  await render(<DoctorAvailabilityAlert doctorId="d1" />);
 
   await fireEvent.press(screen.getByRole('button', { name: 'Notify me when available' }));
   expect(toggleAlert).toHaveBeenCalledTimes(1);
@@ -33,7 +33,7 @@ test('offers subscription for an unavailable doctor', async () => {
 test('shows active subscription and lets patient turn it off', async () => {
   const toggleAlert = jest.fn();
   mockViewModel({ subscribed: true, toggleAlert });
-  await render(<DoctorAvailabilityAlert doctorId="d1" isAvailable={false} />);
+  await render(<DoctorAvailabilityAlert doctorId="d1" />);
 
   expect(screen.getByText('Availability alert on')).toBeOnTheScreen();
   await fireEvent.press(screen.getByRole('button', { name: 'Turn off availability alert' }));
@@ -42,24 +42,24 @@ test('shows active subscription and lets patient turn it off', async () => {
 
 test('does not show subscription CTA for an available doctor', async () => {
   mockViewModel({ canManageAlert: false });
-  await render(<DoctorAvailabilityAlert doctorId="d1" isAvailable />);
+  await render(<DoctorAvailabilityAlert doctorId="d1" />);
 
   expect(screen.queryByRole('button')).not.toBeOnTheScreen();
 });
 
 test('shows loading, retry, and mutation failure states safely', async () => {
   mockViewModel({ isLoading: true });
-  await render(<DoctorAvailabilityAlert doctorId="d1" isAvailable={false} />);
+  await render(<DoctorAvailabilityAlert doctorId="d1" />);
   expect(screen.getByText('Updating...')).toBeOnTheScreen();
 
   const refetch = jest.fn();
   mockViewModel({ isError: true, refetch });
-  await screen.rerender(<DoctorAvailabilityAlert doctorId="d1" isAvailable={false} />);
+  await screen.rerender(<DoctorAvailabilityAlert doctorId="d1" />);
   expect(screen.getByText('Unable to update availability')).toBeOnTheScreen();
   await fireEvent.press(screen.getByRole('button', { name: 'Try again' }));
   expect(refetch).toHaveBeenCalledTimes(1);
 
   mockViewModel({ hasMutationError: true });
-  await screen.rerender(<DoctorAvailabilityAlert doctorId="d1" isAvailable={false} />);
+  await screen.rerender(<DoctorAvailabilityAlert doctorId="d1" />);
   expect(screen.getByRole('alert')).toHaveTextContent('Unable to update availability');
 });
