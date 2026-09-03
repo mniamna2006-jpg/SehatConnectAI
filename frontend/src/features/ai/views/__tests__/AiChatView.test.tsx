@@ -5,8 +5,20 @@ import type { ChatMessage } from '../../viewmodels/useAiChatViewModel';
 import { useAiChatViewModel } from '../../viewmodels/useAiChatViewModel';
 import { AiChatView } from '../AiChatView';
 
+let mockIsRTL = false;
+
 jest.mock('../../viewmodels/useAiChatViewModel');
-jest.mock('@expo/vector-icons/Ionicons', () => () => null);
+jest.mock('../../../../providers/LocaleProvider', () => {
+  const { translate } = require('../../../../i18n');
+  return {
+    useOptionalLocale: () => ({ isRTL: mockIsRTL }),
+    useTranslations: () => (key: string) => translate(mockIsRTL ? 'URDU' : 'ENGLISH', key),
+  };
+});
+jest.mock('@expo/vector-icons/Ionicons', () => {
+  const { Text: MockText } = require('react-native');
+  return ({ name }: { name: string }) => <MockText testID={`icon-${name}`} />;
+});
 jest.mock('expo-router', () => ({ router: { back: jest.fn(), push: jest.fn() } }));
 
 const baseVm = {
@@ -22,6 +34,7 @@ const baseVm = {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockIsRTL = false;
 });
 
 test('shows an empty state when the conversation has no messages', async () => {
@@ -76,6 +89,32 @@ test('renders the recommended department and links to its real doctors route', a
   expect(screen.getByText('Cardiology')).toBeOnTheScreen();
   fireEvent.press(screen.getByText('View doctors'));
   expect(router.push).toHaveBeenCalledWith('/department/d1/doctors');
+});
+
+test('flips the view-doctors disclosure arrow for RTL locales', async () => {
+  const recommendationVm = {
+    ...baseVm,
+    messages: [
+      {
+        id: '1',
+        sender: 'AI',
+        text: 'See Cardiology.',
+        is_emergency: false,
+        recommendation: {
+          recommended_department: { department_id: 'd1', name: 'Cardiology', hospital_id: 'h1', hospital_name: 'City Hospital', city: 'Lahore' },
+          doctors: [],
+        },
+      },
+    ],
+  };
+  (useAiChatViewModel as jest.Mock).mockReturnValue(recommendationVm);
+  await render(<AiChatView />);
+  expect(screen.getByTestId('icon-arrow-forward')).toBeOnTheScreen();
+
+  mockIsRTL = true;
+  (useAiChatViewModel as jest.Mock).mockReturnValue(recommendationVm);
+  await render(<AiChatView />);
+  expect(screen.getAllByTestId('icon-arrow-back').length).toBeGreaterThan(0);
 });
 
 test('renders recommended doctors as informational cards without navigation', async () => {

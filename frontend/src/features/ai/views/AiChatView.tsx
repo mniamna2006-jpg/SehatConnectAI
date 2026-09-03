@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useTranslations } from '../../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon } from '../../../shared/components/AppIcon';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
@@ -19,6 +19,7 @@ interface AiChatViewProps {
 
 export function AiChatView({ conversationId }: AiChatViewProps = {}) {
   const t = useTranslations();
+  const locale = useOptionalLocale();
   const vm = useAiChatViewModel(conversationId);
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
@@ -73,7 +74,7 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
                     style={({ pressed }) => [styles.recommendationAction, pressed && styles.pressed]}
                   >
                     <Text style={styles.recommendationActionText}>{t('ai.chat.viewDoctors')}</Text>
-                    <AppIcon name="arrow-forward" color={colors.primary} size={16} />
+                    <AppIcon name={locale?.isRTL ? 'arrow-back' : 'arrow-forward'} color={colors.primary} size={16} />
                   </Pressable>
                 </View>
               ) : null}

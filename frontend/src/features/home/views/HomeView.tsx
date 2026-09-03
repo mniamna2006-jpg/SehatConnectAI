@@ -5,7 +5,7 @@ import { Avatar } from '../../../shared/components/Avatar';
 import { BrandMark } from '../../../shared/components/BrandMark';
 import { PressableSurface } from '../../../shared/components/Buttons';
 import { NotificationBell } from '../../notifications/views/NotificationBell';
-import { useTranslations } from '../../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { Screen } from '../../../shared/components/Screen';
 import { colors, radius, shadow, typography } from '../../../shared/theme';
 import { useHomeViewModel } from '../viewmodels/useHomeViewModel';
@@ -27,6 +27,7 @@ function greetingKeyForNow(): 'home.morning' | 'home.afternoon' | 'home.evening'
 
 export function HomeView() {
   const t = useTranslations();
+  const locale = useOptionalLocale();
   const { user } = useHomeViewModel();
   const patientName = user?.full_name || t('common.patient');
   const careActions: CareAction[] = [
@@ -93,7 +94,7 @@ export function HomeView() {
               <Text style={styles.appointmentTitle}>{t('home.appointmentDetails.title')}</Text>
               <Text style={styles.appointmentBody}>{t('home.appointmentDetails.description')}</Text>
             </View>
-            <AppIcon name="chevron-forward" color={colors.muted} size={20} />
+            <AppIcon name={locale?.isRTL ? 'chevron-back' : 'chevron-forward'} color={colors.muted} size={20} />
           </PressableSurface>
         </Link>
       </ScrollView>

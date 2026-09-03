@@ -3,9 +3,25 @@ import { render, screen } from '@testing-library/react-native';
 import { useHomeViewModel } from '../../viewmodels/useHomeViewModel';
 import { HomeView } from '../HomeView';
 
+let mockIsRTL = false;
+
 jest.mock('../../viewmodels/useHomeViewModel');
 jest.mock('../../../notifications/views/NotificationBell', () => ({ NotificationBell: () => null }));
-jest.mock('@expo/vector-icons/Ionicons', () => () => null);
+jest.mock('../../../../providers/LocaleProvider', () => {
+  const { translate } = require('../../../../i18n');
+  return {
+    useOptionalLocale: () => ({ isRTL: mockIsRTL }),
+    useTranslations: () => (key: string) => translate(mockIsRTL ? 'URDU' : 'ENGLISH', key),
+  };
+});
+jest.mock('@expo/vector-icons/Ionicons', () => {
+  const { Text: MockText } = require('react-native');
+  return ({ name }: { name: string }) => <MockText testID={`icon-${name}`} />;
+});
+
+beforeEach(() => {
+  mockIsRTL = false;
+});
 jest.mock('expo-router', () => {
   const { View: MockView } = require('react-native');
   return {
@@ -42,4 +58,16 @@ test('keeps sign-out off the home screen; it lives on the profile screen instead
 
   expect(screen.queryByTestId('home-logout')).not.toBeOnTheScreen();
   expect(screen.queryByLabelText('Log out')).not.toBeOnTheScreen();
+});
+
+test('flips the appointment-details disclosure chevron for RTL locales', async () => {
+  (useHomeViewModel as jest.Mock).mockReturnValue({ user: { full_name: 'Demo Patient' } });
+
+  await render(<HomeView />);
+  expect(screen.getByTestId('icon-chevron-forward')).toBeOnTheScreen();
+  expect(screen.queryByTestId('icon-chevron-back')).not.toBeOnTheScreen();
+
+  mockIsRTL = true;
+  await render(<HomeView />);
+  expect(screen.getAllByTestId('icon-chevron-back').length).toBeGreaterThan(0);
 });

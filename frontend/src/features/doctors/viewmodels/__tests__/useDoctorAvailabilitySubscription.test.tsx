@@ -42,7 +42,7 @@ test('queries the subscription endpoint only once the doctor is known unavailabl
   );
 
   await waitFor(() => expect(getDoctorAvailabilitySubscription).toHaveBeenCalledWith('d1'));
-  expect(result.current.canManageAlert).toBe(true);
+  await waitFor(() => expect(result.current.canManageAlert).toBe(true));
 });
 
 test('exposes a manageable alert once the doctor is confirmed unavailable', async () => {

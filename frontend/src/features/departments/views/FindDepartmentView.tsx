@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { useTranslations } from '../../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
@@ -21,6 +21,7 @@ interface FindDepartmentViewProps { hospitalId?: string; departmentId?: string }
 
 export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentViewProps = {}) {
   const t = useTranslations();
+  const locale = useOptionalLocale();
   const vm = useFindDepartmentViewModel({ hospitalId, departmentId });
   const hasQuery = vm.isHospitalScoped || vm.query.trim().length > 0;
 
@@ -64,7 +65,7 @@ export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentV
                 <View style={[styles.tileIcon, selected && styles.tileIconSelected]}><AppIcon name={DEPARTMENT_ICONS[index % DEPARTMENT_ICONS.length]} color={selected ? colors.surface : colors.primary} size={25} /></View>
                 <Text style={styles.tileTitle} numberOfLines={2}>{item.name}</Text>
                 {item.description ? <Text numberOfLines={2} style={styles.tileDescription}>{item.description}</Text> : <Text style={styles.tileDescription}>{t('departments.viewDoctors')}</Text>}
-                <View style={styles.tileArrow}><AppIcon name="arrow-forward" color={colors.primary} size={18} /></View>
+                <View style={styles.tileArrow}><AppIcon name={locale?.isRTL ? 'arrow-back' : 'arrow-forward'} color={colors.primary} size={18} /></View>
               </PressableSurface>
             </Link>
           );
