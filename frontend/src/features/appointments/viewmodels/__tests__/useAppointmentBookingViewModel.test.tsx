@@ -101,7 +101,7 @@ test('onSelectDate loads available time slots for the chosen doctor and date', a
 
 test('onSelectDate rejects a past or impossible date and does not query for slots', async () => {
   const { result } = await renderHook(
-    () => useAppointmentBookingViewModel({ doctorId: 'd1' }),
+    () => useAppointmentBookingViewModel({ doctorId: 'd1', hospitalId: 'h1', departmentId: 'dep1' }),
     { wrapper }
   );
 
