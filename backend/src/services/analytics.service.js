@@ -90,7 +90,7 @@ async function resolveHospitalId(user) {
  * Build the full analytics overview for a given hospital.
  *
  * All appointment/queue/operations data is scoped to the hospital.
- * Patient statistics are system-wide (patients are not tied to a hospital).
+ * Patient statistics include patients with appointments at this hospital.
  */
 async function getOverview(hospitalId) {
   // PKT date boundaries
@@ -168,24 +168,38 @@ async function getOverview(hospitalId) {
       },
     }),
 
-    // ---- Patient counts (system-wide — patients have no hospital_id) ----
-
-    prisma.patient.count(),
+    // ---- Patient counts (scoped through hospital appointments) ----
 
     prisma.patient.count({
-      where: { user: { is_active: true } },
+      where: { appointments: { some: { hospital_id: hospitalId } } },
     }),
 
     prisma.patient.count({
-      where: { created_at: { gte: todayStart, lt: todayEnd } },
+      where: {
+        appointments: { some: { hospital_id: hospitalId } },
+        user: { is_active: true },
+      },
     }),
 
     prisma.patient.count({
-      where: { created_at: { gte: weekStart, lt: todayEnd } },
+      where: {
+        appointments: { some: { hospital_id: hospitalId } },
+        created_at: { gte: todayStart, lt: todayEnd },
+      },
     }),
 
     prisma.patient.count({
-      where: { created_at: { gte: monthStart, lt: todayEnd } },
+      where: {
+        appointments: { some: { hospital_id: hospitalId } },
+        created_at: { gte: weekStart, lt: todayEnd },
+      },
+    }),
+
+    prisma.patient.count({
+      where: {
+        appointments: { some: { hospital_id: hospitalId } },
+        created_at: { gte: monthStart, lt: todayEnd },
+      },
     }),
 
     // ---- Queue counts ----

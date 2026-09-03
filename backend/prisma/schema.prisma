@@ -98,17 +98,18 @@ model HospitalStaff {
 }
 
 model Patient {
-  patient_id        String            @id @default(uuid()) @db.Uuid
-  user_id           String            @unique @db.Uuid
-  date_of_birth     DateTime?
-  gender            String?
-  address           String?
-  city              String?
-  emergency_contact String?
-  created_at        DateTime          @default(now())
-  appointments      Appointment[]
-  ai_conversations  AIConversation[]
-  user              User              @relation(fields: [user_id], references: [user_id])
+  patient_id                 String                           @id @default(uuid()) @db.Uuid
+  user_id                    String                           @unique @db.Uuid
+  date_of_birth              DateTime?
+  gender                     String?
+  address                    String?
+  city                       String?
+  emergency_contact          String?
+  created_at                 DateTime                         @default(now())
+  appointments               Appointment[]
+  ai_conversations           AIConversation[]
+  availability_subscriptions DoctorAvailabilitySubscription[]
+  user                       User                             @relation(fields: [user_id], references: [user_id])
 
   @@index([city])
   @@map("patients")
@@ -133,28 +134,43 @@ model Department {
 }
 
 model Doctor {
-  doctor_id        String               @id @default(uuid()) @db.Uuid
-  hospital_id      String               @db.Uuid
-  department_id    String               @db.Uuid
-  name             String
-  specialization   String
-  qualification    String?
-  license_number   String               @unique
-  bio              String?
-  consultation_fee Decimal?             @db.Decimal(10, 2)
-  is_active        Boolean              @default(true)
-  appointments     Appointment[]
-  availability     DoctorAvailability[]
-  schedules        DoctorSchedule[]
-  department       Department           @relation(fields: [department_id], references: [department_id])
-  hospital         Hospital             @relation(fields: [hospital_id], references: [hospital_id])
-  queues           Queue[]
-  time_slots       TimeSlot[]
+  doctor_id                  String                           @id @default(uuid()) @db.Uuid
+  hospital_id                String                           @db.Uuid
+  department_id              String                           @db.Uuid
+  name                       String
+  specialization             String
+  qualification              String?
+  license_number             String                           @unique
+  bio                        String?
+  consultation_fee           Decimal?                         @db.Decimal(10, 2)
+  is_active                  Boolean                          @default(true)
+  is_available               Boolean                          @default(true)
+  appointments               Appointment[]
+  availability               DoctorAvailability[]
+  availability_subscriptions DoctorAvailabilitySubscription[]
+  schedules                  DoctorSchedule[]
+  department                 Department                       @relation(fields: [department_id], references: [department_id])
+  hospital                   Hospital                         @relation(fields: [hospital_id], references: [hospital_id])
+  queues                     Queue[]
+  time_slots                 TimeSlot[]
 
   @@index([hospital_id])
   @@index([department_id])
   @@index([is_active])
   @@map("doctors")
+}
+
+model DoctorAvailabilitySubscription {
+  subscription_id String   @id @default(uuid()) @db.Uuid
+  patient_id      String   @db.Uuid
+  doctor_id       String   @db.Uuid
+  created_at      DateTime @default(now())
+  patient         Patient  @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade)
+  doctor          Doctor   @relation(fields: [doctor_id], references: [doctor_id], onDelete: Cascade)
+
+  @@unique([patient_id, doctor_id])
+  @@index([doctor_id])
+  @@map("doctor_availability_subscriptions")
 }
 
 model HospitalWorkingHour {
@@ -338,12 +354,12 @@ model ChatMessage {
 }
 
 model AIConversation {
-  conversation_id String       @id @default(uuid()) @db.Uuid
-  patient_id      String       @db.Uuid
+  conversation_id String      @id @default(uuid()) @db.Uuid
+  patient_id      String      @db.Uuid
   title           String?
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  patient         Patient      @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade)
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  patient         Patient     @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade)
   messages        AIMessage[]
 
   @@index([patient_id])
@@ -352,16 +368,16 @@ model AIConversation {
 }
 
 model AIMessage {
-  message_id               String         @id @default(uuid()) @db.Uuid
-  conversation_id          String         @db.Uuid
-  sender                   ChatSender
-  message                  String
-  language                 PreferredLanguage?
-  recommended_department   String?
-  recommendation_snapshot  Json?
-  is_emergency             Boolean        @default(false)
-  created_at               DateTime       @default(now())
-  conversation             AIConversation @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
+  message_id              String             @id @default(uuid()) @db.Uuid
+  conversation_id         String             @db.Uuid
+  sender                  ChatSender
+  message                 String
+  language                PreferredLanguage?
+  recommended_department  String?
+  recommendation_snapshot Json?
+  is_emergency            Boolean            @default(false)
+  created_at              DateTime           @default(now())
+  conversation            AIConversation     @relation(fields: [conversation_id], references: [conversation_id], onDelete: Cascade)
 
   @@index([conversation_id])
   @@index([created_at])

@@ -19,6 +19,13 @@ router.get("/doctor/:doctorId/date/:date", async (req, res) => {
       where: {
         doctor_id: doctorId,
         date: new Date(`${date}T00:00:00.000Z`),
+        doctor: {
+          is_active: true,
+          is_available: true,
+          department: { is_active: true },
+          hospital: { is_active: true },
+        },
+        hospital: { is_active: true },
       },
       orderBy: {
         start_time: "asc",
@@ -65,6 +72,57 @@ router.post(
       }
 
       const dayOfWeek = getPakistanDayOfWeekForDate(requestedDate);
+
+      const admin = await prisma.hospitalAdmin.findUnique({
+        where: { user_id: req.user.user_id },
+        select: {
+          hospital_id: true,
+          hospital: { select: { is_active: true } },
+        },
+      });
+
+      if (!admin) {
+        return res.status(404).json({
+          success: false,
+          message: "Hospital admin profile not found",
+        });
+      }
+
+      if (!admin.hospital.is_active) {
+        return res.status(403).json({
+          success: false,
+          message: "Hospital is inactive",
+        });
+      }
+
+      const doctor = await prisma.doctor.findUnique({
+        where: { doctor_id },
+        select: { hospital_id: true, is_active: true },
+      });
+
+      if (!doctor) {
+        return res.status(404).json({
+          success: false,
+          message: "Doctor not found",
+        });
+      }
+
+      if (
+        admin.hospital_id !== hospital_id ||
+        doctor.hospital_id !== hospital_id
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "You do not have permission to generate these time slots",
+        });
+      }
+
+      if (!doctor.is_active) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot generate time slots for an inactive doctor",
+        });
+      }
 
       const schedule = await prisma.doctorSchedule.findFirst({
         where: {
