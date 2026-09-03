@@ -20,7 +20,7 @@ export function AppButton({ label, icon, loading, variant = 'primary', disabled,
       accessibilityRole="button"
       accessibilityState={{ busy: Boolean(loading), disabled: isDisabled }}
       disabled={isDisabled}
-      android_ripple={{ color: variant === 'primary' ? '#FFFFFF22' : '#2563EB14' }}
+      android_ripple={{ color: variant === 'primary' ? '#FFFFFF22' : `${colors.primary}14` }}
       style={({ pressed }) => [
         styles.base,
         styles[variant],
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   quiet: { backgroundColor: 'transparent' },
   danger: { backgroundColor: colors.dangerSoft },
   content: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  label: { fontSize: 15, lineHeight: 20, fontWeight: '700' },
+  label: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
   primaryLabel: { color: colors.surface },
   secondaryLabel: { color: colors.primary },
   quietLabel: { color: colors.primary },

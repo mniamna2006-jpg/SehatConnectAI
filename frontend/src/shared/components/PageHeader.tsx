@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useOptionalLocale, useTranslations } from '../../providers/LocaleProvider';
 import { colors, typography } from '../theme';
-import { IconButton } from './Buttons';
+import { AppIcon } from './AppIcon';
 
 export function PageHeader({
   title,
@@ -21,7 +21,19 @@ export function PageHeader({
   return (
     <View style={styles.wrap}>
       <View style={styles.topRow}>
-        {showBack ? <IconButton icon={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.goBack')} onPress={() => router.back()} /> : <View style={styles.spacer} />}
+        {showBack ? (
+          <Pressable
+            accessibilityLabel={t('common.goBack')}
+            accessibilityRole="button"
+            hitSlop={6}
+            onPress={() => router.back()}
+            style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
+          >
+            <AppIcon name={isRTL ? 'chevron-forward' : 'chevron-back'} color={colors.ink} size={22} />
+          </Pressable>
+        ) : (
+          <View style={styles.spacer} />
+        )}
         <View style={styles.titleWrap}>
           <Text accessibilityRole="header" style={styles.title}>{title}</Text>
         </View>
@@ -35,7 +47,9 @@ export function PageHeader({
 const styles = StyleSheet.create({
   wrap: { gap: 8 },
   topRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  spacer: { width: 48, height: 48 },
+  spacer: { width: 44, height: 44 },
+  backButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 22 },
+  backButtonPressed: { backgroundColor: colors.surfaceMuted },
   titleWrap: { flex: 1, alignItems: 'center' },
   title: { ...typography.screenTitle, color: colors.ink, textAlign: 'center', letterSpacing: -0.6 },
   subtitle: { ...typography.body, color: colors.muted, textAlign: 'center', paddingHorizontal: 18 },
