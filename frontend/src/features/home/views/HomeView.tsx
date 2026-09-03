@@ -27,7 +27,7 @@ function greetingForNow(): string {
 
 export function HomeView() {
   const t = useTranslations();
-  const { user, onLogout } = useHomeViewModel();
+  const { user } = useHomeViewModel();
   const patientName = user?.full_name || 'Patient';
   const careActions: CareAction[] = [
     { href: '/find-hospital', title: t('home.actions.findHospital.title'), description: t('home.actions.findHospital.description'), icon: 'business-outline', tone: 'teal' },
@@ -43,16 +43,6 @@ export function HomeView() {
           <BrandMark compact />
           <View style={styles.topActions}>
             <NotificationBell />
-            <Pressable
-              testID="home-logout"
-              accessibilityLabel="Log out"
-              accessibilityRole="button"
-              hitSlop={8}
-              onPress={onLogout}
-              style={({ pressed }) => [styles.logout, pressed && styles.pressed]}
-            >
-              <AppIcon name="log-out-outline" color={colors.muted} size={21} />
-            </Pressable>
             <Link href="/profile" asChild>
               <Pressable accessibilityLabel="Open profile" style={({ pressed }) => pressed && styles.pressed}>
                 <Avatar name={patientName} size={48} />
@@ -115,7 +105,6 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 22, paddingTop: 12, paddingBottom: 36, gap: 26 },
   topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   topActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logout: { width: 46, height: 46, borderRadius: radius.md, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   pressed: { opacity: 0.72 },
   greeting: { gap: 2 },
   eyebrow: { fontSize: 15, lineHeight: 21, color: colors.muted, fontWeight: '600' },

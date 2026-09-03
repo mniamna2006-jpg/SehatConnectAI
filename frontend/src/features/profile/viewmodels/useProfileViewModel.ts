@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { router } from 'expo-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProfile, updateProfile } from '../model/api';
 import { profileUpdateSchema } from '../model/schemas';
 import type { ProfileUpdateInput } from '../model/types';
+import { useAuth } from '../../../providers/AuthProvider';
 import { useOptionalLocale } from '../../../providers/LocaleProvider';
 import { queryKeys } from '../../../shared/constants/queryKeys';
 
 export function useProfileViewModel() {
   const queryClient = useQueryClient();
   const locale = useOptionalLocale();
+  const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -40,6 +43,11 @@ export function useProfileViewModel() {
 
   const onCancel = () => setIsEditing(false);
 
+  const onLogout = async () => {
+    await logout();
+    router.replace('/login');
+  };
+
   const onSave = handleSubmit(async (values) => {
     setSaveError(null);
     try {
@@ -52,6 +60,6 @@ export function useProfileViewModel() {
 
   return {
     profile, isLoading, isError, refetch, isEditing, control, errors, setValue,
-    onEdit, onCancel, onSave, isSaving: mutation.isPending, saveError,
+    onEdit, onCancel, onSave, onLogout, isSaving: mutation.isPending, saveError,
   };
 }

@@ -117,7 +117,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                 <Link key={item.department_id} href={`/find-department?hospitalId=${hospitalId}&departmentId=${item.department_id}`} asChild>
                   <PressableSurface testID={`department-link-${item.department_id}`} accessibilityRole="button" style={styles.departmentTile}>
                     <View style={styles.departmentIcon}><AppIcon name="medical-outline" color={colors.teal} size={20} /></View>
-                    <Text testID={`department-name-${item.department_id}`} style={styles.departmentName}>{item.name}</Text>
+                    <Text testID={`department-name-${item.department_id}`} style={styles.departmentName} numberOfLines={2}>{item.name}</Text>
                     <AppIcon name="chevron-forward" color={colors.faint} size={18} />
                   </PressableSurface>
                 </Link>
@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
   day: { ...typography.metadata, color: colors.primary, fontWeight: '800' },
   time: { ...typography.entityTitle, color: colors.ink, marginTop: 12 },
   timeMuted: { ...typography.metadata, color: colors.muted, marginTop: 2 },
-  departmentGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  departmentTile: { width: '48%', minHeight: 86, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, padding: 13, flexDirection: 'row', alignItems: 'center', gap: 9 },
+  departmentGrid: { gap: 10 },
+  departmentTile: { minHeight: 62, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 13, paddingVertical: 11, flexDirection: 'row', alignItems: 'center', gap: 11 },
   departmentIcon: { width: 36, height: 36, borderRadius: 12, backgroundColor: colors.tealSoft, alignItems: 'center', justifyContent: 'center' },
   departmentName: { ...typography.metadata, color: colors.ink, fontWeight: '700', flex: 1 },
   doctorList: { gap: 14 },

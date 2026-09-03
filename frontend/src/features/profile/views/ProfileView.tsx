@@ -11,6 +11,7 @@ import { PageHeader } from '../../../shared/components/PageHeader';
 import { Screen } from '../../../shared/components/Screen';
 import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
+import { formatHumanDate } from '../../../shared/utils/formatters';
 import type { PreferredLanguage } from '../../../shared/types/api';
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel';
 
@@ -49,7 +50,7 @@ export function ProfileView() {
           <View style={styles.section}>
             <SectionHeader title="Personal details" />
             <View style={styles.infoPanel}>
-              <InfoRow icon="calendar-outline" label={t('profile.fields.dateOfBirth')} value={vm.profile?.date_of_birth} testID="profile-date-of-birth" />
+              <InfoRow icon="calendar-outline" label={t('profile.fields.dateOfBirth')} value={formatHumanDate(vm.profile?.date_of_birth)} testID="profile-date-of-birth" />
               <InfoRow icon="person-outline" label={t('profile.fields.gender')} value={vm.profile?.gender} testID="profile-gender" />
             </View>
           </View>
@@ -63,6 +64,7 @@ export function ProfileView() {
             </View>
           </View>
           <AppButton testID="profile-edit" label={t('profile.makeChanges')} icon="create-outline" onPress={vm.onEdit} />
+          <AppButton testID="profile-sign-out" label={t('profile.signOut')} icon="log-out-outline" variant="danger" onPress={() => void vm.onLogout()} />
         </ScrollView>
       </Screen>
     );

@@ -1,14 +1,32 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { router } from 'expo-router';
 import { useProfileViewModel } from '../useProfileViewModel';
 import { TestQueryProvider } from '../../../../core/query/testUtils';
 import { useOptionalLocale } from '../../../../providers/LocaleProvider';
+import { useAuth } from '../../../../providers/AuthProvider';
 import * as api from '../../model/api';
 
 jest.mock('../../model/api');
 jest.mock('../../../../providers/LocaleProvider');
+jest.mock('../../../../providers/AuthProvider', () => ({ useAuth: jest.fn(() => ({ logout: jest.fn() })) }));
+jest.mock('expo-router', () => ({ router: { replace: jest.fn() } }));
 
 const wrapper = ({ children }: { children: React.ReactNode }) => <TestQueryProvider>{children}</TestQueryProvider>;
+
+test('onLogout calls useAuth().logout and redirects to /login', async () => {
+  const logout = jest.fn().mockResolvedValue(undefined);
+  (useAuth as jest.Mock).mockReturnValue({ logout });
+  (api.getProfile as jest.Mock).mockResolvedValue({ patient_id: '1', full_name: 'Ayesha', preferred_language: 'ENGLISH' });
+
+  const { result } = await renderHook(() => useProfileViewModel(), { wrapper });
+  await act(async () => {
+    await result.current.onLogout();
+  });
+
+  expect(logout).toHaveBeenCalled();
+  expect(router.replace).toHaveBeenCalledWith('/login');
+});
 
 test('starts in view mode, onEdit switches to edit mode, onSave PATCHes and returns to view mode', async () => {
   (api.getProfile as jest.Mock).mockResolvedValue({ patient_id: '1', full_name: 'Ayesha', preferred_language: 'ENGLISH' });

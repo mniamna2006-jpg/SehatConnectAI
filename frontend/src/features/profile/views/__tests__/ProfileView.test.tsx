@@ -6,7 +6,8 @@ import { ProfileView } from '../ProfileView';
 
 jest.mock('../../model/api');
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
-jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
+jest.mock('expo-router', () => ({ router: { back: jest.fn(), replace: jest.fn() } }));
+jest.mock('../../../../providers/AuthProvider', () => ({ useAuth: () => ({ logout: jest.fn().mockResolvedValue(undefined) }) }));
 
 const profile = {
   patient_id: 'p1',
@@ -38,7 +39,7 @@ test('shows complete read-only identity without a location field', async () => {
   expect(await screen.findByTestId('profile-full-name')).toHaveTextContent('Ayesha Khan');
   expect(screen.getByTestId('profile-email')).toHaveTextContent('ayesha@example.com');
   expect(screen.getByTestId('profile-phone')).toHaveTextContent('03001234567');
-  expect(screen.getByTestId('profile-date-of-birth')).toHaveTextContent('1990-01-01');
+  expect(screen.getByTestId('profile-date-of-birth')).toHaveTextContent('1 Jan 1990');
   expect(screen.getByTestId('profile-gender')).toHaveTextContent('Female');
   expect(screen.getByTestId('profile-address')).toHaveTextContent('123 Main Street');
   expect(screen.getByTestId('profile-city')).toHaveTextContent('Karachi');
@@ -50,11 +51,19 @@ test('shows complete read-only identity without a location field', async () => {
   expect(router.back).toHaveBeenCalledTimes(1);
 });
 
+test('signs out and redirects to login from the profile screen', async () => {
+  await render(<ProfileView />, { wrapper });
+
+  await fireEvent.press(await screen.findByRole('button', { name: 'Sign Out' }));
+
+  await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/login'));
+});
+
 test('supports edit, preferred language, save, and cancel while email stays read-only', async () => {
   await render(<ProfileView />, { wrapper });
   expect(await screen.findByTestId('profile-edit')).toBeOnTheScreen();
 
-  await fireEvent.press(screen.getByRole('button', { name: 'Make Changes' }));
+  await fireEvent.press(screen.getByRole('button', { name: 'Edit profile' }));
 
   expect(screen.getByLabelText('Full name')).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'English', selected: true })).toBeOnTheScreen();
@@ -70,7 +79,7 @@ test('supports edit, preferred language, save, and cancel while email stays read
 
 test('saves editable profile fields without sending read-only email', async () => {
   await render(<ProfileView />, { wrapper });
-  await fireEvent.press(await screen.findByRole('button', { name: 'Make Changes' }));
+  await fireEvent.press(await screen.findByRole('button', { name: 'Edit profile' }));
   await fireEvent.press(screen.getByRole('radio', { name: 'اردو' }));
   await fireEvent.press(screen.getByRole('button', { name: 'Save' }));
 
