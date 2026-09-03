@@ -50,11 +50,12 @@ test('shows unavailable status without hiding doctor', async () => {
   expect(screen.getByText('Unavailable')).toBeOnTheScreen();
 });
 
-test('uses initials and safe schedule fallback when photo and schedule are absent', async () => {
+test('uses initials when photo is absent, and never pairs a missing-schedule label with an active Book action', async () => {
   await render(
     <DoctorCard id="d2" name="Ayesha Khan" bookingHref="/appointments?doctorId=d2" />
   );
 
   expect(screen.getByText('AK')).toBeOnTheScreen();
-  expect(screen.getByText('Schedule not available')).toBeOnTheScreen();
+  expect(screen.queryByText('Schedule not available')).not.toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'Book Appointment' })).toBeOnTheScreen();
 });

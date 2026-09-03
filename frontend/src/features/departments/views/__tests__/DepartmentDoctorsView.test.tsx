@@ -45,4 +45,5 @@ test('shows department doctor results', async () => {
 
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
   expect(screen.getByText('Cardiology')).toBeOnTheScreen();
+  expect(screen.queryByText('Specialist care team')).not.toBeOnTheScreen();
 });
