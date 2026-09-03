@@ -151,7 +151,13 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
 
       {vm.bookingError ? <ErrorState message={vm.bookingError} /> : null}
       {vm.bookingSuccess ? <View style={styles.success}><AppIcon name="checkmark-circle" color={colors.success} size={22} /><Text style={styles.successText}>{vm.bookingSuccess}</Text></View> : null}
-      <AppButton label={t('appointments.booking.confirmAppointment')} icon="checkmark-circle-outline" loading={vm.isSubmitting} onPress={vm.onSubmit} />
+      <AppButton
+  label={t('appointments.booking.confirmAppointment')}
+  icon="checkmark-circle-outline"
+  loading={vm.isSubmitting || vm.isPrefilling}
+  disabled={vm.isPrefilling}
+  onPress={vm.onSubmit}
+/>
     </ScrollView>
     </KeyboardAvoidingView>
   );

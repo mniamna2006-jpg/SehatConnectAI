@@ -51,17 +51,21 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   // Doctor-only prefill (no hospitalId/departmentId): resolve the doctor's
   // own hospital/department so the dependent queries below aren't stuck
   // disabled and the prefill survives mount.
-  const hasDoctorOnlyPrefill = Boolean(prefill.doctorId) && !prefill.hospitalId && !prefill.departmentId;
-  const {
-    data: prefillDoctor,
-    isError: isPrefillDoctorError,
-    refetch: refetchPrefillDoctor,
-  } = useQuery({
-    queryKey: queryKeys.doctor(prefill.doctorId ?? ''),
-    queryFn: () => getDoctorById(prefill.doctorId as string),
-    enabled: hasDoctorOnlyPrefill,
-  });
+  const hasDoctorOnlyPrefill =
+  Boolean(prefill.doctorId) && !prefill.hospitalId && !prefill.departmentId;
 
+const {
+  data: prefillDoctor,
+  isError: isPrefillDoctorError,
+  isLoading: isLoadingPrefillDoctor,
+  refetch: refetchPrefillDoctor,
+} = useQuery({
+  queryKey: queryKeys.doctor(prefill.doctorId ?? ''),
+  queryFn: () => getDoctorById(prefill.doctorId as string),
+  enabled: hasDoctorOnlyPrefill,
+});
+
+const isPrefilling = hasDoctorOnlyPrefill && isLoadingPrefillDoctor;
   useEffect(() => {
     if (!prefillDoctor) return;
     setValue('hospital_id', prefillDoctor.hospital.hospital_id);
@@ -198,6 +202,7 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
     onSelectSlot,
     onSubmit,
     isSubmitting,
+    isPrefilling,
     bookingError,
     bookingSuccess,
   };
