@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
@@ -45,6 +45,7 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
   const days = nextSevenDays();
 
   return (
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.introCard}>
         <View style={styles.introIcon}><AppIcon name="calendar-clear" color={colors.surface} size={27} /></View>
@@ -152,10 +153,12 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
       {vm.bookingSuccess ? <View style={styles.success}><AppIcon name="checkmark-circle" color={colors.success} size={22} /><Text style={styles.successText}>{vm.bookingSuccess}</Text></View> : null}
       <AppButton label={t('appointments.booking.confirmAppointment')} icon="checkmark-circle-outline" loading={vm.isSubmitting} onPress={vm.onSubmit} />
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   content: { paddingHorizontal: 22, paddingBottom: 44, gap: 26 },
   introCard: { minHeight: 112, borderRadius: radius.lg, backgroundColor: colors.primary, padding: 18, flexDirection: 'row', alignItems: 'center', gap: 14 },
   introIcon: { width: 56, height: 56, borderRadius: 18, backgroundColor: '#FFFFFF24', alignItems: 'center', justifyContent: 'center' },
