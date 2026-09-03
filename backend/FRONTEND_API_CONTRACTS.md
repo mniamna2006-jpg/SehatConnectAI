@@ -73,8 +73,8 @@ Public invitation acceptance remains `GET /api/staff/invitations/token/:token` a
 
 | Method | Route | Access | Stable data / behavior |
 |---|---|---|---|
-| GET | `/api/staff/dashboard` | STAFF with active profile/hospital | Own-hospital daily dashboard |
-| GET | `/api/staff/appointments/today` | STAFF with active profile/hospital | Own-hospital appointments for current Pakistan date |
+| GET | `/api/staff/dashboard` | STAFF or ADMIN with active HospitalStaff profile/hospital | Own-hospital daily dashboard |
+| GET | `/api/staff/appointments/today` | STAFF or ADMIN with active HospitalStaff profile/hospital | Own-hospital appointments for current Pakistan date |
 | GET | `/api/appointments/hospital` | STAFF with active profile | Own-hospital appointments |
 | PATCH | `/api/appointments/:appointment_id/status` | STAFF; owning hospital | Valid status transition; CHECKED_IN creates queue |
 | GET | `/api/queue/hospital` | STAFF with active profile | Active own-hospital queue |

@@ -68,8 +68,8 @@ test("staff available-today count excludes inactive and temporarily unavailable 
   const dashboardRoute = harness.findRoute("GET", "/dashboard");
   const todayRoute = harness.findRoute("GET", "/appointments/today");
 
-  assert.deepEqual(dashboardRoute.handlers[1].allowedRoles, ["STAFF"]);
-  assert.deepEqual(todayRoute.handlers[1].allowedRoles, ["STAFF"]);
+  assert.deepEqual(dashboardRoute.handlers[1].allowedRoles, ["STAFF", "ADMIN"]);
+  assert.deepEqual(todayRoute.handlers[1].allowedRoles, ["STAFF", "ADMIN"]);
 
   await dashboardRoute.handlers.at(-1)(
     { user: { user_id: "staff-user-1", role: "STAFF" } },
