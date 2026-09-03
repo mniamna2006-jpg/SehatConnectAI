@@ -141,6 +141,7 @@
       "contactRequired": "Email ya phone number darj karein.",
       "passwordsMismatch": "Passwords match nahi karte.",
       "language": "Apni pasandeeda zaban muntakhib karein.",
+      "dateOfBirth": "Sahi tareekh-e-paidaish darj karein (YYYY-MM-DD), jo mustaqbil mein na ho.",
       "registerFailed": "Account nahi ban saka. Dobara koshish karein.",
       "profileSaveFailed": "Tabdeeliyan save nahi ho sakin. Dobara koshish karein."
     },
@@ -291,6 +292,7 @@
       "chooseDate": "Tareekh Chunein",
       "nextSevenDays": "Aglay 7 din",
       "enterDate": "Ya tareekh darj karein",
+      "invalidDate": "Sahi aur aane wali tareekh darj karein (YYYY-MM-DD).",
       "availableTime": "Dastyab Waqt",
       "slots": "waqt",
       "noTimesTitle": "Koi waqt dastyab nahi",

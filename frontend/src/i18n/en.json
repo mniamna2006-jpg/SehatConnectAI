@@ -141,6 +141,7 @@
       "contactRequired": "Enter an email or phone number.",
       "passwordsMismatch": "Passwords do not match.",
       "language": "Choose a preferred language.",
+      "dateOfBirth": "Enter a real date of birth (YYYY-MM-DD), not in the future.",
       "registerFailed": "Unable to create your account. Please try again.",
       "profileSaveFailed": "Unable to save your changes. Please try again."
     },
@@ -291,6 +292,7 @@
       "chooseDate": "Choose Date",
       "nextSevenDays": "Next 7 days",
       "enterDate": "Or enter a date",
+      "invalidDate": "Enter a real, upcoming date (YYYY-MM-DD).",
       "availableTime": "Available Time",
       "slots": "slots",
       "noTimesTitle": "No times available",

@@ -19,6 +19,12 @@ export function formatDateLabel(value: string): string {
   });
 }
 
+/** Normalizes any ISO-ish date/datetime string down to its YYYY-MM-DD prefix, for editable date inputs. */
+export function toDateInputValue(value?: string): string {
+  if (!value) return '';
+  return value.match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? '';
+}
+
 export function formatHumanDate(value?: string): string {
   if (!value) return '';
   const calendarDate = value.match(/^\d{4}-\d{2}-\d{2}/)?.[0];

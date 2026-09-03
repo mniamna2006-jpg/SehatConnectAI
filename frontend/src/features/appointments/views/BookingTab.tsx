@@ -123,7 +123,7 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
             );
           })}
         </ScrollView>
-        <FormField accessibilityLabel={t('appointments.booking.appointmentDate')} label={t('appointments.booking.enterDate')} icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} />
+        <FormField accessibilityLabel={t('appointments.booking.appointmentDate')} label={t('appointments.booking.enterDate')} icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} error={vm.isInvalidDate ? t('appointments.booking.invalidDate') : undefined} />
       </View>
 
       <View style={styles.stage}>

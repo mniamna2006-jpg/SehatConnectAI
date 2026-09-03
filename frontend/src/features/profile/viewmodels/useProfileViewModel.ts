@@ -9,6 +9,7 @@ import type { ProfileUpdateInput } from '../model/types';
 import { useAuth } from '../../../providers/AuthProvider';
 import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { queryKeys } from '../../../shared/constants/queryKeys';
+import { toDateInputValue } from '../../../shared/utils/formatters';
 
 export function useProfileViewModel() {
   const queryClient = useQueryClient();
@@ -38,7 +39,7 @@ export function useProfileViewModel() {
   });
 
   const onEdit = () => {
-    if (profile) reset(profile);
+    if (profile) reset({ ...profile, date_of_birth: toDateInputValue(profile.date_of_birth) });
     setSaveError(null);
     setIsEditing(true);
   };

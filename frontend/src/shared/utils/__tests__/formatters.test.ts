@@ -1,4 +1,4 @@
-import { formatDateLabel, formatDateTimeLabel, formatHumanDate } from '../formatters';
+import { formatDateLabel, formatDateTimeLabel, formatHumanDate, toDateInputValue } from '../formatters';
 
 describe('formatDateLabel', () => {
   test('formats a backend ISO timestamp as its appointment calendar date', () => {
@@ -21,6 +21,21 @@ describe('formatHumanDate', () => {
 
   test('returns empty string for an absent value', () => {
     expect(formatHumanDate(undefined)).toBe('');
+  });
+});
+
+describe('toDateInputValue', () => {
+  test('strips the time component from a backend ISO datetime for an editable date field', () => {
+    expect(toDateInputValue('1995-08-14T00:00:00.000Z')).toBe('1995-08-14');
+  });
+
+  test('passes through an already date-only value', () => {
+    expect(toDateInputValue('1995-08-14')).toBe('1995-08-14');
+  });
+
+  test('returns empty string for an absent value', () => {
+    expect(toDateInputValue(undefined)).toBe('');
+    expect(toDateInputValue('')).toBe('');
   });
 });
 

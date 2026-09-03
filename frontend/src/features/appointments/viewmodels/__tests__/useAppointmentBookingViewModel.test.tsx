@@ -73,12 +73,14 @@ test('doctor-only prefill resolves hospital_id/department_id from the doctor det
 });
 
 test('onSelectDate loads available time slots for the chosen doctor and date', async () => {
+  const today = new Date();
+  const futureDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   (api.getTimeSlots as jest.Mock).mockResolvedValue([
     {
       slot_id: 's1',
       doctor_id: 'd1',
       hospital_id: 'h1',
-      date: '2026-09-01',
+      date: futureDate,
       start_time: '09:00',
       end_time: '09:30',
       status: 'AVAILABLE',
@@ -90,11 +92,30 @@ test('onSelectDate loads available time slots for the chosen doctor and date', a
   );
 
   await act(() => {
-    result.current.onSelectDate('2026-09-01');
+    result.current.onSelectDate(futureDate);
   });
 
   await waitFor(() => expect(result.current.timeSlots).toHaveLength(1));
-  expect(api.getTimeSlots).toHaveBeenCalledWith('d1', '2026-09-01');
+  expect(api.getTimeSlots).toHaveBeenCalledWith('d1', futureDate);
+});
+
+test('onSelectDate rejects a past or impossible date and does not query for slots', async () => {
+  const { result } = await renderHook(
+    () => useAppointmentBookingViewModel({ doctorId: 'd1' }),
+    { wrapper }
+  );
+
+  await act(() => {
+    result.current.onSelectDate('2000-01-01');
+  });
+  await waitFor(() => expect(result.current.isInvalidDate).toBe(true));
+  expect(api.getTimeSlots).not.toHaveBeenCalled();
+
+  await act(() => {
+    result.current.onSelectDate('2999-02-30');
+  });
+  await waitFor(() => expect(result.current.isInvalidDate).toBe(true));
+  expect(api.getTimeSlots).not.toHaveBeenCalled();
 });
 
 test('onSubmit maps a 400 response to the slot-taken message', async () => {

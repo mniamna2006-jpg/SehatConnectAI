@@ -9,10 +9,9 @@ import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue';
 import { getDepartmentsByHospital } from '../../departments/model/api';
 import { getDoctorById, getDoctorsByHospital } from '../../doctors/model/api';
 import { getHospitals } from '../../hospitals/model/api';
+import { isTodayOrFutureDate } from '../../../shared/utils/dateValidation';
 import { createAppointment, getTimeSlots } from '../model/api';
 import { bookingSchema, type BookingInput } from '../model/schemas';
-
-const FULL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 interface AppointmentPrefill {
   doctorId?: string;
@@ -106,7 +105,8 @@ const isPrefilling = hasDoctorOnlyPrefill && isLoadingPrefillDoctor;
     : hospitalDoctors;
 
   const debouncedDate = useDebouncedValue(selectedDate);
-  const isCompleteDate = FULL_DATE_PATTERN.test(debouncedDate);
+  const isCompleteDate = isTodayOrFutureDate(debouncedDate);
+  const isInvalidDate = debouncedDate.length > 0 && !isCompleteDate;
   const {
     data: allTimeSlots = [],
     isLoading: isLoadingSlots,
@@ -182,6 +182,7 @@ const isPrefilling = hasDoctorOnlyPrefill && isLoadingPrefillDoctor;
     departmentId,
     doctorId,
     selectedDate,
+    isInvalidDate,
     selectedSlotId,
     isLoadingHospitals,
     isLoadingDepartments,
