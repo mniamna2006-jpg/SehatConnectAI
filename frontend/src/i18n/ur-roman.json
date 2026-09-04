@@ -335,7 +335,13 @@
       "loadingHospitals": "Hospital load ho rahe hain…",
       "loadingDepartments": "Shobajaat load ho rahe hain…",
       "loadingDoctors": "Doctors load ho rahe hain…",
-      "loadingSlots": "Waqt load ho raha hai…"
+      "loadingSlots": "Waqt load ho raha hai…",
+      "validation": {
+        "doctor": "Doctor chunein",
+        "hospital": "Hospital chunein",
+        "department": "Department chunein",
+        "slot": "Waqt chunein"
+      }
     },
     "history": {
       "title": "Appointment history",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
@@ -11,7 +11,7 @@ import { getDoctorById, getDoctorsByHospital } from '../../doctors/model/api';
 import { getHospitals } from '../../hospitals/model/api';
 import { isTodayOrFutureDate } from '../../../shared/utils/dateValidation';
 import { createAppointment, getTimeSlots } from '../model/api';
-import { bookingSchema, type BookingInput } from '../model/schemas';
+import { createBookingSchema, type BookingInput } from '../model/schemas';
 
 interface AppointmentPrefill {
   doctorId?: string;
@@ -25,6 +25,7 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   const [selectedDate, setSelectedDate] = useState('');
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
+  const bookingSchema = useMemo(() => createBookingSchema(t), [t]);
   const {
     control,
     getValues,

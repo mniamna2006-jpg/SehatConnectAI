@@ -335,7 +335,13 @@
       "loadingHospitals": "ہسپتال لوڈ ہو رہے ہیں…",
       "loadingDepartments": "شعبہ جات لوڈ ہو رہے ہیں…",
       "loadingDoctors": "ڈاکٹرز لوڈ ہو رہے ہیں…",
-      "loadingSlots": "اوقات لوڈ ہو رہے ہیں…"
+      "loadingSlots": "اوقات لوڈ ہو رہے ہیں…",
+      "validation": {
+        "doctor": "ڈاکٹر منتخب کریں",
+        "hospital": "ہسپتال منتخب کریں",
+        "department": "شعبہ منتخب کریں",
+        "slot": "وقت منتخب کریں"
+      }
     },
     "history": {
       "title": "اپائنٹمنٹ ہسٹری",

@@ -335,7 +335,13 @@
       "loadingHospitals": "Loading hospitals…",
       "loadingDepartments": "Loading departments…",
       "loadingDoctors": "Loading doctors…",
-      "loadingSlots": "Loading time slots…"
+      "loadingSlots": "Loading time slots…",
+      "validation": {
+        "doctor": "Choose a doctor",
+        "hospital": "Choose a hospital",
+        "department": "Choose a department",
+        "slot": "Choose a time slot"
+      }
     },
     "history": {
       "title": "Appointment history",

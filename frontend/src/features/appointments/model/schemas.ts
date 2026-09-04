@@ -1,11 +1,15 @@
 import { z } from 'zod';
 
-export const bookingSchema = z.object({
-  doctor_id: z.string().min(1, 'Choose a doctor'),
-  hospital_id: z.string().min(1, 'Choose a hospital'),
-  department_id: z.string().min(1, 'Choose a department'),
-  slot_id: z.string().min(1, 'Choose a time slot'),
-  reason: z.string().optional(),
-});
+type T = (key: string) => string;
 
-export type BookingInput = z.infer<typeof bookingSchema>;
+export function createBookingSchema(t: T) {
+  return z.object({
+    doctor_id: z.string().min(1, t('appointments.booking.validation.doctor')),
+    hospital_id: z.string().min(1, t('appointments.booking.validation.hospital')),
+    department_id: z.string().min(1, t('appointments.booking.validation.department')),
+    slot_id: z.string().min(1, t('appointments.booking.validation.slot')),
+    reason: z.string().optional(),
+  });
+}
+
+export type BookingInput = z.infer<ReturnType<typeof createBookingSchema>>;
