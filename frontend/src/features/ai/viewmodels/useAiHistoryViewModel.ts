@@ -31,7 +31,8 @@ export function useAiHistoryViewModel() {
     isLoading,
     isError,
     refetch,
-    onDelete: (conversationId: string) => mutation.mutateAsync(conversationId),
+    onDelete: (conversationId: string) => mutation.mutateAsync(conversationId).catch(() => undefined),
     isDeleting: (conversationId: string) => deletingId === conversationId,
+    hasDeleteError: mutation.isError,
   };
 }

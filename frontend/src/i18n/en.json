@@ -16,6 +16,7 @@
     "emptyTitle": "Nothing here yet",
     "goBack": "Go back",
     "notProvided": "Not provided",
+    "detailsUnavailable": "Details unavailable",
     "found": "found",
     "available": "available",
     "selected": "Selected",
@@ -23,6 +24,15 @@
     "to": "to",
     "patient": "Patient",
     "active": "active",
+    "days": {
+      "MONDAY": "Monday",
+      "TUESDAY": "Tuesday",
+      "WEDNESDAY": "Wednesday",
+      "THURSDAY": "Thursday",
+      "FRIDAY": "Friday",
+      "SATURDAY": "Saturday",
+      "SUNDAY": "Sunday"
+    },
     "status": {
       "BOOKED": "Booked",
       "CONFIRMED": "Confirmed",
@@ -70,6 +80,10 @@
     "appointmentDetails": {
       "title": "Appointment Details",
       "description": "View bookings, history, and queue status"
+    },
+    "upcomingAppointment": {
+      "eyebrow": "Upcoming appointment",
+      "viewDetails": "View details"
     }
   },
   "profile": {
@@ -131,6 +145,18 @@
       "network": "Unable to connect to the server. Please try again.",
       "server": "Server is temporarily unavailable. Please try again.",
       "unexpected": "Unable to sign in. Please try again."
+    },
+    "validation": {
+      "email": "Enter a valid email address.",
+      "password": "Password must be at least 6 characters.",
+      "fullName": "Enter your full name (at least 2 characters).",
+      "phone": "Enter a valid phone number (at least 7 digits).",
+      "contactRequired": "Enter an email or phone number.",
+      "passwordsMismatch": "Passwords do not match.",
+      "language": "Choose a preferred language.",
+      "dateOfBirth": "Enter a real date of birth (YYYY-MM-DD), not in the future.",
+      "registerFailed": "Unable to create your account. Please try again.",
+      "profileSaveFailed": "Unable to save your changes. Please try again."
     },
     "register": {
       "title": "Create your account",
@@ -197,10 +223,15 @@
     "unavailableTitle": "Hospital not found",
     "unavailableMessage": "This hospital profile is not available.",
     "hoursAvailable": "Working hours available",
+    "today": "Today",
+    "viewWeeklyHours": "View weekly hours",
+    "hideWeeklyHours": "Hide weekly hours",
     "about": "About",
     "contactInformation": "Contact information",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "logo": "logo",
+    "building": "building"
   },
   "doctors": {
     "findTitle": "Find Doctor",
@@ -268,7 +299,10 @@
       "title": "Book Appointment",
       "introTitle": "Book an appointment",
       "introMessage": "Choose your care team, date and available time.",
-      "chooseHospital": "Choose Hospital",
+      "phaseCare": "Care",
+    "phaseDetails": "Details",
+    "enterDifferentDate": "Enter a different date",
+    "chooseHospital": "Choose Hospital",
       "startHere": "Start here",
       "noHospitals": "No hospitals available.",
       "chooseDepartment": "Choose Department",
@@ -277,6 +311,7 @@
       "chooseDate": "Choose Date",
       "nextSevenDays": "Next 7 days",
       "enterDate": "Or enter a date",
+      "invalidDate": "Enter a real, upcoming date (YYYY-MM-DD).",
       "availableTime": "Available Time",
       "slots": "slots",
       "noTimesTitle": "No times available",
@@ -300,7 +335,13 @@
       "loadingHospitals": "Loading hospitals…",
       "loadingDepartments": "Loading departments…",
       "loadingDoctors": "Loading doctors…",
-      "loadingSlots": "Loading time slots…"
+      "loadingSlots": "Loading time slots…",
+      "validation": {
+        "doctor": "Choose a doctor",
+        "hospital": "Choose a hospital",
+        "department": "Choose a department",
+        "slot": "Choose a time slot"
+      }
     },
     "history": {
       "title": "Appointment history",
@@ -311,7 +352,8 @@
       "date": "Date",
       "time": "Time",
       "bookingReference": "Booking reference",
-      "cancelling": "Cancelling..."
+      "cancelling": "Cancelling...",
+      "cancelError": "Could not cancel this appointment. Please try again."
     },
     "queue": {
       "title": "Queue status",
@@ -335,6 +377,7 @@
     "emptyTitle": "No notifications",
     "emptyMessage": "You're all caught up. New updates will appear here.",
     "errorMessage": "We couldn't load your notifications.",
+    "mutationError": "We couldn't update that. Please try again.",
     "unread": "Unread"
   },
   "ai": {
@@ -360,6 +403,7 @@
       "emptyTitle": "No conversations yet",
       "emptyMessage": "Start a chat with the AI Assistant to see it here.",
       "errorMessage": "We couldn't load your history.",
+      "deleteError": "We couldn't delete that conversation. Please try again.",
       "deleteConfirmTitle": "Delete conversation?",
       "deleteConfirmMessage": "This will permanently remove this conversation and its messages.",
       "delete": "Delete",

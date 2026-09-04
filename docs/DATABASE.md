@@ -13,7 +13,7 @@
 - **TimeSlot** — a specific bookable date+time for one doctor at one hospital, with status (`AVAILABLE` / `BOOKED` / `BLOCKED` / `COMPLETED`).
 - **Appointment** — links Patient + Doctor + Hospital + Department + TimeSlot, with status lifecycle and a unique `booking_reference`.
 - **Queue** — created automatically when an appointment is checked in; token number + queue status. Read-only for patients (staff-driven updates).
-- **Notification** — user-facing notifications (booking confirmation, queue updates); not part of the frozen 11-screen scope but exists in the backend.
+- **Notification** — user-facing notifications (booking confirmation, queue updates, reminders, doctor-availability alerts); surfaced in the frontend's Notifications screen.
 
 ## Relationships That Matter to the Frontend
 

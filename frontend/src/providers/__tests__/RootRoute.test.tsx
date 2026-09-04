@@ -25,11 +25,15 @@ try {
 function setSessionState({
   patient = null,
   patientLoading = false,
+  sessionError = null,
+  retrySession = jest.fn(),
 }: {
   patient?: { role: 'PATIENT' } | null;
   patientLoading?: boolean;
+  sessionError?: 'network' | null;
+  retrySession?: () => void;
 } = {}) {
-  (useAuth as jest.Mock).mockReturnValue({ user: patient, isLoading: patientLoading });
+  (useAuth as jest.Mock).mockReturnValue({ user: patient, isLoading: patientLoading, sessionError, retrySession });
 }
 
 async function renderRootRoute() {
@@ -63,8 +67,18 @@ test('root waits while Patient auth restoration is loading', async () => {
 
   await renderRootRoute();
 
-  expect(screen.getByText('Preparing your session…')).toBeOnTheScreen();
+  expect(screen.getByText('Loading…')).toBeOnTheScreen();
   expect(screen.queryByText(/^redirect:/)).not.toBeOnTheScreen();
+});
+
+test('root offers a retry instead of redirecting to login when session restore fails offline', async () => {
+  const retrySession = jest.fn();
+  setSessionState({ sessionError: 'network', retrySession });
+
+  await renderRootRoute();
+
+  expect(screen.queryByText(/^redirect:/)).not.toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'Try again' })).toBeOnTheScreen();
 });
 
 test('root route exists for the normal launcher URL', async () => {

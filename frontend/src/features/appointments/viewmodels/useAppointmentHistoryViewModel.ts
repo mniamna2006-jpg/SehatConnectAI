@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from '../../../providers/LocaleProvider';
 import { queryKeys } from '../../../shared/constants/queryKeys';
 import type { AppointmentStatus } from '../../../shared/types/api';
 import { cancelAppointment, getMyAppointments } from '../model/api';
@@ -14,6 +15,7 @@ const FILTER_STATUSES: Record<HistoryFilter, AppointmentStatus[]> = {
 
 export function useAppointmentHistoryViewModel() {
   const queryClient = useQueryClient();
+  const t = useTranslations();
   const [filter, setFilter] = useState<HistoryFilter>('upcoming');
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -46,7 +48,7 @@ export function useAppointmentHistoryViewModel() {
     try {
       await mutation.mutateAsync(id);
     } catch {
-      setCancelError('Could not cancel this appointment. Please try again.');
+      setCancelError(t('appointments.history.cancelError'));
     }
   };
 

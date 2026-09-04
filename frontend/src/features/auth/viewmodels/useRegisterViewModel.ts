@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
-import { registerSchema } from '../model/schemas';
+import { useTranslations } from '../../../providers/LocaleProvider';
+import { createRegisterSchema } from '../model/schemas';
 import type { RegisterInput } from '../model/types';
 import { useAuth } from '../../../providers/AuthProvider';
 
@@ -12,7 +13,9 @@ interface RegisterFormValues extends RegisterInput {
 
 export function useRegisterViewModel() {
   const { register: registerPatient } = useAuth();
+  const t = useTranslations();
   const [apiError, setApiError] = useState<string | null>(null);
+  const registerSchema = useMemo(() => createRegisterSchema(t), [t]);
   const {
     control, handleSubmit, setValue, formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({ resolver: zodResolver(registerSchema) });
@@ -24,7 +27,7 @@ export function useRegisterViewModel() {
       router.replace('/home');
     } catch (err) {
       console.warn('[useRegisterViewModel] registration failed', err);
-      setApiError('Unable to create your account. Please try again.');
+      setApiError(t('auth.validation.registerFailed'));
     }
   });
 

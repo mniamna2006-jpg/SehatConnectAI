@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   title: { ...typography.metadata, color: colors.muted, fontWeight: '700' },
   currentRow: { minHeight: 32, flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start' },
-  currentLabel: { color: colors.primary, fontSize: 14, fontWeight: '700' },
+  currentLabel: { color: colors.primaryPressed, fontSize: 14, fontWeight: '700' },
   pressed: { opacity: 0.7 },
   notice: { ...typography.metadata, color: colors.danger },
   inputShell: { minHeight: 48, borderRadius: radius.md, backgroundColor: colors.surfaceMuted, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14 },

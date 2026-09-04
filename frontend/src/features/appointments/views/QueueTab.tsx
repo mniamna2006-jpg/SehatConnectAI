@@ -1,4 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
@@ -18,10 +19,11 @@ function DetailRow({ icon, label, value }: { icon: AppIconName; label: string; v
 }
 
 export function QueueTab() {
+  const t = useTranslations();
   const { queue, isLoading, isError, refetch } = useQueueViewModel();
-  if (isLoading) return <LoadingState label="Checking your queue…" />;
+  if (isLoading) return <LoadingState label={t('appointments.queue.checking')} />;
   if (isError) return <ErrorState onRetry={() => void refetch()} />;
-  if (queue.length === 0) return <EmptyState title="No active queue" message="Your token will appear here after check-in." icon="people-outline" />;
+  if (queue.length === 0) return <EmptyState title={t('appointments.queue.emptyTitle')} message={t('appointments.queue.emptyMessage')} icon="people-outline" />;
 
   return (
     <FlatList
@@ -30,20 +32,20 @@ export function QueueTab() {
       contentContainerStyle={styles.content}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={<View style={styles.header}><Text accessibilityRole="header" style={styles.title}>Queue status</Text><Text style={styles.subtitle}>Follow your active token and estimated wait</Text></View>}
+      ListHeaderComponent={<View style={styles.header}><Text accessibilityRole="header" style={styles.title}>{t('appointments.queue.title')}</Text><Text style={styles.subtitle}>{t('appointments.queue.subtitle')}</Text></View>}
       renderItem={({ item }: { item: QueueEntry }) => (
         <View style={styles.queueCard}>
           <View style={styles.tokenHero}>
             <View style={styles.tokenIcon}><AppIcon name="ticket-outline" color={colors.surface} size={25} /></View>
-            <Text style={styles.tokenLabel}>Your Token</Text>
+            <Text style={styles.tokenLabel}>{t('appointments.queue.yourToken')}</Text>
             <Text style={styles.tokenNumber}>{item.token_number}</Text>
-            <View style={styles.statusBadge}><View style={styles.statusDot} /><Text style={styles.statusText}>{item.queue_status.replaceAll('_', ' ')}</Text></View>
+            <View style={styles.statusBadge}><View style={styles.statusDot} /><Text style={styles.statusText}>{t(`common.status.${item.queue_status}`)}</Text></View>
           </View>
           <View style={styles.detailsPanel}>
-            {item.appointment?.doctor?.name ? <DetailRow icon="medkit-outline" label="Doctor" value={item.appointment.doctor.name} /> : null}
-            {item.appointment?.hospital?.name ? <DetailRow icon="business-outline" label="Hospital" value={item.appointment.hospital.name} /> : null}
-            {item.appointment ? <DetailRow icon="time-outline" label="Appointment time" value={displayTime12h(item.appointment.appointment_time_12h, item.appointment.appointment_time)} /> : null}
-            {item.estimated_wait_time !== undefined ? <DetailRow icon="hourglass-outline" label="Estimated wait" value={`${item.estimated_wait_time} minutes`} /> : null}
+            {item.appointment?.doctor?.name ? <DetailRow icon="medkit-outline" label={t('appointments.queue.doctorLabel')} value={item.appointment.doctor.name} /> : null}
+            {item.appointment?.hospital?.name ? <DetailRow icon="business-outline" label={t('appointments.queue.hospitalLabel')} value={item.appointment.hospital.name} /> : null}
+            {item.appointment ? <DetailRow icon="time-outline" label={t('appointments.queue.appointmentTime')} value={displayTime12h(item.appointment.appointment_time_12h, item.appointment.appointment_time)} /> : null}
+            {item.estimated_wait_time !== undefined ? <DetailRow icon="hourglass-outline" label={t('appointments.queue.estimatedWait')} value={`${item.estimated_wait_time} ${t('appointments.queue.minutes')}`} /> : null}
           </View>
         </View>
       )}
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
   queueCard: { borderRadius: radius.lg, backgroundColor: colors.surface, overflow: 'hidden', shadowColor: shadow.color, shadowOpacity: shadow.opacity, shadowRadius: shadow.radius, shadowOffset: shadow.offset, elevation: shadow.elevation },
   tokenHero: { minHeight: 238, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', padding: 24 },
   tokenIcon: { width: 52, height: 52, borderRadius: 17, backgroundColor: '#FFFFFF24', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  tokenLabel: { ...typography.body, color: '#DCE8FF', fontWeight: '700' },
+  tokenLabel: { ...typography.body, color: colors.onPrimaryMuted, fontWeight: '700' },
   tokenNumber: { fontSize: 64, lineHeight: 72, color: colors.surface, fontWeight: '900', letterSpacing: -2, marginVertical: 3 },
   statusBadge: { minHeight: 36, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 7 },
   statusDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.teal },

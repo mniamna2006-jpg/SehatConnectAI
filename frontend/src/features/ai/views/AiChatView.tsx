@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useTranslations } from '../../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon } from '../../../shared/components/AppIcon';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
@@ -19,6 +19,7 @@ interface AiChatViewProps {
 
 export function AiChatView({ conversationId }: AiChatViewProps = {}) {
   const t = useTranslations();
+  const locale = useOptionalLocale();
   const vm = useAiChatViewModel(conversationId);
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
@@ -28,7 +29,7 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
 
   return (
     <Screen>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={12}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={12}>
         <PageHeader
           title={t('ai.chat.title')}
           subtitle={t('ai.chat.disclaimer')}
@@ -36,6 +37,7 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
         />
         <FlatList
           ref={listRef}
+          style={styles.flex}
           data={vm.messages}
           keyExtractor={(item: ChatMessage) => item.id}
           contentContainerStyle={styles.content}
@@ -73,7 +75,7 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
                     style={({ pressed }) => [styles.recommendationAction, pressed && styles.pressed]}
                   >
                     <Text style={styles.recommendationActionText}>{t('ai.chat.viewDoctors')}</Text>
-                    <AppIcon name="arrow-forward" color={colors.primary} size={16} />
+                    <AppIcon name={locale?.isRTL ? 'arrow-back' : 'arrow-forward'} color={colors.primary} size={16} />
                   </Pressable>
                 </View>
               ) : null}
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
   recommendationTitle: { ...typography.entityTitle, color: colors.ink },
   recommendationMeta: { ...typography.metadata, color: colors.muted },
   recommendationAction: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6, minHeight: 32 },
-  recommendationActionText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
+  recommendationActionText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700' },
   doctorList: { maxWidth: '90%', gap: 8 },
   doctorCard: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: 12, gap: 2 },
   doctorName: { ...typography.entityTitle, color: colors.ink, fontSize: 15 },

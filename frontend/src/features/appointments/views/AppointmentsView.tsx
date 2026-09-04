@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   tab: { flex: 1, minHeight: 46, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
   tabSelected: { backgroundColor: colors.primarySoft },
   tabText: { ...typography.metadata, color: colors.muted, fontWeight: '700' },
-  tabTextSelected: { color: colors.primary },
+  tabTextSelected: { color: colors.primaryPressed },
   pressed: { opacity: 0.74 },
   content: { flex: 1 },
 });

@@ -1,4 +1,3 @@
-import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useNotificationsViewModel } from '../../viewmodels/useNotificationsViewModel';
 import type { Notification } from '../../model/types';
@@ -121,6 +120,17 @@ test('pressing mark all as read calls onMarkAllRead', async () => {
 
   fireEvent.press(screen.getByText('Mark all as read'));
   expect(vm.onMarkAllRead).toHaveBeenCalled();
+});
+
+test('shows a visible error when a mark-read mutation failed, instead of failing silently', async () => {
+  (useNotificationsViewModel as jest.Mock).mockReturnValue({
+    ...baseVm,
+    notifications: [notification()],
+    hasMutationError: true,
+  });
+  await render(<NotificationsView />);
+
+  expect(screen.getByText("We couldn't update that. Please try again.")).toBeOnTheScreen();
 });
 
 test('distinguishes unread from read notifications for accessibility', async () => {

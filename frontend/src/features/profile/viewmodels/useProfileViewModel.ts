@@ -1,21 +1,24 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { router } from 'expo-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProfile, updateProfile } from '../model/api';
-import { profileUpdateSchema } from '../model/schemas';
+import { createProfileUpdateSchema } from '../model/schemas';
 import type { ProfileUpdateInput } from '../model/types';
 import { useAuth } from '../../../providers/AuthProvider';
-import { useOptionalLocale } from '../../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { queryKeys } from '../../../shared/constants/queryKeys';
+import { toDateInputValue } from '../../../shared/utils/formatters';
 
 export function useProfileViewModel() {
   const queryClient = useQueryClient();
   const locale = useOptionalLocale();
+  const t = useTranslations();
   const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const profileUpdateSchema = useMemo(() => createProfileUpdateSchema(t), [t]);
 
   const { data: profile, isLoading, isError, refetch } = useQuery({
     queryKey: queryKeys.profile,
@@ -36,7 +39,7 @@ export function useProfileViewModel() {
   });
 
   const onEdit = () => {
-    if (profile) reset(profile);
+    if (profile) reset({ ...profile, date_of_birth: toDateInputValue(profile.date_of_birth) });
     setSaveError(null);
     setIsEditing(true);
   };
@@ -54,7 +57,7 @@ export function useProfileViewModel() {
       await mutation.mutateAsync(values);
     } catch (err) {
       console.warn('[useProfileViewModel] save failed', err);
-      setSaveError('Unable to save your changes. Please try again.');
+      setSaveError(t('auth.validation.profileSaveFailed'));
     }
   });
 

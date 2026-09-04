@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { router } from 'expo-router';
 import { TestQueryProvider } from '../../../../core/query/testUtils';
+import { ltr } from '../../../../shared/utils/formatters';
 import * as api from '../../model/api';
 import { ProfileView } from '../ProfileView';
 
@@ -38,12 +39,12 @@ test('shows complete read-only identity without a location field', async () => {
 
   expect(await screen.findByTestId('profile-full-name')).toHaveTextContent('Ayesha Khan');
   expect(screen.getByTestId('profile-email')).toHaveTextContent('ayesha@example.com');
-  expect(screen.getByTestId('profile-phone')).toHaveTextContent('03001234567');
+  expect(screen.getByTestId('profile-phone')).toHaveTextContent(ltr('03001234567'));
   expect(screen.getByTestId('profile-date-of-birth')).toHaveTextContent('1 Jan 1990');
   expect(screen.getByTestId('profile-gender')).toHaveTextContent('Female');
   expect(screen.getByTestId('profile-address')).toHaveTextContent('123 Main Street');
   expect(screen.getByTestId('profile-city')).toHaveTextContent('Karachi');
-  expect(screen.getByTestId('profile-emergency-contact')).toHaveTextContent('03007654321');
+  expect(screen.getByTestId('profile-emergency-contact')).toHaveTextContent(ltr('03007654321'));
   expect(screen.getByTestId('profile-preferred-language')).toHaveTextContent('English');
   expect(screen.queryByText(/^Location$/)).not.toBeOnTheScreen();
 
@@ -65,7 +66,7 @@ test('supports edit, preferred language, save, and cancel while email stays read
 
   await fireEvent.press(screen.getByRole('button', { name: 'Edit profile' }));
 
-  expect(screen.getByLabelText('Full name')).toBeOnTheScreen();
+  expect(screen.getByLabelText('Full Name')).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'English', selected: true })).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'اردو' })).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'Roman Urdu' })).toBeOnTheScreen();

@@ -1,4 +1,7 @@
-import { bookingSchema } from '../schemas';
+import { createBookingSchema } from '../schemas';
+
+const t = (key: string) => key;
+const bookingSchema = createBookingSchema(t);
 
 test('bookingSchema requires doctor, hospital, department, and slot ids', () => {
   const valid = {
@@ -12,7 +15,7 @@ test('bookingSchema requires doctor, hospital, department, and slot ids', () => 
   expect(bookingSchema.safeParse({ ...valid, doctor_id: undefined }).success).toBe(false);
 });
 
-test('bookingSchema reports friendly messages instead of raw zod text for missing selections', () => {
+test('bookingSchema reports localized keys instead of raw zod text for missing selections', () => {
   const valid = {
     doctor_id: 'd1',
     hospital_id: 'h1',
@@ -24,6 +27,6 @@ test('bookingSchema reports friendly messages instead of raw zod text for missin
 
   expect(result.success).toBe(false);
   const messages = result.success ? [] : result.error.issues.map((issue) => issue.message);
-  expect(messages).toEqual(['Choose a doctor', 'Choose a time slot']);
+  expect(messages).toEqual(['appointments.booking.validation.doctor', 'appointments.booking.validation.slot']);
   expect(messages.join(' ')).not.toMatch(/too small|expected string/i);
 });

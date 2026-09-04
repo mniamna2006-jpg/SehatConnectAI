@@ -5,7 +5,7 @@ Full context lives in `docs/` — read there, don't duplicate here:
 
 ## Permanent Rules
 
-- **Patient frontend only**, unless the user explicitly expands scope. See FRONTEND_SCOPE.md for the frozen 11-screen list.
+- **Patient frontend only**, unless the user explicitly expands scope. See FRONTEND_SCOPE.md for the current screen list.
 - **Backend is read-only** for current frontend work. Never modify `backend/`; consume it via DATA_CONTRACTS.md.
 - **Architecture: feature-first, hook-based MVVM** (View → ViewModel hook → Model), Expo Router for navigation. Not class-heavy MVVM. No Redux/Zustand unless a concrete Phase 1 need proves existing state ownership (TanStack Query / RHF+Zod / SecureStore / providers) can't handle it.
 - **YAGNI on structure** — a feature gets only the files it needs (`model.ts` + `useViewModel.ts` + `View.tsx` is enough when that's sufficient). No empty enterprise boilerplate.

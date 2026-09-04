@@ -1,4 +1,3 @@
-import React from 'react';
 import { Alert } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
@@ -86,4 +85,15 @@ test('deleting asks for confirmation before calling onDelete', async () => {
 
   expect(alertSpy).toHaveBeenCalled();
   expect(vm.onDelete).toHaveBeenCalledWith('c1');
+});
+
+test('shows a visible error when a delete mutation failed, instead of failing silently', async () => {
+  (useAiHistoryViewModel as jest.Mock).mockReturnValue({
+    ...baseVm,
+    conversations: [conversation()],
+    hasDeleteError: true,
+  });
+  await render(<AiHistoryView />);
+
+  expect(screen.getByText("We couldn't delete that conversation. Please try again.")).toBeOnTheScreen();
 });

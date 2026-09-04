@@ -100,3 +100,27 @@ test('onMarkAllRead calls the mark-all-read endpoint', async () => {
 
   expect(api.markAllNotificationsRead).toHaveBeenCalled();
 });
+
+test('surfaces a visible error when marking a notification read fails, instead of failing silently', async () => {
+  (api.markNotificationRead as jest.Mock).mockRejectedValue(new Error('offline'));
+  const { result } = await renderHook(() => useNotificationsViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+  await act(async () => {
+    await result.current.onPress(notification());
+  });
+
+  await waitFor(() => expect(result.current.hasMutationError).toBe(true));
+});
+
+test('surfaces a visible error when mark-all-read fails, instead of failing silently', async () => {
+  (api.markAllNotificationsRead as jest.Mock).mockRejectedValue(new Error('offline'));
+  const { result } = await renderHook(() => useNotificationsViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+  await act(async () => {
+    await result.current.onMarkAllRead();
+  });
+
+  await waitFor(() => expect(result.current.hasMutationError).toBe(true));
+});

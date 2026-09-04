@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { useTranslations } from '../../../providers/LocaleProvider';
+import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon, type AppIconName } from '../../../shared/components/AppIcon';
 import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
@@ -21,6 +21,7 @@ interface FindDepartmentViewProps { hospitalId?: string; departmentId?: string }
 
 export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentViewProps = {}) {
   const t = useTranslations();
+  const locale = useOptionalLocale();
   const vm = useFindDepartmentViewModel({ hospitalId, departmentId });
   const hasQuery = vm.isHospitalScoped || vm.query.trim().length > 0;
 
@@ -36,7 +37,7 @@ export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentV
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.header}>
-            <PageHeader title={t('departments.findTitle')} subtitle={vm.isHospitalScoped ? 'Explore departments at this hospital' : 'Browse care by medical specialty'} />
+            <PageHeader title={t('departments.findTitle')} subtitle={vm.isHospitalScoped ? t('departments.scopedSubtitle') : t('departments.subtitle')} />
             {!vm.isHospitalScoped ? (
               <>
                 <LocationPicker selector={vm.selector} />
@@ -45,10 +46,10 @@ export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentV
             ) : (
               <View style={styles.scopedBanner}>
                 <View style={styles.scopedIcon}><AppIcon name="business-outline" color={colors.teal} size={22} /></View>
-                <View style={styles.scopedCopy}><Text style={styles.scopedTitle}>Hospital directory</Text><Text style={styles.scopedText}>Choose a department to view its doctors</Text></View>
+                <View style={styles.scopedCopy}><Text style={styles.scopedTitle}>{t('departments.directoryTitle')}</Text><Text style={styles.scopedText}>{t('departments.directoryMessage')}</Text></View>
               </View>
             )}
-            {vm.departments.length > 0 ? <SectionHeader title="Browse Departments" detail={`${vm.departments.length} available`} /> : null}
+            {vm.departments.length > 0 ? <SectionHeader title={t('departments.browseTitle')} detail={`${vm.departments.length} ${t('common.available')}`} /> : null}
           </View>
         }
         renderItem={({ item, index }: { item: Department; index: number }) => {
@@ -59,17 +60,17 @@ export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentV
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
                 testID={`department-row-${item.department_id}`}
-                style={[styles.tile, selected && styles.tileSelected]}
+                style={StyleSheet.flatten([styles.tile, selected && styles.tileSelected])}
               >
                 <View style={[styles.tileIcon, selected && styles.tileIconSelected]}><AppIcon name={DEPARTMENT_ICONS[index % DEPARTMENT_ICONS.length]} color={selected ? colors.surface : colors.primary} size={25} /></View>
                 <Text style={styles.tileTitle} numberOfLines={2}>{item.name}</Text>
-                {item.description ? <Text numberOfLines={2} style={styles.tileDescription}>{item.description}</Text> : <Text style={styles.tileDescription}>View available doctors</Text>}
-                <View style={styles.tileArrow}><AppIcon name="arrow-forward" color={colors.primary} size={18} /></View>
+                {item.description ? <Text numberOfLines={2} style={styles.tileDescription}>{item.description}</Text> : <Text style={styles.tileDescription}>{t('departments.viewDoctors')}</Text>}
+                <View testID="tile-arrow-wrap" style={[styles.tileArrow, locale?.isRTL && styles.tileArrowRTL]}><AppIcon name={locale?.isRTL ? 'arrow-back' : 'arrow-forward'} color={colors.primary} size={18} /></View>
               </PressableSurface>
             </Link>
           );
         }}
-        ListEmptyComponent={vm.isLoading ? <LoadingState label="Loading departments…" /> : vm.isError ? <ErrorState onRetry={() => void vm.refetch()} /> : hasQuery ? <EmptyState title="No departments found" message="Try a broader department name or another location." icon="grid-outline" /> : <EmptyState title="Search the directory" message="Enter a specialty to browse matching departments." icon="search-outline" />}
+        ListEmptyComponent={vm.isLoading ? <LoadingState label={t('departments.loading')} /> : vm.isError ? <ErrorState onRetry={() => void vm.refetch()} /> : hasQuery ? <EmptyState title={t('departments.emptyTitle')} message={t('departments.emptyMessage')} icon="grid-outline" /> : <EmptyState title={t('departments.startTitle')} message={t('departments.startMessage')} icon="search-outline" />}
       />
     </Screen>
   );
@@ -91,4 +92,5 @@ const styles = StyleSheet.create({
   tileTitle: { ...typography.entityTitle, color: colors.ink },
   tileDescription: { ...typography.metadata, color: colors.muted, marginTop: 5, paddingRight: 8 },
   tileArrow: { position: 'absolute', right: 14, bottom: 14 },
+  tileArrowRTL: { right: undefined, left: 14 },
 });

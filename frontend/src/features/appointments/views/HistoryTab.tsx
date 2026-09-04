@@ -1,4 +1,5 @@
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon } from '../../../shared/components/AppIcon';
 import { Avatar } from '../../../shared/components/Avatar';
 import { AppButton } from '../../../shared/components/Buttons';
@@ -11,11 +12,7 @@ import { displayTime12h } from '../../../shared/utils/time';
 import type { Appointment } from '../model/types';
 import { type HistoryFilter, useAppointmentHistoryViewModel } from '../viewmodels/useAppointmentHistoryViewModel';
 
-const FILTERS: { id: HistoryFilter; label: string }[] = [
-  { id: 'upcoming', label: 'Upcoming' },
-  { id: 'completed', label: 'Completed' },
-  { id: 'cancelled', label: 'Cancelled' },
-];
+const FILTER_IDS: HistoryFilter[] = ['upcoming', 'completed', 'cancelled'];
 
 function statusStyles(status: Appointment['status']) {
   if (status === 'COMPLETED') return { wrap: styles.badgeSuccess, text: styles.badgeSuccessText };
@@ -25,7 +22,13 @@ function statusStyles(status: Appointment['status']) {
 }
 
 export function HistoryTab() {
+  const t = useTranslations();
   const vm = useAppointmentHistoryViewModel();
+  const filterLabels: Record<HistoryFilter, string> = {
+    upcoming: t('appointments.tabs.upcoming'),
+    completed: t('appointments.tabs.completed'),
+    cancelled: t('appointments.tabs.cancelled'),
+  };
   return (
     <FlatList
       data={vm.appointments}
@@ -35,37 +38,38 @@ export function HistoryTab() {
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={
         <View style={styles.header}>
-          <Text accessibilityRole="header" style={styles.title}>Appointment history</Text>
-          <Text style={styles.subtitle}>Your scheduled and past care</Text>
+          <Text accessibilityRole="header" style={styles.title}>{t('appointments.history.title')}</Text>
+          <Text style={styles.subtitle}>{t('appointments.history.subtitle')}</Text>
           <View accessibilityRole="tablist" style={styles.filters}>
-            {FILTERS.map((filter) => {
-              const selected = vm.filter === filter.id;
-              return <Pressable key={filter.id} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => vm.setFilter(filter.id)} style={({ pressed }) => [styles.filter, selected && styles.filterSelected, pressed && styles.pressed]}><Text style={[styles.filterText, selected && styles.filterTextSelected]}>{filter.label}</Text></Pressable>;
+            {FILTER_IDS.map((filterId) => {
+              const selected = vm.filter === filterId;
+              return <Pressable key={filterId} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => vm.setFilter(filterId)} style={({ pressed }) => [styles.filter, selected && styles.filterSelected, pressed && styles.pressed]}><Text style={[styles.filterText, selected && styles.filterTextSelected]}>{filterLabels[filterId]}</Text></Pressable>;
             })}
           </View>
-          {vm.cancelError ? <ErrorState message={vm.cancelError} /> : null}
+          {vm.cancelError ? <ErrorState inline message={vm.cancelError} /> : null}
         </View>
       }
-      ListEmptyComponent={vm.isLoading ? <LoadingState label="Loading appointments…" /> : vm.isError ? <ErrorState onRetry={() => void vm.refetch()} /> : <EmptyState title="No appointments here" message="Appointments in this category will appear here." icon="calendar-outline" />}
+      ListEmptyComponent={vm.isLoading ? <LoadingState label={t('appointments.history.loading')} /> : vm.isError ? <ErrorState onRetry={() => void vm.refetch()} /> : <EmptyState title={t('appointments.history.emptyTitle')} message={t('appointments.history.emptyMessage')} icon="calendar-outline" />}
       renderItem={({ item }: { item: Appointment }) => {
         const canCancel = item.status === 'BOOKED' || item.status === 'CONFIRMED';
         const badge = statusStyles(item.status);
-        const doctorName = item.doctor?.name ?? item.doctor_id;
+        const doctorName = item.doctor?.name ?? t('common.detailsUnavailable');
+        const hospitalName = item.hospital?.name ?? t('common.detailsUnavailable');
         return (
           <View style={styles.card}>
             <View style={styles.cardTop}>
               <Avatar name={doctorName} size={58} />
-              <View style={styles.cardCopy}><Text style={styles.doctorName}>{doctorName}</Text><View style={styles.metaRow}><AppIcon name="business-outline" color={colors.muted} size={15} /><Text style={styles.metaText}>{item.hospital?.name ?? item.hospital_id}</Text></View></View>
-              <View style={[styles.badge, badge.wrap]}><Text style={[styles.badgeText, badge.text]}>{item.status.replaceAll('_', ' ')}</Text></View>
+              <View style={styles.cardCopy}><Text style={styles.doctorName}>{doctorName}</Text><View style={styles.metaRow}><AppIcon name="business-outline" color={colors.muted} size={15} /><Text style={styles.metaText}>{hospitalName}</Text></View></View>
+              <View style={[styles.badge, badge.wrap]}><Text style={[styles.badgeText, badge.text]}>{t(`common.status.${item.status}`)}</Text></View>
             </View>
             <View style={styles.datePanel}>
-              <View style={styles.dateItem}><AppIcon name="calendar-outline" color={colors.primary} size={19} /><View><Text style={styles.dateLabel}>Date</Text><Text style={styles.dateValue}>{formatDateLabel(item.appointment_date)}</Text></View></View>
+              <View style={styles.dateItem}><AppIcon name="calendar-outline" color={colors.primary} size={19} /><View><Text style={styles.dateLabel}>{t('appointments.history.date')}</Text><Text style={styles.dateValue}>{formatDateLabel(item.appointment_date)}</Text></View></View>
               <View style={styles.dateDivider} />
-              <View style={styles.dateItem}><AppIcon name="time-outline" color={colors.teal} size={19} /><View><Text style={styles.dateLabel}>Time</Text><Text style={styles.dateValue}>{displayTime12h(item.appointment_time_12h, item.appointment_time)}</Text></View></View>
+              <View style={styles.dateItem}><AppIcon name="time-outline" color={colors.teal} size={19} /><View><Text style={styles.dateLabel}>{t('appointments.history.time')}</Text><Text style={styles.dateValue}>{displayTime12h(item.appointment_time_12h, item.appointment_time)}</Text></View></View>
             </View>
             <View style={styles.cardFooter}>
-              <View><Text style={styles.referenceLabel}>Booking reference</Text><Text style={styles.referenceValue}>{item.booking_reference}</Text></View>
-              {canCancel ? <AppButton label={vm.isCancelling(item.appointment_id) ? 'Cancelling...' : 'Cancel'} variant="danger" loading={vm.isCancelling(item.appointment_id)} onPress={() => void vm.onCancel(item.appointment_id)} style={styles.cancelButton} /> : null}
+              <View><Text style={styles.referenceLabel}>{t('appointments.history.bookingReference')}</Text><Text style={styles.referenceValue}>{item.booking_reference}</Text></View>
+              {canCancel ? <AppButton label={vm.isCancelling(item.appointment_id) ? t('appointments.history.cancelling') : t('common.cancel')} variant="danger" loading={vm.isCancelling(item.appointment_id)} onPress={() => void vm.onCancel(item.appointment_id)} style={styles.cancelButton} /> : null}
             </View>
           </View>
         );
@@ -95,9 +99,9 @@ const styles = StyleSheet.create({
   badge: { minHeight: 28, borderRadius: radius.pill, justifyContent: 'center', paddingHorizontal: 9 },
   badgeText: { fontSize: 10, lineHeight: 14, fontWeight: '800' },
   badgeBlue: { backgroundColor: colors.primarySoft },
-  badgeBlueText: { color: colors.primary },
+  badgeBlueText: { color: colors.primaryPressed },
   badgeTeal: { backgroundColor: colors.tealSoft },
-  badgeTealText: { color: colors.teal },
+  badgeTealText: { color: colors.tealText },
   badgeSuccess: { backgroundColor: colors.successSoft },
   badgeSuccessText: { color: colors.success },
   badgeDanger: { backgroundColor: colors.dangerSoft },

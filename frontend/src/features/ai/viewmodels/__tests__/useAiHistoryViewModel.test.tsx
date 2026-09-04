@@ -61,3 +61,15 @@ test('onDelete removes a conversation and refetches the list', async () => {
 
   expect(api.deleteAiConversation).toHaveBeenCalledWith('c1');
 });
+
+test('surfaces a visible error when deletion fails, instead of failing silently', async () => {
+  (api.deleteAiConversation as jest.Mock).mockRejectedValue(new Error('offline'));
+  const { result } = await renderHook(() => useAiHistoryViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+  await act(async () => {
+    void result.current.onDelete('c1');
+  });
+
+  await waitFor(() => expect(result.current.hasDeleteError).toBe(true));
+});

@@ -33,7 +33,12 @@ export function AiHistoryView() {
         showsVerticalScrollIndicator={false}
         refreshing={vm.isLoading}
         onRefresh={() => void vm.refetch()}
-        ListHeaderComponent={<PageHeader title={t('ai.history.title')} subtitle={t('ai.history.subtitle')} />}
+        ListHeaderComponent={
+          <View style={styles.headerWrap}>
+            <PageHeader title={t('ai.history.title')} subtitle={t('ai.history.subtitle')} />
+            {vm.hasDeleteError ? <ErrorState inline message={t('ai.history.deleteError')} /> : null}
+          </View>
+        }
         ListEmptyComponent={
           vm.isLoading ? (
             <LoadingState />
@@ -74,6 +79,7 @@ export function AiHistoryView() {
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: 22, paddingTop: 12, paddingBottom: 36, gap: 18 },
+  headerWrap: { gap: 8 },
   separator: { height: 12 },
   pressed: { opacity: 0.75 },
   card: { minHeight: 48, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 15, flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: colors.line },

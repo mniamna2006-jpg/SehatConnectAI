@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, shadow, typography } from '../theme';
+import { ltr } from '../utils/formatters';
 import { displayTime12h } from '../utils/time';
 import { AppIcon } from './AppIcon';
 import { Avatar } from './Avatar';
@@ -67,21 +68,23 @@ export function DoctorCard({
         <View style={styles.availability}>
           <View style={styles.availabilityItem}>
             <AppIcon name="calendar-outline" color={colors.teal} size={17} />
-            <Text style={styles.availabilityText}>{firstSchedule.day}</Text>
+            <Text style={styles.availabilityText}>{t(`common.days.${firstSchedule.day}`)}</Text>
           </View>
           <View style={styles.availabilityItem}>
             <AppIcon name="time-outline" color={colors.teal} size={17} />
-            <Text style={styles.availabilityText}>{displayTime12h(firstSchedule.start12h, firstSchedule.start)} - {displayTime12h(firstSchedule.end12h, firstSchedule.end)}</Text>
+            <Text style={styles.availabilityText}>{ltr(`${displayTime12h(firstSchedule.start12h, firstSchedule.start)} - ${displayTime12h(firstSchedule.end12h, firstSchedule.end)}`)}</Text>
           </View>
         </View>
       ) : null}
       {availabilityAction}
-      <View style={styles.footer}>
-        {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <View style={styles.footerSpacer} />}
-        <Link href={bookingHref} asChild>
-          <AppButton label={t('common.bookAppointment')} style={styles.bookButton} />
-        </Link>
-      </View>
+      {isAvailable === false ? null : (
+        <View style={styles.footer}>
+          {schedules.length > 0 ? <Text style={styles.availableLabel}>{t('doctors.availableTimings')}</Text> : <View style={styles.footerSpacer} />}
+          <Link href={bookingHref} asChild>
+            <AppButton label={t('common.bookAppointment')} style={styles.bookButton} />
+          </Link>
+        </View>
+      )}
     </View>
   );
 }
@@ -91,7 +94,7 @@ const styles = StyleSheet.create({
   mainRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   copy: { flex: 1, gap: 2 },
   name: { ...typography.entityTitle, color: colors.ink },
-  specialty: { ...typography.body, color: colors.primary, fontWeight: '600' },
+  specialty: { ...typography.body, color: colors.primaryPressed, fontWeight: '600' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
   metaText: { ...typography.metadata, color: colors.muted, flex: 1 },
   statusRow: { minHeight: 24, flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },

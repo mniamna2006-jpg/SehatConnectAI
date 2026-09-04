@@ -25,8 +25,8 @@ export function DepartmentDoctorsView({ departmentId }: { departmentId: string }
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.header}>
-            <PageHeader title={t('departments.doctorsTitle')} subtitle="Find the right specialist for your care" />
-            {doctors.length > 0 ? <SectionHeader title="Available Doctors" detail={`${doctors.length} found`} /> : null}
+            <PageHeader title={t('departments.doctorsTitle')} subtitle={t('departments.doctorsSubtitle')} />
+            {doctors.length > 0 ? <SectionHeader title={t('departments.availableDoctors')} detail={`${doctors.length} ${t('common.found')}`} /> : null}
           </View>
         }
         renderItem={({ item }: { item: Doctor }) => (
@@ -35,11 +35,12 @@ export function DepartmentDoctorsView({ departmentId }: { departmentId: string }
             testID={`department-doctor-${item.doctor_id}`}
             name={item.name}
             specialization={item.specialization}
-            availabilityAction={<DoctorAvailabilityAlert doctorId={item.doctor_id} />}
+            isAvailable={item.is_available}
+            availabilityAction={<DoctorAvailabilityAlert doctorId={item.doctor_id} isAvailable={item.is_available} />}
             bookingHref={`/appointments?doctorId=${item.doctor_id}&hospitalId=${item.hospital_id}&departmentId=${item.department_id}`}
           />
         )}
-        ListEmptyComponent={isLoading ? <LoadingState label="Loading doctors…" /> : isError ? <ErrorState onRetry={() => void refetch()} /> : <EmptyState title="No doctors available" message="Please check again later or browse another department." icon="medkit-outline" />}
+        ListEmptyComponent={isLoading ? <LoadingState label={t('departments.loadingDoctors')} /> : isError ? <ErrorState onRetry={() => void refetch()} /> : <EmptyState title={t('departments.noDoctorsTitle')} message={t('departments.noDoctorsMessage')} icon="medkit-outline" />}
       />
     </Screen>
   );

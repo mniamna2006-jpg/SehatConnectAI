@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react-native';
 import { useFindHospitalViewModel } from '../../viewmodels/useFindHospitalViewModel';
+import { ltr } from '../../../../shared/utils/formatters';
 import { FindHospitalView } from '../FindHospitalView';
 
 jest.mock('../../viewmodels/useFindHospitalViewModel');
@@ -47,7 +48,7 @@ test('renders hospital identity, optional metadata, fallback logo, and details a
 
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
   expect(screen.getByText('Main Road, Karachi')).toBeOnTheScreen();
-  expect(screen.getByText('+92 21 111 222 333')).toBeOnTheScreen();
+  expect(screen.getByText(ltr('+92 21 111 222 333'))).toBeOnTheScreen();
   expect(screen.getByText('2.5 km away')).toBeOnTheScreen();
   expect(screen.getByLabelText('City Hospital logo')).toBeOnTheScreen();
   expect(screen.getByLabelText('/hospital/h1')).toBeOnTheScreen();

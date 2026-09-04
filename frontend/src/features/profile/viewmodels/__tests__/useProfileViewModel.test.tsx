@@ -8,7 +8,10 @@ import { useAuth } from '../../../../providers/AuthProvider';
 import * as api from '../../model/api';
 
 jest.mock('../../model/api');
-jest.mock('../../../../providers/LocaleProvider');
+jest.mock('../../../../providers/LocaleProvider', () => ({
+  useOptionalLocale: jest.fn(),
+  useTranslations: () => (key: string) => key,
+}));
 jest.mock('../../../../providers/AuthProvider', () => ({ useAuth: jest.fn(() => ({ logout: jest.fn() })) }));
 jest.mock('expo-router', () => ({ router: { replace: jest.fn() } }));
 
@@ -63,6 +66,32 @@ test('onSave sets saveError and does not throw when the mutation rejects', async
 
   await waitFor(() => expect(result.current.saveError).toBeTruthy());
   expect(result.current.isEditing).toBe(true);
+});
+
+test('onEdit normalizes a backend ISO datetime date_of_birth into an editable YYYY-MM-DD value', async () => {
+  (api.getProfile as jest.Mock).mockResolvedValue({
+    patient_id: '1',
+    full_name: 'Ayesha',
+    preferred_language: 'ENGLISH',
+    date_of_birth: '1995-08-14T00:00:00.000Z',
+  });
+  (api.updateProfile as jest.Mock).mockResolvedValue({
+    patient_id: '1',
+    full_name: 'Ayesha',
+    preferred_language: 'ENGLISH',
+    date_of_birth: '1995-08-14T00:00:00.000Z',
+  });
+
+  const { result } = await renderHook(() => useProfileViewModel(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+  await act(() => result.current.onEdit());
+
+  await act(async () => {
+    await result.current.onSave();
+  });
+
+  expect(api.updateProfile).toHaveBeenCalledWith(expect.objectContaining({ date_of_birth: '1995-08-14' }));
 });
 
 test('applies a saved preferred language immediately', async () => {

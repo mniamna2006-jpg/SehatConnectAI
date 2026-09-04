@@ -16,6 +16,7 @@
     "emptyTitle": "Abhi yahan kuch nahi",
     "goBack": "Wapas jayein",
     "notProvided": "Maloomat mojood nahi",
+    "detailsUnavailable": "Tafseelat dastyab nahi",
     "found": "milay",
     "available": "dastyab",
     "selected": "Muntakhib",
@@ -23,6 +24,15 @@
     "to": "se",
     "patient": "Mareez",
     "active": "active",
+    "days": {
+      "MONDAY": "Peer",
+      "TUESDAY": "Mangal",
+      "WEDNESDAY": "Budh",
+      "THURSDAY": "Jumeraat",
+      "FRIDAY": "Jumma",
+      "SATURDAY": "Hafta",
+      "SUNDAY": "Itwaar"
+    },
     "status": {
       "BOOKED": "Book Shuda",
       "CONFIRMED": "Tasdeeq Shuda",
@@ -70,6 +80,10 @@
     "appointmentDetails": {
       "title": "Appointment Ki Tafseelat",
       "description": "Bookings, history aur queue ki soorat-e-haal dekhein"
+    },
+    "upcomingAppointment": {
+      "eyebrow": "Aane wali appointment",
+      "viewDetails": "Tafseelat dekhein"
     }
   },
   "profile": {
@@ -131,6 +145,18 @@
       "network": "Server se rabta nahi ho saka. Dobara koshish karein.",
       "server": "Server filhaal dastyab nahi. Dobara koshish karein.",
       "unexpected": "Sign in nahi ho saka. Dobara koshish karein."
+    },
+    "validation": {
+      "email": "Sahi email address darj karein.",
+      "password": "Password kam az kam 6 characters ka hona chahiye.",
+      "fullName": "Apna pura naam darj karein (kam az kam 2 harf).",
+      "phone": "Sahi phone number darj karein (kam az kam 7 digits).",
+      "contactRequired": "Email ya phone number darj karein.",
+      "passwordsMismatch": "Passwords match nahi karte.",
+      "language": "Apni pasandeeda zaban muntakhib karein.",
+      "dateOfBirth": "Sahi tareekh-e-paidaish darj karein (YYYY-MM-DD), jo mustaqbil mein na ho.",
+      "registerFailed": "Account nahi ban saka. Dobara koshish karein.",
+      "profileSaveFailed": "Tabdeeliyan save nahi ho sakin. Dobara koshish karein."
     },
     "register": {
       "title": "Apna account banayein",
@@ -197,10 +223,15 @@
     "unavailableTitle": "Hospital nahi mila",
     "unavailableMessage": "Yeh hospital profile dastyab nahi.",
     "hoursAvailable": "Auqaat-e-kaar dastyab hain",
+    "today": "Aaj",
+    "viewWeeklyHours": "Hafta-waar auqaat dekhein",
+    "hideWeeklyHours": "Hafta-waar auqaat chupayein",
     "about": "Taaruf",
     "contactInformation": "Rabta ki maloomat",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "logo": "logo",
+    "building": "building"
   },
   "doctors": {
     "findTitle": "Doctor Talash Karein",
@@ -268,6 +299,9 @@
       "title": "Appointment Book Karein",
       "introTitle": "Appointment book karein",
       "introMessage": "Apni care team, tareekh aur dastyab waqt chunein.",
+      "phaseCare": "Dekh Bhaal",
+      "phaseDetails": "Tafseelat",
+      "enterDifferentDate": "Doosri tareekh darj karein",
       "chooseHospital": "Hospital Chunein",
       "startHere": "Yahan se shuru karein",
       "noHospitals": "Koi hospital dastyab nahi.",
@@ -277,6 +311,7 @@
       "chooseDate": "Tareekh Chunein",
       "nextSevenDays": "Aglay 7 din",
       "enterDate": "Ya tareekh darj karein",
+      "invalidDate": "Sahi aur aane wali tareekh darj karein (YYYY-MM-DD).",
       "availableTime": "Dastyab Waqt",
       "slots": "waqt",
       "noTimesTitle": "Koi waqt dastyab nahi",
@@ -300,7 +335,13 @@
       "loadingHospitals": "Hospital load ho rahe hain…",
       "loadingDepartments": "Shobajaat load ho rahe hain…",
       "loadingDoctors": "Doctors load ho rahe hain…",
-      "loadingSlots": "Waqt load ho raha hai…"
+      "loadingSlots": "Waqt load ho raha hai…",
+      "validation": {
+        "doctor": "Doctor chunein",
+        "hospital": "Hospital chunein",
+        "department": "Department chunein",
+        "slot": "Waqt chunein"
+      }
     },
     "history": {
       "title": "Appointment history",
@@ -311,7 +352,8 @@
       "date": "Tareekh",
       "time": "Waqt",
       "bookingReference": "Booking reference",
-      "cancelling": "Mansookh ho rahi hai..."
+      "cancelling": "Mansookh ho rahi hai...",
+      "cancelError": "Hum yeh appointment mansookh nahi kar sakay. Dobara koshish karein."
     },
     "queue": {
       "title": "Queue ki soorat-e-haal",
@@ -335,6 +377,7 @@
     "emptyTitle": "Koi notification nahi",
     "emptyMessage": "Aap bilkul up to date hain. Nai updates yahan nazar aayen gi.",
     "errorMessage": "Hum aap ki notifications load nahi kar sakay.",
+    "mutationError": "Hum yeh update nahi kar sakay. Dobara koshish karein.",
     "unread": "Ghair parha hua"
   },
   "ai": {
@@ -360,6 +403,7 @@
       "emptyTitle": "Abhi tak koi guftagu nahi",
       "emptyMessage": "AI Assistant kay sath baat cheet shuru karein taakay yahan nazar aaye.",
       "errorMessage": "Hum aap ki history load nahi kar sakay.",
+      "deleteError": "Hum yeh guftagu delete nahi kar sakay. Dobara koshish karein.",
       "deleteConfirmTitle": "Guftagu delete karein?",
       "deleteConfirmMessage": "Yeh guftagu aur iskay paigham hamesha kay liye delete ho jayen gay.",
       "delete": "Delete karein",

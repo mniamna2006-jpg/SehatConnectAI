@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
@@ -9,10 +9,9 @@ import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue';
 import { getDepartmentsByHospital } from '../../departments/model/api';
 import { getDoctorById, getDoctorsByHospital } from '../../doctors/model/api';
 import { getHospitals } from '../../hospitals/model/api';
+import { isTodayOrFutureDate } from '../../../shared/utils/dateValidation';
 import { createAppointment, getTimeSlots } from '../model/api';
-import { bookingSchema, type BookingInput } from '../model/schemas';
-
-const FULL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+import { createBookingSchema, type BookingInput } from '../model/schemas';
 
 interface AppointmentPrefill {
   doctorId?: string;
@@ -26,6 +25,7 @@ export function useAppointmentBookingViewModel(prefill: AppointmentPrefill) {
   const [selectedDate, setSelectedDate] = useState('');
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
+  const bookingSchema = useMemo(() => createBookingSchema(t), [t]);
   const {
     control,
     getValues,
@@ -106,7 +106,8 @@ const isPrefilling = hasDoctorOnlyPrefill && isLoadingPrefillDoctor;
     : hospitalDoctors;
 
   const debouncedDate = useDebouncedValue(selectedDate);
-  const isCompleteDate = FULL_DATE_PATTERN.test(debouncedDate);
+  const isCompleteDate = isTodayOrFutureDate(debouncedDate);
+  const isInvalidDate = debouncedDate.length > 0 && !isCompleteDate;
   const {
     data: allTimeSlots = [],
     isLoading: isLoadingSlots,
@@ -182,6 +183,7 @@ const isPrefilling = hasDoctorOnlyPrefill && isLoadingPrefillDoctor;
     departmentId,
     doctorId,
     selectedDate,
+    isInvalidDate,
     selectedSlotId,
     isLoadingHospitals,
     isLoadingDepartments,

@@ -1,6 +1,6 @@
 # Frontend Architecture — Patient App
 
-Status: **Pre-Phase-1 (frozen for planning, not yet scaffolded)**
+Status: **Implemented** — Phase 1 (functional) and Phase 2 (design/polish) are both done on `feat/frontend-100-premium`.
 
 ## Stack
 
@@ -72,6 +72,6 @@ Swapping mock → real later means replacing the adapter implementation only; no
 
 `AuthProvider` (token + current-user session) and `LocaleProvider` (English / Urdu / Roman Urdu) wrap the app root. Providers own cross-cutting concerns that multiple features need; they are not a place for feature-specific state.
 
-## Directory Target (documented, not yet scaffolded)
+## Directory Shape
 
-See PHASES.md — full tree is documented there conceptually. Not created until Phase 1 begins. A feature only gets the files it needs (`model.ts` + `useViewModel.ts` + `View.tsx` is sufficient when that's all a feature requires) — no empty enterprise boilerplate.
+See PHASES.md for the target tree. A feature only gets the files it needs (`model.ts` + `useViewModel.ts` + `View.tsx` is sufficient when that's all a feature requires) — no empty enterprise boilerplate.

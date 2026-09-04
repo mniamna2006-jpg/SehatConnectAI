@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { useAppointmentBookingViewModel } from '../../viewmodels/useAppointmentBookingViewModel';
 import { BookingTab } from '../BookingTab';
 
@@ -64,6 +64,28 @@ test('renders a mobile date strip and 12-hour time slots', async () => {
   expect(screen.getByText('Choose Date')).toBeOnTheScreen();
   expect(screen.getByTestId('date-option-0')).toBeOnTheScreen();
   expect(screen.getByText('9:00 AM')).toBeOnTheScreen();
+});
+
+test('keeps the manual date field tucked behind a link until a custom date is needed', async () => {
+  (useAppointmentBookingViewModel as jest.Mock).mockReturnValue(viewModel({ selectedDate: '' }));
+
+  await render(<BookingTab prefill={{}} />);
+
+  expect(screen.getByText('Enter a different date')).toBeOnTheScreen();
+  expect(screen.queryByLabelText('Appointment date')).not.toBeOnTheScreen();
+
+  await fireEvent.press(screen.getByText('Enter a different date'));
+
+  expect(screen.getByLabelText('Appointment date')).toBeOnTheScreen();
+});
+
+test('reveals the manual date field automatically when the selected date is outside the suggested week', async () => {
+  (useAppointmentBookingViewModel as jest.Mock).mockReturnValue(viewModel({ selectedDate: '2026-08-31' }));
+
+  await render(<BookingTab prefill={{}} />);
+
+  expect(screen.getByLabelText('Appointment date')).toBeOnTheScreen();
+  expect(screen.queryByText('Enter a different date')).not.toBeOnTheScreen();
 });
 
 test('shows retry recovery instead of an empty list when hospitals fail to load', async () => {

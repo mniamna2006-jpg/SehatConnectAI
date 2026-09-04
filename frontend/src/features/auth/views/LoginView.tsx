@@ -74,7 +74,7 @@ export function LoginView() {
 const styles = StyleSheet.create({
   createRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: 5 },
   footerText: { ...typography.body, color: colors.muted },
-  link: { ...typography.body, color: colors.primary, fontWeight: '700' },
+  link: { ...typography.body, color: colors.primaryPressed, fontWeight: '700' },
   quietLink: { ...typography.body, color: colors.inkSoft, fontWeight: '600' },
   error: { ...typography.metadata, color: colors.danger, textAlign: 'center' },
 });

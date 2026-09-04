@@ -38,23 +38,26 @@ export function NotificationsView() {
         refreshing={vm.isLoading}
         onRefresh={() => void vm.refetch()}
         ListHeaderComponent={
-          <PageHeader
-            title={t('notifications.title')}
-            subtitle={t('notifications.subtitle')}
-            right={
-              vm.notifications.length > 0 ? (
-                <Pressable
-                  accessibilityRole="button"
-                  disabled={vm.isMarkingAllRead}
-                  hitSlop={8}
-                  onPress={() => void vm.onMarkAllRead()}
-                  style={({ pressed }) => [styles.markAll, pressed && styles.pressed]}
-                >
-                  <Text style={styles.markAllText}>{t('notifications.markAllRead')}</Text>
-                </Pressable>
-              ) : undefined
-            }
-          />
+          <View style={styles.headerWrap}>
+            <PageHeader
+              title={t('notifications.title')}
+              subtitle={t('notifications.subtitle')}
+              right={
+                vm.notifications.length > 0 ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    disabled={vm.isMarkingAllRead}
+                    hitSlop={8}
+                    onPress={() => void vm.onMarkAllRead()}
+                    style={({ pressed }) => [styles.markAll, pressed && styles.pressed]}
+                  >
+                    <Text style={styles.markAllText}>{t('notifications.markAllRead')}</Text>
+                  </Pressable>
+                ) : undefined
+              }
+            />
+            {vm.hasMutationError ? <ErrorState inline message={t('notifications.mutationError')} /> : null}
+          </View>
         }
         ListEmptyComponent={
           vm.isLoading ? (
@@ -96,9 +99,10 @@ export function NotificationsView() {
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: 22, paddingTop: 12, paddingBottom: 36, gap: 18 },
+  headerWrap: { gap: 8 },
   separator: { height: 12 },
   markAll: { minHeight: 48, justifyContent: 'center', paddingHorizontal: 4 },
-  markAllText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
+  markAllText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700' },
   pressed: { opacity: 0.75 },
   card: { minHeight: 48, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 15, flexDirection: 'row', gap: 13, borderWidth: 1, borderColor: colors.line },
   cardUnread: { backgroundColor: colors.primarySoft },

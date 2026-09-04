@@ -6,13 +6,16 @@ import { useDoctorAvailabilitySubscription } from '../viewmodels/useDoctorAvaila
 
 interface DoctorAvailabilityAlertProps {
   doctorId: string;
+  /** From the already-fetched doctor record — the source of truth for the CTA and the alert's gate. */
+  isAvailable: boolean;
 }
 
 export function DoctorAvailabilityAlert({
   doctorId,
+  isAvailable,
 }: DoctorAvailabilityAlertProps) {
   const t = useTranslations();
-  const viewModel = useDoctorAvailabilitySubscription(doctorId);
+  const viewModel = useDoctorAvailabilitySubscription(doctorId, isAvailable);
 
   if (!viewModel.canManageAlert) return null;
 
@@ -97,12 +100,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  actionText: { ...typography.metadata, color: colors.primary, fontWeight: '700', flexShrink: 1 },
+  actionText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700', flexShrink: 1 },
   feedbackRow: { minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8 },
   feedbackText: { ...typography.metadata, color: colors.muted },
   errorRow: { gap: 8 },
   errorText: { ...typography.metadata, color: colors.danger },
   retryButton: { minHeight: 44, alignSelf: 'flex-start', justifyContent: 'center', paddingHorizontal: 8 },
-  retryText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
+  retryText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700' },
   pressed: { opacity: 0.75 },
 });

@@ -52,5 +52,6 @@ export function useNotificationsViewModel() {
     onPress,
     onMarkAllRead,
     isMarkingAllRead: markAllReadMutation.isPending,
+    hasMutationError: markReadMutation.isError || markAllReadMutation.isError,
   };
 }
