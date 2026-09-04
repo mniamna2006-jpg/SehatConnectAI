@@ -60,7 +60,7 @@ export function FindDepartmentView({ hospitalId, departmentId }: FindDepartmentV
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
                 testID={`department-row-${item.department_id}`}
-                style={[styles.tile, selected && styles.tileSelected]}
+                style={StyleSheet.flatten([styles.tile, selected && styles.tileSelected])}
               >
                 <View style={[styles.tileIcon, selected && styles.tileIconSelected]}><AppIcon name={DEPARTMENT_ICONS[index % DEPARTMENT_ICONS.length]} color={selected ? colors.surface : colors.primary} size={25} /></View>
                 <Text style={styles.tileTitle} numberOfLines={2}>{item.name}</Text>

@@ -75,7 +75,7 @@ export function HomeView() {
         <View style={styles.actionGrid}>
           {careActions.map((action, index) => (
             <Link key={action.href} href={action.href} asChild>
-              <PressableSurface accessibilityRole="button" style={[styles.actionCard, index === 0 && styles.actionCardWide]}>
+              <PressableSurface accessibilityRole="button" style={StyleSheet.flatten([styles.actionCard, index === 0 && styles.actionCardWide])}>
                 <View style={[styles.actionIcon, action.tone === 'teal' ? styles.tealIcon : styles.blueIcon]}>
                   <AppIcon name={action.icon} color={action.tone === 'teal' ? colors.teal : colors.primary} size={24} />
                 </View>
