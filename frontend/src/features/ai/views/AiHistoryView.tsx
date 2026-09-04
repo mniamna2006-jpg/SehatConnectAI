@@ -36,7 +36,7 @@ export function AiHistoryView() {
         ListHeaderComponent={
           <View style={styles.headerWrap}>
             <PageHeader title={t('ai.history.title')} subtitle={t('ai.history.subtitle')} />
-            {vm.hasDeleteError ? <ErrorState message={t('ai.history.deleteError')} /> : null}
+            {vm.hasDeleteError ? <ErrorState inline message={t('ai.history.deleteError')} /> : null}
           </View>
         }
         ListEmptyComponent={

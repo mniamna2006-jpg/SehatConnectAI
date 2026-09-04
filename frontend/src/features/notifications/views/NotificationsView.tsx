@@ -56,7 +56,7 @@ export function NotificationsView() {
                 ) : undefined
               }
             />
-            {vm.hasMutationError ? <ErrorState message={t('notifications.mutationError')} /> : null}
+            {vm.hasMutationError ? <ErrorState inline message={t('notifications.mutationError')} /> : null}
           </View>
         }
         ListEmptyComponent={

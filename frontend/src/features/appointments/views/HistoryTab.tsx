@@ -46,7 +46,7 @@ export function HistoryTab() {
               return <Pressable key={filterId} accessibilityRole="tab" accessibilityState={{ selected }} onPress={() => vm.setFilter(filterId)} style={({ pressed }) => [styles.filter, selected && styles.filterSelected, pressed && styles.pressed]}><Text style={[styles.filterText, selected && styles.filterTextSelected]}>{filterLabels[filterId]}</Text></Pressable>;
             })}
           </View>
-          {vm.cancelError ? <ErrorState message={vm.cancelError} /> : null}
+          {vm.cancelError ? <ErrorState inline message={vm.cancelError} /> : null}
         </View>
       }
       ListEmptyComponent={vm.isLoading ? <LoadingState label={t('appointments.history.loading')} /> : vm.isError ? <ErrorState onRetry={() => void vm.refetch()} /> : <EmptyState title={t('appointments.history.emptyTitle')} message={t('appointments.history.emptyMessage')} icon="calendar-outline" />}
