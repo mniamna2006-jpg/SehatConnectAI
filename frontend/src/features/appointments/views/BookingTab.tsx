@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   entityNameSelected: { color: colors.primaryPressed },
   inlineEmpty: { ...typography.body, color: colors.muted, paddingVertical: 8 },
   departmentGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  departmentOption: { width: '48%', minHeight: 90, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, padding: 13, gap: 10 },
+  departmentOption: { width: '46%', minHeight: 90, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, padding: 13, gap: 10 },
   departmentOptionSelected: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
   departmentOptionIcon: { width: 34, height: 34, borderRadius: 11, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
   departmentOptionIconSelected: { backgroundColor: colors.primary },

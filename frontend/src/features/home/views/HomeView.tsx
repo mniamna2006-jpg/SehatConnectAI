@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   sectionTitle: { ...typography.sectionTitle, color: colors.ink },
   sectionSubtitle: { ...typography.metadata, color: colors.muted, marginTop: 4 },
   actionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  actionCard: { width: '48%', minHeight: 170, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 17, shadowColor: shadow.color, shadowOpacity: 0.06, shadowRadius: 13, shadowOffset: shadow.offset, elevation: 2 },
+  actionCard: { width: '46%', minHeight: 170, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 17, shadowColor: shadow.color, shadowOpacity: 0.06, shadowRadius: 13, shadowOffset: shadow.offset, elevation: 2 },
   actionIcon: { width: 46, height: 46, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
   tealIcon: { backgroundColor: colors.tealSoft },
   blueIcon: { backgroundColor: colors.primarySoft },
