@@ -72,8 +72,8 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
   expect(screen.getByTestId('hospital-address')).toHaveTextContent('Main Road, Karachi');
   expect(screen.getByText(ltr('+92 21 111 222 333'))).toBeOnTheScreen();
   expect(screen.getByText('care@city.test')).toBeOnTheScreen();
-  expect(screen.getByText('9:00 AM')).toBeOnTheScreen();
-  expect(screen.getByText('to 5:00 PM')).toBeOnTheScreen();
+  expect(screen.getByText(ltr('9:00 AM'))).toBeOnTheScreen();
+  expect(screen.getByText(`to ${ltr('5:00 PM')}`)).toBeOnTheScreen();
   expect(screen.getAllByText('Cardiology')).not.toHaveLength(0);
   expect(screen.getByText('Dr. Ali')).toBeOnTheScreen();
   expect(screen.queryByText(/rating|review|statistic/i)).not.toBeOnTheScreen();

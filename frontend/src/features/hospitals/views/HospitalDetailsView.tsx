@@ -105,8 +105,8 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                     <Text style={styles.todayLabel}>{t('hospitals.today')}</Text>
                     {todayHours.is_open ? (
                       <View style={styles.todayValueRow}>
-                        <Text style={styles.todayValue}>{displayTime12h(todayHours.opening_time_12h, todayHours.opening_time)}</Text>
-                        <Text style={styles.todayValueMuted}>{t('common.to')} {displayTime12h(todayHours.closing_time_12h, todayHours.closing_time)}</Text>
+                        <Text style={styles.todayValue}>{ltr(displayTime12h(todayHours.opening_time_12h, todayHours.opening_time))}</Text>
+                        <Text style={styles.todayValueMuted}>{t('common.to')} {ltr(displayTime12h(todayHours.closing_time_12h, todayHours.closing_time))}</Text>
                       </View>
                     ) : <Text style={styles.todayValue}>{t('common.closed')}</Text>}
                   </View>
@@ -128,7 +128,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                     <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={[styles.weeklyRow, index > 0 && styles.weeklyRowDivider]}>
                       <Text style={styles.weeklyDay}>{t(`common.days.${item.day_of_week}`)}</Text>
                       {item.is_open ? (
-                        <Text style={styles.weeklyTime}>{displayTime12h(item.opening_time_12h, item.opening_time)} {t('common.to')} {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
+                        <Text style={styles.weeklyTime}>{ltr(displayTime12h(item.opening_time_12h, item.opening_time))} {t('common.to')} {ltr(displayTime12h(item.closing_time_12h, item.closing_time))}</Text>
                       ) : <Text style={styles.weeklyTime}>{t('common.closed')}</Text>}
                     </View>
                   ))}
