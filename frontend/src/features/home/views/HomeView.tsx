@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   heroCopy: { maxWidth: '78%', gap: 9, zIndex: 1 },
   heroIcon: { width: 42, height: 42, borderRadius: 14, backgroundColor: '#FFFFFF24', alignItems: 'center', justifyContent: 'center' },
   heroTitle: { fontSize: 20, lineHeight: 25, color: colors.surface, fontWeight: '800', letterSpacing: -0.3 },
-  heroBody: { fontSize: 14, lineHeight: 20, color: '#DCE8FF', fontWeight: '500' },
+  heroBody: { fontSize: 14, lineHeight: 20, color: colors.onPrimaryMuted, fontWeight: '500' },
   heroRings: { position: 'absolute', width: 150, height: 150, borderRadius: 75, borderWidth: 28, borderColor: '#FFFFFF12', right: -48, top: 12 },
   upcomingCard: { borderRadius: radius.lg, backgroundColor: colors.surface, padding: 17, gap: 14, borderWidth: 1, borderColor: colors.line },
   upcomingTop: { flexDirection: 'row', alignItems: 'center', gap: 12 },

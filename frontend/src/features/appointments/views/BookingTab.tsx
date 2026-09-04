@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   introIcon: { width: 56, height: 56, borderRadius: 18, backgroundColor: '#FFFFFF24', alignItems: 'center', justifyContent: 'center' },
   introCopy: { flex: 1 },
   introTitle: { ...typography.sectionTitle, color: colors.surface },
-  introText: { ...typography.body, color: '#DCE8FF', marginTop: 4 },
+  introText: { ...typography.body, color: colors.onPrimaryMuted, marginTop: 4 },
   stage: { gap: 13 },
   stageHeader: { flexDirection: 'row', alignItems: 'center', gap: 11 },
   stageIcon: { width: 40, height: 40, borderRadius: 13, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },

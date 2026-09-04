@@ -346,7 +346,8 @@
       "date": "Date",
       "time": "Time",
       "bookingReference": "Booking reference",
-      "cancelling": "Cancelling..."
+      "cancelling": "Cancelling...",
+      "cancelError": "Could not cancel this appointment. Please try again."
     },
     "queue": {
       "title": "Queue status",

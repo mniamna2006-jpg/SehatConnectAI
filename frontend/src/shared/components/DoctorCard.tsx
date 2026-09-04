@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslations } from '../../providers/LocaleProvider';
 import { colors, radius, shadow, typography } from '../theme';
+import { ltr } from '../utils/formatters';
 import { displayTime12h } from '../utils/time';
 import { AppIcon } from './AppIcon';
 import { Avatar } from './Avatar';
@@ -71,7 +72,7 @@ export function DoctorCard({
           </View>
           <View style={styles.availabilityItem}>
             <AppIcon name="time-outline" color={colors.teal} size={17} />
-            <Text style={styles.availabilityText}>{displayTime12h(firstSchedule.start12h, firstSchedule.start)} - {displayTime12h(firstSchedule.end12h, firstSchedule.end)}</Text>
+            <Text style={styles.availabilityText}>{ltr(`${displayTime12h(firstSchedule.start12h, firstSchedule.start)} - ${displayTime12h(firstSchedule.end12h, firstSchedule.end)}`)}</Text>
           </View>
         </View>
       ) : null}

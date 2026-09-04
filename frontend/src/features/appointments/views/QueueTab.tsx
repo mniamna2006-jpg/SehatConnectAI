@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   queueCard: { borderRadius: radius.lg, backgroundColor: colors.surface, overflow: 'hidden', shadowColor: shadow.color, shadowOpacity: shadow.opacity, shadowRadius: shadow.radius, shadowOffset: shadow.offset, elevation: shadow.elevation },
   tokenHero: { minHeight: 238, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', padding: 24 },
   tokenIcon: { width: 52, height: 52, borderRadius: 17, backgroundColor: '#FFFFFF24', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  tokenLabel: { ...typography.body, color: '#DCE8FF', fontWeight: '700' },
+  tokenLabel: { ...typography.body, color: colors.onPrimaryMuted, fontWeight: '700' },
   tokenNumber: { fontSize: 64, lineHeight: 72, color: colors.surface, fontWeight: '900', letterSpacing: -2, marginVertical: 3 },
   statusBadge: { minHeight: 36, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', paddingHorizontal: 13, flexDirection: 'row', alignItems: 'center', gap: 7 },
   statusDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.teal },

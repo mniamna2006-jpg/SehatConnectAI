@@ -346,7 +346,8 @@
       "date": "Tareekh",
       "time": "Waqt",
       "bookingReference": "Booking reference",
-      "cancelling": "Mansookh ho rahi hai..."
+      "cancelling": "Mansookh ho rahi hai...",
+      "cancelError": "Hum yeh appointment mansookh nahi kar sakay. Dobara koshish karein."
     },
     "queue": {
       "title": "Queue ki soorat-e-haal",

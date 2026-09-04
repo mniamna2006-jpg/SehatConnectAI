@@ -12,6 +12,7 @@ export const colors = {
   primary: '#2F6BFF',
   primaryPressed: '#2554CC',
   primarySoft: '#EDF4FF',
+  onPrimaryMuted: '#DCE8FF',
   secondary: '#149F91',
   teal: '#149F91',
   // Text-only variant of teal (icons/backgrounds keep the brighter `teal`) — #149F91 as text is 3.28:1, fails AA.

@@ -61,7 +61,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           </View>
           <View>
             <Text accessibilityRole="header" testID="hospital-name" style={styles.heroName}>{hospital.name}</Text>
-            {hospital.address || hospital.city ? <View style={styles.heroMeta}><AppIcon name="location-outline" color="#DCE8FF" size={18} /><Text testID="hospital-address" style={styles.heroMetaText}>{[hospital.address, hospital.city].filter(Boolean).join(', ')}</Text></View> : null}
+            {hospital.address || hospital.city ? <View style={styles.heroMeta}><AppIcon name="location-outline" color={colors.onPrimaryMuted} size={18} /><Text testID="hospital-address" style={styles.heroMetaText}>{[hospital.address, hospital.city].filter(Boolean).join(', ')}</Text></View> : null}
             <PressableSurface
               onPress={handleGetDirections}
               disabled={isNavigating}
@@ -105,8 +105,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                     <Text style={styles.todayLabel}>{t('hospitals.today')}</Text>
                     {todayHours.is_open ? (
                       <View style={styles.todayValueRow}>
-                        <Text style={styles.todayValue}>{ltr(displayTime12h(todayHours.opening_time_12h, todayHours.opening_time))}</Text>
-                        <Text style={styles.todayValueMuted}>{t('common.to')} {ltr(displayTime12h(todayHours.closing_time_12h, todayHours.closing_time))}</Text>
+                        <Text style={styles.todayValue}>{ltr(`${displayTime12h(todayHours.opening_time_12h, todayHours.opening_time)} - ${displayTime12h(todayHours.closing_time_12h, todayHours.closing_time)}`)}</Text>
                       </View>
                     ) : <Text style={styles.todayValue}>{t('common.closed')}</Text>}
                   </View>
@@ -128,7 +127,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
                     <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={[styles.weeklyRow, index > 0 && styles.weeklyRowDivider]}>
                       <Text style={styles.weeklyDay}>{t(`common.days.${item.day_of_week}`)}</Text>
                       {item.is_open ? (
-                        <Text style={styles.weeklyTime}>{ltr(displayTime12h(item.opening_time_12h, item.opening_time))} {t('common.to')} {ltr(displayTime12h(item.closing_time_12h, item.closing_time))}</Text>
+                        <Text style={styles.weeklyTime}>{ltr(`${displayTime12h(item.opening_time_12h, item.opening_time)} - ${displayTime12h(item.closing_time_12h, item.closing_time)}`)}</Text>
                       ) : <Text style={styles.weeklyTime}>{t('common.closed')}</Text>}
                     </View>
                   ))}
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
   hoursBadgeText: { ...typography.metadata, color: colors.inkSoft, fontWeight: '700' },
   heroName: { fontSize: 27, lineHeight: 33, color: colors.surface, fontWeight: '800', letterSpacing: -0.6 },
   heroMeta: { flexDirection: 'row', alignItems: 'flex-start', gap: 7, marginTop: 9 },
-  heroMetaText: { ...typography.body, color: '#DCE8FF', flex: 1 },
+  heroMetaText: { ...typography.body, color: colors.onPrimaryMuted, flex: 1 },
   directionsButton: { marginTop: 14, alignSelf: 'flex-start', minHeight: 40, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: 16 },
   directionsButtonText: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '700' },
   about: { gap: 10 },
@@ -209,7 +208,6 @@ const styles = StyleSheet.create({
   todayLabel: { ...typography.metadata, color: colors.muted },
   todayValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 5, marginTop: 1 },
   todayValue: { ...typography.entityTitle, color: colors.ink },
-  todayValueMuted: { ...typography.metadata, color: colors.muted },
   hoursToggle: { minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 16 },
   hoursToggleDivider: { borderTopWidth: 1, borderTopColor: colors.line },
   hoursToggleText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },

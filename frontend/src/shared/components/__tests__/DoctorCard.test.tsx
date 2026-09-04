@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { render, screen } from '@testing-library/react-native';
+import { ltr } from '../../utils/formatters';
 import { DoctorCard } from '../DoctorCard';
 
 jest.mock('@expo/vector-icons/Ionicons', () => () => null);
@@ -30,7 +31,7 @@ test('renders clinician identity, one hospital, 12-hour schedule, and booking ac
   expect(screen.getByText('City Hospital')).toBeOnTheScreen();
   expect(screen.getByText('Available')).toBeOnTheScreen();
   expect(screen.getByText('Monday')).toBeOnTheScreen();
-  expect(screen.getByText('9:00 AM - 1:00 PM')).toBeOnTheScreen();
+  expect(screen.getByText(ltr('9:00 AM - 1:00 PM'))).toBeOnTheScreen();
   expect(screen.getByRole('button', { name: 'Book Appointment' })).toBeOnTheScreen();
   expect(screen.getByLabelText('/appointments?doctorId=d1')).toBeOnTheScreen();
   expect(screen.queryByText(/rating|review|fee/i)).not.toBeOnTheScreen();
