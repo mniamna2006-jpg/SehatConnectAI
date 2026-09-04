@@ -1,9 +1,7 @@
 # AI Prompts
 
-The current Patient Frontend scope contains **no production AI feature**. There is no chatbot, assistant, or AI-driven UI in the frozen 11-screen scope (see FRONTEND_SCOPE.md). No prompts are defined here, and none should be invented or assumed elsewhere in the codebase or docs.
+The Patient Frontend includes an AI Chat feature (AI Chat + AI History screens, see FRONTEND_SCOPE.md), backed by real endpoints (`POST /api/ai/chat`, `GET/DELETE /api/ai/history*`, see `backend/FRONTEND_API_CONTRACTS.md`). The frontend sends the patient's message and renders whatever the backend returns (AI reply, emergency flag, department/doctor recommendations) — no client-side prompt engineering or prompt text lives in this repository. The backend owns the actual model prompts.
 
-*(Note: the backend schema contains `ChatConversation`/`ChatMessage` models, suggesting a future AI chat feature may exist on the roadmap — but it is out of scope for this frontend work and is not referenced by any of the 11 screens.)*
-
-## Reserved for Future Use
-
-If/when an AI feature is explicitly authorized for the Patient Frontend, prompts and interaction design will be documented here using the `ai-inputs`, `ai-tuners`, and `ai-trust-builders` skills already available in this environment.
+Client-side responsibilities only:
+- Display the conversation, emergency flag, and any recommended department/doctors the backend returns.
+- Never fabricate a reply locally or fall back to canned text if the backend call fails — surface a normal error state instead (see ERROR_HANDLING.md).

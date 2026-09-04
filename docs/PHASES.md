@@ -9,9 +9,9 @@
 - Documentation freeze — this package
 - Phase 1 Detailed Implementation Plan — done
 
-## PHASE 1 — Functional Grey Structure — done, PR open (not yet merged)
+## PHASE 1 — Functional Grey Structure — done
 
-Scaffold Expo app, build all 11 patient screens end-to-end against real/adapter data with correct navigation, forms, and state — no visual design work. UI choices limited to: understandable layout, correct interaction, touch targets, basic accessibility, no broken overflow, safe areas, keyboard usability.
+Scaffold Expo app, build patient screens end-to-end against real/adapter data with correct navigation, forms, and state — no visual design work. UI choices limited to: understandable layout, correct interaction, touch targets, basic accessibility, no broken overflow, safe areas, keyboard usability.
 
 Target directory shape (feature-first MVVM, YAGNI — a feature only gets the files it needs):
 
@@ -47,6 +47,6 @@ frontend/
 └── assets/
 ```
 
-## PHASE 2 — Design / Styling / Polish (current)
+## PHASE 2 — Design / Styling / Polish — done
 
-Apply visual identity: `ui-ux-pro-max` + `expo-design-system` for design system generation, `frontend-design` + `craft`/`general-design-review` for polish, `accessibility` skill for a full WCAG pass. Begins in a new isolated branch/worktree (`feat/patient-frontend-phase-2-ui`) only after PR #1 (Phase 1) is merged into `main`.
+Visual identity, responsive layout fixes (down to 320dp), RTL/Urdu correctness (mirrored icons, non-reversed phone numbers/time ranges), and an accessibility pass. Done on `feat/frontend-100-premium`, open as PR #16 awaiting review/merge into `main`.
