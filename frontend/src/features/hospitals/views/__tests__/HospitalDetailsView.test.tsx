@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useHospitalDetailsViewModel } from '../../viewmodels/useHospitalDetailsViewModel';
 import { useDoctorAvailabilitySubscription } from '../../../doctors/viewmodels/useDoctorAvailabilitySubscription';
 import { openHospitalNavigation } from '../../../../core/navigation/openHospitalNavigation';
+import { ltr } from '../../../../shared/utils/formatters';
 import { HospitalDetailsView } from '../HospitalDetailsView';
 
 jest.mock('../../viewmodels/useHospitalDetailsViewModel');
@@ -69,7 +70,7 @@ test('renders supported hospital profile, departments, doctors, and 12-hour timi
 
   expect(screen.getByTestId('hospital-name')).toHaveTextContent('City Hospital');
   expect(screen.getByTestId('hospital-address')).toHaveTextContent('Main Road, Karachi');
-  expect(screen.getByText('+92 21 111 222 333')).toBeOnTheScreen();
+  expect(screen.getByText(ltr('+92 21 111 222 333'))).toBeOnTheScreen();
   expect(screen.getByText('care@city.test')).toBeOnTheScreen();
   expect(screen.getByText('9:00 AM')).toBeOnTheScreen();
   expect(screen.getByText('to 5:00 PM')).toBeOnTheScreen();

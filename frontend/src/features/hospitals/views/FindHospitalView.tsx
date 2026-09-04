@@ -12,6 +12,7 @@ import { PressableSurface } from '../../../shared/components/Buttons';
 import { Screen } from '../../../shared/components/Screen';
 import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
+import { ltr } from '../../../shared/utils/formatters';
 import type { Hospital } from '../model/types';
 import { useFindHospitalViewModel } from '../viewmodels/useFindHospitalViewModel';
 
@@ -54,7 +55,7 @@ export function FindHospitalView() {
               <View style={styles.copy}>
                 <Text testID={`hospital-name-${item.hospital_id}`} style={styles.name}>{item.name}</Text>
                 <View style={styles.metaRow}><AppIcon name="location-outline" color={colors.muted} size={15} /><Text testID={`hospital-city-${item.hospital_id}`} style={styles.meta}>{item.address || item.city || t('hospitals.fallbackLocation')}</Text></View>
-                {item.phone ? <View style={styles.metaRow}><AppIcon name="call-outline" color={colors.muted} size={15} /><Text style={styles.meta}>{item.phone}</Text></View> : null}
+                {item.phone ? <View style={styles.metaRow}><AppIcon name="call-outline" color={colors.muted} size={15} /><Text style={styles.meta}>{ltr(item.phone)}</Text></View> : null}
                 {distance ? <Text testID={`hospital-distance-${item.hospital_id}`} style={styles.distance}>{distance}</Text> : null}
               </View>
               <AppIcon name="chevron-forward" color={colors.faint} size={20} />

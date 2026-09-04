@@ -1,4 +1,10 @@
-import { formatDateLabel, formatDateTimeLabel, formatHumanDate, toDateInputValue } from '../formatters';
+import { formatDateLabel, formatDateTimeLabel, formatHumanDate, ltr, toDateInputValue } from '../formatters';
+
+describe('ltr', () => {
+  test('wraps a phone number in directional isolate marks so it cannot reverse in RTL text', () => {
+    expect(ltr('+92 300 1234567')).toBe('⁦+92 300 1234567⁩');
+  });
+});
 
 describe('formatDateLabel', () => {
   test('formats a backend ISO timestamp as its appointment calendar date', () => {

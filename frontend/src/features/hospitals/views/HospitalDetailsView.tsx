@@ -14,6 +14,7 @@ import { Screen } from '../../../shared/components/Screen';
 import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
 import { displayTime12h, todayDayOfWeek } from '../../../shared/utils/time';
+import { ltr } from '../../../shared/utils/formatters';
 import { openHospitalNavigation } from '../../../core/navigation/openHospitalNavigation';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
 import { DoctorAvailabilityAlert } from '../../doctors/views/DoctorAvailabilityAlert';
@@ -87,7 +88,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           <View style={styles.section}>
             <SectionHeader title={t('hospitals.contactInformation')} />
             <View style={styles.contactPanel}>
-              {hospital.phone ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="call-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>{t('hospitals.phone')}</Text><Text style={styles.contactValue}>{hospital.phone}</Text></View></View> : null}
+              {hospital.phone ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="call-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>{t('hospitals.phone')}</Text><Text style={styles.contactValue}>{ltr(hospital.phone)}</Text></View></View> : null}
               {hospital.email ? <View style={styles.contactRow}><View style={styles.contactIcon}><AppIcon name="mail-outline" color={colors.primary} size={20} /></View><View><Text style={styles.contactLabel}>{t('hospitals.email')}</Text><Text style={styles.contactValue}>{hospital.email}</Text></View></View> : null}
             </View>
           </View>

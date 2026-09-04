@@ -11,7 +11,7 @@ import { PageHeader } from '../../../shared/components/PageHeader';
 import { Screen } from '../../../shared/components/Screen';
 import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
-import { formatHumanDate } from '../../../shared/utils/formatters';
+import { formatHumanDate, ltr } from '../../../shared/utils/formatters';
 import type { PreferredLanguage } from '../../../shared/types/api';
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel';
 
@@ -57,10 +57,10 @@ export function ProfileView() {
           <View style={styles.section}>
             <SectionHeader title={t('profile.sections.contactAddress')} />
             <View style={styles.infoPanel}>
-              <InfoRow icon="call-outline" label={t('profile.fields.phone')} value={vm.profile?.phone} fallback={t('common.notProvided')} testID="profile-phone" />
+              <InfoRow icon="call-outline" label={t('profile.fields.phone')} value={vm.profile?.phone && ltr(vm.profile.phone)} fallback={t('common.notProvided')} testID="profile-phone" />
               <InfoRow icon="home-outline" label={t('profile.fields.address')} value={vm.profile?.address} fallback={t('common.notProvided')} testID="profile-address" />
               <InfoRow icon="location-outline" label={t('profile.fields.city')} value={vm.profile?.city} fallback={t('common.notProvided')} testID="profile-city" />
-              <InfoRow icon="shield-outline" label={t('profile.fields.emergencyContact')} value={vm.profile?.emergency_contact} fallback={t('common.notProvided')} testID="profile-emergency-contact" />
+              <InfoRow icon="shield-outline" label={t('profile.fields.emergencyContact')} value={vm.profile?.emergency_contact && ltr(vm.profile.emergency_contact)} fallback={t('common.notProvided')} testID="profile-emergency-contact" />
             </View>
           </View>
           <AppButton testID="profile-edit" label={t('profile.makeChanges')} icon="create-outline" onPress={vm.onEdit} />

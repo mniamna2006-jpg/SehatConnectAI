@@ -43,6 +43,11 @@ export function formatDateTimeLabel(value: string): string {
   return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}, ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
 }
 
+/** Isolates a phone number's digit order from surrounding RTL (Urdu) text, so "+92 300 1234567" doesn't render as "1234567 300 92+". */
+export function ltr(value: string): string {
+  return `⁦${value}⁩`;
+}
+
 export function getInitials(value?: string): string {
   const parts = value?.trim().split(/\s+/).filter(Boolean) ?? [];
   if (parts.length === 0) return 'SC';
