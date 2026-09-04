@@ -34,6 +34,13 @@ export function titleCaseDay(dayOfWeek: string): string {
   return dayOfWeek.charAt(0) + dayOfWeek.slice(1).toLowerCase();
 }
 
+const DAYS_BY_JS_INDEX = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+/** Today's backend day-of-week enum value ("MONDAY", etc.) in local device time. */
+export function todayDayOfWeek(): string {
+  return DAYS_BY_JS_INDEX[new Date().getDay()];
+}
+
 export interface ScheduleLike {
   day_of_week: string;
   start_time: string;

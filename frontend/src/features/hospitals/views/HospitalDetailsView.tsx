@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'expo-router';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useTranslations } from '../../../providers/LocaleProvider';
 import { AppIcon } from '../../../shared/components/AppIcon';
@@ -13,7 +13,7 @@ import { PressableSurface } from '../../../shared/components/Buttons';
 import { Screen } from '../../../shared/components/Screen';
 import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
-import { displayTime12h } from '../../../shared/utils/time';
+import { displayTime12h, todayDayOfWeek } from '../../../shared/utils/time';
 import { openHospitalNavigation } from '../../../core/navigation/openHospitalNavigation';
 import { useHospitalDetailsViewModel } from '../viewmodels/useHospitalDetailsViewModel';
 import { DoctorAvailabilityAlert } from '../../doctors/views/DoctorAvailabilityAlert';
@@ -24,9 +24,12 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
   const t = useTranslations();
   const { hospital, isLoading, isError, refetch } = useHospitalDetailsViewModel(hospitalId);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [showWeeklyHours, setShowWeeklyHours] = useState(false);
   if (isLoading) return <Screen><LoadingState label={t('hospitals.loadingProfile')} /></Screen>;
   if (isError) return <Screen><ErrorState onRetry={() => void refetch()} /></Screen>;
   if (!hospital) return <Screen><EmptyState title={t('hospitals.unavailableTitle')} message={t('hospitals.unavailableMessage')} icon="business-outline" /></Screen>;
+
+  const todayHours = hospital.working_hours.find((item) => item.day_of_week === todayDayOfWeek());
 
   async function handleGetDirections() {
     if (!hospital) return;
@@ -93,19 +96,44 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
         {hospital.working_hours.length > 0 ? (
           <View testID="hospital-working-hours-section" style={styles.section}>
             <SectionHeader title={t('hospitals.workingHours')} />
-            <ScrollView testID="hospital-working-hours-list" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hoursList}>
-              {hospital.working_hours.map((item, index) => (
-                <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={styles.hoursCard}>
-                  <Text style={styles.day}>{t(`common.days.${item.day_of_week}`)}</Text>
-                  {item.is_open ? (
-                    <>
-                      <Text style={styles.time}>{displayTime12h(item.opening_time_12h, item.opening_time)}</Text>
-                      <Text style={styles.timeMuted}>{t('common.to')} {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
-                    </>
-                  ) : <Text style={styles.time}>{t('common.closed')}</Text>}
+            <View style={styles.hoursPanel}>
+              {todayHours ? (
+                <View testID="hospital-today-hours" style={styles.todayRow}>
+                  <View style={styles.todayIcon}><AppIcon name="time-outline" color={colors.primary} size={19} /></View>
+                  <View style={styles.todayCopy}>
+                    <Text style={styles.todayLabel}>{t('hospitals.today')}</Text>
+                    {todayHours.is_open ? (
+                      <View style={styles.todayValueRow}>
+                        <Text style={styles.todayValue}>{displayTime12h(todayHours.opening_time_12h, todayHours.opening_time)}</Text>
+                        <Text style={styles.todayValueMuted}>{t('common.to')} {displayTime12h(todayHours.closing_time_12h, todayHours.closing_time)}</Text>
+                      </View>
+                    ) : <Text style={styles.todayValue}>{t('common.closed')}</Text>}
+                  </View>
                 </View>
-              ))}
-            </ScrollView>
+              ) : null}
+              <Pressable
+                testID="toggle-weekly-hours"
+                accessibilityRole="button"
+                accessibilityState={{ expanded: showWeeklyHours }}
+                onPress={() => setShowWeeklyHours((prev) => !prev)}
+                style={({ pressed }) => [styles.hoursToggle, todayHours && styles.hoursToggleDivider, pressed && styles.pressed]}
+              >
+                <Text style={styles.hoursToggleText}>{t(showWeeklyHours ? 'hospitals.hideWeeklyHours' : 'hospitals.viewWeeklyHours')}</Text>
+                <AppIcon name={showWeeklyHours ? 'chevron-up' : 'chevron-down'} color={colors.primary} size={18} />
+              </Pressable>
+              {showWeeklyHours ? (
+                <View testID="hospital-working-hours-list" style={styles.weeklyList}>
+                  {hospital.working_hours.map((item, index) => (
+                    <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={[styles.weeklyRow, index > 0 && styles.weeklyRowDivider]}>
+                      <Text style={styles.weeklyDay}>{t(`common.days.${item.day_of_week}`)}</Text>
+                      {item.is_open ? (
+                        <Text style={styles.weeklyTime}>{displayTime12h(item.opening_time_12h, item.opening_time)} {t('common.to')} {displayTime12h(item.closing_time_12h, item.closing_time)}</Text>
+                      ) : <Text style={styles.weeklyTime}>{t('common.closed')}</Text>}
+                    </View>
+                  ))}
+                </View>
+              ) : null}
+            </View>
           </View>
         ) : null}
 
@@ -173,11 +201,23 @@ const styles = StyleSheet.create({
   contactIcon: { width: 42, height: 42, borderRadius: 14, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
   contactLabel: { ...typography.metadata, color: colors.muted },
   contactValue: { ...typography.body, color: colors.ink, fontWeight: '600', marginTop: 1 },
-  hoursList: { gap: 10, paddingRight: 22 },
-  hoursCard: { width: 126, minHeight: 112, borderRadius: radius.lg, backgroundColor: colors.surface, padding: 15, borderWidth: 1, borderColor: colors.line },
-  day: { ...typography.metadata, color: colors.primaryPressed, fontWeight: '800' },
-  time: { ...typography.entityTitle, color: colors.ink, marginTop: 12 },
-  timeMuted: { ...typography.metadata, color: colors.muted, marginTop: 2 },
+  hoursPanel: { backgroundColor: colors.surface, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' },
+  todayRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 16 },
+  todayIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
+  todayCopy: { flex: 1 },
+  todayLabel: { ...typography.metadata, color: colors.muted },
+  todayValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 5, marginTop: 1 },
+  todayValue: { ...typography.entityTitle, color: colors.ink },
+  todayValueMuted: { ...typography.metadata, color: colors.muted },
+  hoursToggle: { minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 16 },
+  hoursToggleDivider: { borderTopWidth: 1, borderTopColor: colors.line },
+  hoursToggleText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
+  pressed: { opacity: 0.7 },
+  weeklyList: { borderTopWidth: 1, borderTopColor: colors.line },
+  weeklyRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
+  weeklyRowDivider: { borderTopWidth: 1, borderTopColor: colors.line },
+  weeklyDay: { ...typography.body, color: colors.ink, fontWeight: '600' },
+  weeklyTime: { ...typography.metadata, color: colors.muted },
   departmentGrid: { gap: 10 },
   departmentTile: { minHeight: 62, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, paddingHorizontal: 13, paddingVertical: 11, flexDirection: 'row', alignItems: 'center', gap: 11 },
   departmentIcon: { width: 36, height: 36, borderRadius: 12, backgroundColor: colors.tealSoft, alignItems: 'center', justifyContent: 'center' },
