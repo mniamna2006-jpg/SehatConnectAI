@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { useOptionalLocale, useTranslations } from '../../../providers/LocaleProvider';
@@ -8,6 +9,7 @@ import { EmptyState } from '../../../shared/components/EmptyState';
 import { ErrorState } from '../../../shared/components/ErrorState';
 import { FormField } from '../../../shared/components/FormField';
 import { LoadingState } from '../../../shared/components/LoadingState';
+import { SectionHeader } from '../../../shared/components/SectionHeader';
 import { colors, radius, typography } from '../../../shared/theme';
 import { displayTime12h } from '../../../shared/utils/time';
 import type { AppointmentPrefill } from '../viewmodels/useAppointmentsViewModel';
@@ -43,6 +45,8 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
   const locale = useOptionalLocale();
   const vm = useAppointmentBookingViewModel(prefill);
   const days = nextSevenDays();
+  const [showCustomDate, setShowCustomDate] = useState(false);
+  const isCustomDateSelected = Boolean(vm.selectedDate) && !days.some((date) => toDateValue(date) === vm.selectedDate);
 
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -51,6 +55,8 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
         <View style={styles.introIcon}><AppIcon name="calendar-clear" color={colors.surface} size={27} /></View>
         <View style={styles.introCopy}><Text accessibilityRole="header" style={styles.introTitle}>{t('appointments.booking.introTitle')}</Text><Text style={styles.introText}>{t('appointments.booking.introMessage')}</Text></View>
       </View>
+
+      <SectionHeader title={t('appointments.booking.phaseCare')} />
 
       <View style={styles.stage}>
         <StageHeader icon="business-outline" title={t('appointments.booking.chooseHospital')} detail={vm.hospitalId ? t('common.selected') : t('appointments.booking.startHere')} />
@@ -109,6 +115,8 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
         {vm.errors.doctor_id ? <Text style={styles.error}>{vm.errors.doctor_id.message}</Text> : null}
       </View>
 
+      <SectionHeader title={t('appointments.booking.dateTime')} />
+
       <View style={styles.stage}>
         <StageHeader icon="calendar-outline" title={t('appointments.booking.chooseDate')} detail={vm.selectedDate || t('appointments.booking.nextSevenDays')} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.dateStrip}>
@@ -123,7 +131,13 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
             );
           })}
         </ScrollView>
-        <FormField accessibilityLabel={t('appointments.booking.appointmentDate')} label={t('appointments.booking.enterDate')} icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} error={vm.isInvalidDate ? t('appointments.booking.invalidDate') : undefined} />
+        {showCustomDate || isCustomDateSelected ? (
+          <FormField accessibilityLabel={t('appointments.booking.appointmentDate')} label={t('appointments.booking.enterDate')} icon="calendar-outline" placeholder="YYYY-MM-DD" value={vm.selectedDate} onChangeText={vm.onSelectDate} error={vm.isInvalidDate ? t('appointments.booking.invalidDate') : undefined} />
+        ) : (
+          <Pressable accessibilityRole="button" onPress={() => setShowCustomDate(true)} style={({ pressed }) => [styles.customDateLink, pressed && styles.pressed]}>
+            <Text style={styles.customDateLinkText}>{t('appointments.booking.enterDifferentDate')}</Text>
+          </Pressable>
+        )}
       </View>
 
       <View style={styles.stage}>
@@ -143,6 +157,8 @@ export function BookingTab({ prefill }: { prefill: AppointmentPrefill }) {
         </View>
         {vm.errors.slot_id ? <Text style={styles.error}>{vm.errors.slot_id.message}</Text> : null}
       </View>
+
+      <SectionHeader title={t('appointments.booking.phaseDetails')} />
 
       <View style={styles.stage}>
         <StageHeader icon="document-text-outline" title={t('appointments.booking.reasonForVisit')} detail={t('common.optional')} />
@@ -203,6 +219,8 @@ const styles = StyleSheet.create({
   dateDay: { ...typography.metadata, color: colors.muted },
   dateNumber: { fontSize: 22, lineHeight: 27, color: colors.ink, fontWeight: '800' },
   dateTextSelected: { color: colors.surface },
+  customDateLink: { alignSelf: 'flex-start', minHeight: 32, justifyContent: 'center' },
+  customDateLinkText: { ...typography.metadata, color: colors.primary, fontWeight: '700' },
   timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   timeOption: { minWidth: '30%', minHeight: 48, borderRadius: radius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 },
   timeOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
