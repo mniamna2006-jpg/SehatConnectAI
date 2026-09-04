@@ -80,6 +80,10 @@
     "appointmentDetails": {
       "title": "اپائنٹمنٹ کی تفصیلات",
       "description": "بکنگز، ہسٹری اور قطار کی صورتحال دیکھیں"
+    },
+    "upcomingAppointment": {
+      "eyebrow": "آئندہ اپائنٹمنٹ",
+      "viewDetails": "تفصیلات دیکھیں"
     }
   },
   "profile": {

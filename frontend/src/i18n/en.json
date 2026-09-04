@@ -80,6 +80,10 @@
     "appointmentDetails": {
       "title": "Appointment Details",
       "description": "View bookings, history, and queue status"
+    },
+    "upcomingAppointment": {
+      "eyebrow": "Upcoming appointment",
+      "viewDetails": "View details"
     }
   },
   "profile": {

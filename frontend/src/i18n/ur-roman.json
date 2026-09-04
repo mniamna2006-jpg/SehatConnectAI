@@ -80,6 +80,10 @@
     "appointmentDetails": {
       "title": "Appointment Ki Tafseelat",
       "description": "Bookings, history aur queue ki soorat-e-haal dekhein"
+    },
+    "upcomingAppointment": {
+      "eyebrow": "Aane wali appointment",
+      "viewDetails": "Tafseelat dekhein"
     }
   },
   "profile": {
