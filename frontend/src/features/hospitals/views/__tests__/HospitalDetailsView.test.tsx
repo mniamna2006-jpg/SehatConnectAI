@@ -151,7 +151,7 @@ test('renders a closed working-hours day as closed without opening times', async
 
   await render(<HospitalDetailsView hospitalId="h3" />);
 
-  expect(screen.getByTestId('working-hours-SUNDAY')).toHaveTextContent('SUNDAYClosed');
+  expect(screen.getByTestId('working-hours-SUNDAY')).toHaveTextContent('SundayClosed');
   expect(screen.queryByText('9:00 AM')).not.toBeOnTheScreen();
   expect(screen.queryByText('to 5:00 PM')).not.toBeOnTheScreen();
 });

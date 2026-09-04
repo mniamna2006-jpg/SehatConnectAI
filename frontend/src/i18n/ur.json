@@ -24,6 +24,15 @@
     "to": "سے",
     "patient": "مریض",
     "active": "فعال",
+    "days": {
+      "MONDAY": "پیر",
+      "TUESDAY": "منگل",
+      "WEDNESDAY": "بدھ",
+      "THURSDAY": "جمعرات",
+      "FRIDAY": "جمعہ",
+      "SATURDAY": "ہفتہ",
+      "SUNDAY": "اتوار"
+    },
     "status": {
       "BOOKED": "بک شدہ",
       "CONFIRMED": "تصدیق شدہ",

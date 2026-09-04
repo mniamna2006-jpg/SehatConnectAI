@@ -67,7 +67,7 @@ export function DoctorCard({
         <View style={styles.availability}>
           <View style={styles.availabilityItem}>
             <AppIcon name="calendar-outline" color={colors.teal} size={17} />
-            <Text style={styles.availabilityText}>{firstSchedule.day}</Text>
+            <Text style={styles.availabilityText}>{t(`common.days.${firstSchedule.day}`)}</Text>
           </View>
           <View style={styles.availabilityItem}>
             <AppIcon name="time-outline" color={colors.teal} size={17} />

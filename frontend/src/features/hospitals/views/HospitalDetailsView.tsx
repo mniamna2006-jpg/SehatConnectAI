@@ -96,7 +96,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
             <ScrollView testID="hospital-working-hours-list" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hoursList}>
               {hospital.working_hours.map((item, index) => (
                 <View key={`${item.day_of_week}-${index}`} testID={`working-hours-${item.day_of_week}`} style={styles.hoursCard}>
-                  <Text style={styles.day}>{item.day_of_week}</Text>
+                  <Text style={styles.day}>{t(`common.days.${item.day_of_week}`)}</Text>
                   {item.is_open ? (
                     <>
                       <Text style={styles.time}>{displayTime12h(item.opening_time_12h, item.opening_time)}</Text>

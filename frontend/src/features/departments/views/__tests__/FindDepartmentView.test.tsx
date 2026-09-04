@@ -68,8 +68,10 @@ test('flips the department tile disclosure arrow for RTL locales', async () => {
 
   await render(<FindDepartmentView hospitalId="h1" departmentId="dep1" />);
   expect(screen.getByTestId('icon-arrow-forward')).toBeOnTheScreen();
+  expect(screen.getByTestId('tile-arrow-wrap')).toHaveStyle({ right: 14, left: undefined });
 
   mockIsRTL = true;
   await render(<FindDepartmentView hospitalId="h1" departmentId="dep1" />);
   expect(screen.getAllByTestId('icon-arrow-back').length).toBeGreaterThan(0);
+  expect(screen.getAllByTestId('tile-arrow-wrap')[0]).toHaveStyle({ left: 14, right: undefined });
 });

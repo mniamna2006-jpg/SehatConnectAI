@@ -24,6 +24,15 @@
     "to": "to",
     "patient": "Patient",
     "active": "active",
+    "days": {
+      "MONDAY": "Monday",
+      "TUESDAY": "Tuesday",
+      "WEDNESDAY": "Wednesday",
+      "THURSDAY": "Thursday",
+      "FRIDAY": "Friday",
+      "SATURDAY": "Saturday",
+      "SUNDAY": "Sunday"
+    },
     "status": {
       "BOOKED": "Booked",
       "CONFIRMED": "Confirmed",

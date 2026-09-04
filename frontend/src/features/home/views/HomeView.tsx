@@ -81,7 +81,7 @@ export function HomeView() {
                 </View>
                 <Text style={styles.actionTitle}>{action.title}</Text>
                 <Text style={styles.actionDescription}>{action.description}</Text>
-                <View style={styles.actionArrow}><AppIcon name="arrow-forward" color={colors.primary} size={18} /></View>
+                <View testID="action-arrow-wrap" style={[styles.actionArrow, locale?.isRTL && styles.actionArrowRTL]}><AppIcon name={locale?.isRTL ? 'arrow-back' : 'arrow-forward'} color={colors.primary} size={18} /></View>
               </PressableSurface>
             </Link>
           ))}
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
   actionTitle: { ...typography.entityTitle, color: colors.ink },
   actionDescription: { ...typography.metadata, color: colors.muted, marginTop: 4, paddingRight: 8 },
   actionArrow: { position: 'absolute', right: 16, bottom: 16 },
+  actionArrowRTL: { right: undefined, left: 16 },
   appointmentCard: { minHeight: 92, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 17, flexDirection: 'row', alignItems: 'center', gap: 14, borderWidth: 1, borderColor: colors.line },
   appointmentIcon: { width: 52, height: 52, borderRadius: 17, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center' },
   appointmentCopy: { flex: 1 },

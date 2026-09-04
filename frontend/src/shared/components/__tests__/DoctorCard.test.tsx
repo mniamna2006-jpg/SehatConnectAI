@@ -20,7 +20,7 @@ test('renders clinician identity, one hospital, 12-hour schedule, and booking ac
       specialization="Neurology"
       hospital="City Hospital"
       isAvailable
-      schedules={[{ id: 's1', day: 'Monday', start: '09:00', end: '13:00' }]}
+      schedules={[{ id: 's1', day: 'MONDAY', start: '09:00', end: '13:00' }]}
       bookingHref="/appointments?doctorId=d1"
     />
   );

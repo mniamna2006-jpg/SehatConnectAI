@@ -75,6 +75,16 @@ test('doctor-only prefill resolves hospital_id/department_id from the doctor det
 test('onSelectDate loads available time slots for the chosen doctor and date', async () => {
   const today = new Date();
   const futureDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  (getDoctorById as jest.Mock).mockResolvedValue({
+    doctor_id: 'd1',
+    hospital_id: 'h1',
+    department_id: 'dep1',
+    name: 'Dr. Ali',
+    is_active: true,
+    hospital: { hospital_id: 'h1', name: 'City Hospital' },
+    department: { department_id: 'dep1', name: 'Cardiology' },
+    schedules: [],
+  });
   (api.getTimeSlots as jest.Mock).mockResolvedValue([
     {
       slot_id: 's1',

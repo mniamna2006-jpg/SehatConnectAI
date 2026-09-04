@@ -24,6 +24,15 @@
     "to": "se",
     "patient": "Mareez",
     "active": "active",
+    "days": {
+      "MONDAY": "Peer",
+      "TUESDAY": "Mangal",
+      "WEDNESDAY": "Budh",
+      "THURSDAY": "Jumeraat",
+      "FRIDAY": "Jumma",
+      "SATURDAY": "Hafta",
+      "SUNDAY": "Itwaar"
+    },
     "status": {
       "BOOKED": "Book Shuda",
       "CONFIRMED": "Tasdeeq Shuda",

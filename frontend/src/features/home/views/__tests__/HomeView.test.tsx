@@ -66,8 +66,10 @@ test('flips the appointment-details disclosure chevron for RTL locales', async (
   await render(<HomeView />);
   expect(screen.getByTestId('icon-chevron-forward')).toBeOnTheScreen();
   expect(screen.queryByTestId('icon-chevron-back')).not.toBeOnTheScreen();
+  expect(screen.getAllByTestId('action-arrow-wrap')[0]).toHaveStyle({ right: 16, left: undefined });
 
   mockIsRTL = true;
   await render(<HomeView />);
   expect(screen.getAllByTestId('icon-chevron-back').length).toBeGreaterThan(0);
+  expect(screen.getAllByTestId('action-arrow-wrap')[0]).toHaveStyle({ left: 16, right: undefined });
 });
