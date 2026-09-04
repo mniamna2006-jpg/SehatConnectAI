@@ -57,7 +57,7 @@ export function HospitalDetailsView({ hospitalId }: HospitalDetailsViewProps) {
           <View style={styles.scrim} />
           <View style={styles.heroTop}>
             {hospital.logo_url ? <Image source={{ uri: hospital.logo_url }} style={styles.logo} contentFit="cover" accessibilityLabel={`${hospital.name} ${t('hospitals.logo')}`} /> : <View style={styles.logoFallback}><AppIcon name="business" color={colors.primary} size={29} /></View>}
-            {hospital.working_hours.some((item) => item.is_open) ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText}>{t('hospitals.hoursAvailable')}</Text></View> : null}
+            {hospital.working_hours.some((item) => item.is_open) ? <View style={styles.hoursBadge}><AppIcon name="time-outline" color={colors.teal} size={16} /><Text style={styles.hoursBadgeText} numberOfLines={1}>{t('hospitals.hoursAvailable')}</Text></View> : null}
           </View>
           <View>
             <Text accessibilityRole="header" testID="hospital-name" style={styles.heroName}>{hospital.name}</Text>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   logo: { width: 66, height: 66, borderRadius: 20, backgroundColor: colors.surface },
   logoFallback: { width: 66, height: 66, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
-  hoursBadge: { minHeight: 36, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12 },
+  hoursBadge: { minHeight: 36, borderRadius: radius.pill, backgroundColor: '#FFFFFFE8', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, flexShrink: 1 },
   hoursBadgeText: { ...typography.metadata, color: colors.inkSoft, fontWeight: '700' },
   heroName: { fontSize: 27, lineHeight: 33, color: colors.surface, fontWeight: '800', letterSpacing: -0.6 },
   heroMeta: { flexDirection: 'row', alignItems: 'flex-start', gap: 7, marginTop: 9 },
