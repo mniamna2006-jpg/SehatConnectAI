@@ -29,7 +29,7 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
 
   return (
     <Screen>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={12}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={12}>
         <PageHeader
           title={t('ai.chat.title')}
           subtitle={t('ai.chat.disclaimer')}
@@ -37,6 +37,7 @@ export function AiChatView({ conversationId }: AiChatViewProps = {}) {
         />
         <FlatList
           ref={listRef}
+          style={styles.flex}
           data={vm.messages}
           keyExtractor={(item: ChatMessage) => item.id}
           contentContainerStyle={styles.content}
